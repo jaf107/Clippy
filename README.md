@@ -31,4 +31,5 @@ Render pdf using HTML canvas in the browser (Ongoing) 🔃 <br>
 
 To install all dependencies run: `npm install` <br>
 To install pdfjs library in the project run: `npm install pdfjs-dist` <br>
+To install pdf-export-image library in the project run: `npm i pdf-export-images` <br>
 To run the demo: `node index.js`
