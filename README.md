@@ -23,9 +23,9 @@ Render pdf using HTML canvas in the browser (Ongoing) 🔃 <br>
 ### Library/API used
 
 📑PDF.JS <br>
-&emsp;npm link: `https://www.npmjs.com/package/pdfjs?activeTab=readme` <br>
-📷PDF-EXPORT-IMAGES
-&emsp;npm link: `https://www.npmjs.com/package/pdf-export-images?activeTab=readme` <br>
+&emsp;npm link: <a href="https://www.npmjs.com/package/pdfjs?activeTab=readme">https://www.npmjs.com/package/pdfjs?activeTab=readme</a> <br>
+📷PDF-EXPORT-IMAGES <br>
+&emsp;npm link: <a href="https://www.npmjs.com/package/pdf-export-images?activeTab=readme">https://www.npmjs.com/package/pdf-export-images?activeTab=readme</a> <br>
 
 ### How to run
 
