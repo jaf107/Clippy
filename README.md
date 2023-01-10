@@ -8,11 +8,11 @@ Will update the readme for any further progress.<br>
 
 ### Progress
 
-Extract text data from pdf using pdfjs ✅ <br>
-Extract embedded images from pdf ✅ <br>
-Extract tables as JSON from pdf (ongoing) 🔃 <br>
-Extarct Chart data as JSON from pdf (ongoing) 🔃 <br>
-Render pdf using HTML canvas in the browser (Ongoing) 🔃 <br>
+📄 Extract text data from pdf using pdfjs ✅ <br>
+🖼 Extract embedded images from pdf ✅ <br>
+📊 Extract tables as JSON from pdf (ongoing) 🔃 <br>
+📈 Extarct Chart data as JSON from pdf (ongoing) 🔃 <br>
+🌐 Render pdf using HTML canvas in the browser (Ongoing) 🔃 <br>
 
 ### To do
 
@@ -22,9 +22,9 @@ Render pdf using HTML canvas in the browser (Ongoing) 🔃 <br>
 
 ### Library/API used
 
-📑PDF.JS <br>
+📑 PDF.JS <br>
 &emsp;npm link: <a href="https://www.npmjs.com/package/pdfjs">https://www.npmjs.com/package/pdfjs</a> <br>
-📷PDF-EXPORT-IMAGES <br>
+📷 PDF-EXPORT-IMAGES <br>
 &emsp;npm link: <a href="https://www.npmjs.com/package/pdf-export-images">https://www.npmjs.com/package/pdf-export-images</a> <br>
 
 ### How to run
