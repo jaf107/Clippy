@@ -16,7 +16,7 @@ Will update the readme for any further progress.<br>
 
 ### To do
 
-1️⃣ Parse keyword for object (image, table, chart) from text data in a pdf <br>
+1️⃣ Parse keyword for object (image, table, chart) from text data in a pdf via nltk or some nlp library in js <br>
 2️⃣ Storing object-key pair in a golbal store/context in the UI <br>
 3️⃣ Highlight text in the UI using the keywords in global store <br>
 
