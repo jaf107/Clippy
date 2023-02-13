@@ -63,3 +63,9 @@ h1{
 .guest:hover{
     background-color: #3a3a3a;
 }
+
+@media (min-width: 1080px) {
+    .auth {
+        margin-top: 10% !important;
+    }
+    }
