@@ -16,7 +16,7 @@ h1{
 
 .signup{
     font-size: 120%;
-    margin-top: 20%;
+    margin-top: 15%;
     color: #e9e9eaa9;
 }
 
@@ -32,7 +32,7 @@ h1{
     height: fit-content;
     width: fit-content;
     margin: auto;
-    margin-top: 8%;
+    margin-top: 6%;
 }
 
 .login{
@@ -64,14 +64,23 @@ h1{
     background-color: #3a3a3a;
 }
 
+#footer{
+    position: fixed;
+    left: 0;
+    bottom: 2%;
+    width: 100%;
+    color: rgb(138, 138, 138);
+    text-align: center;
+}
+
 @media only screen and (min-width: 1200px) {
     .auth {
-        margin-top: 15% !important;
+        margin-top: 12% !important;
     }
     }
 
 @media only screen and (min-width: 992px) {
     .auth {
-        margin-top: 8% !important;
+        margin-top: 6% !important;
     }
     }

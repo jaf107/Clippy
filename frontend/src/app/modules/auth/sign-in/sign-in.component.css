@@ -1,6 +1,11 @@
 input{
-    background-color: #999999; 
+    background-color: #777777; 
     border-color: #999999;
+}
+
+input:focus, input:active{
+    background-color: #999999; 
+    outline: 2px solid #404040;
 }
 
 .card{
@@ -12,4 +17,17 @@ input{
     background-color: #404040;
     border: none; 
     padding: 10px 20px;
+    font-size: large;
+}
+
+.submit:active{
+    background-color: #1c1c1c;
+    border: none; 
+    padding: 10px 20px;
+    font-size: large;
+}
+
+.signup{
+    font-size: 120%;
+    color: #e9e9eaa9;
 }
