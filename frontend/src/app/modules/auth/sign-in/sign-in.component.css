@@ -1,0 +1,15 @@
+input{
+    background-color: #999999; 
+    border-color: #999999;
+}
+
+.card{
+    margin: 0 auto;
+    text-align: center;
+}
+
+.submit{
+    background-color: #404040;
+    border: none; 
+    padding: 10px 20px;
+}

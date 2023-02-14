@@ -64,8 +64,14 @@ h1{
     background-color: #3a3a3a;
 }
 
-@media (min-width: 1080px) {
+@media only screen and (min-width: 1200px) {
     .auth {
-        margin-top: 10% !important;
+        margin-top: 15% !important;
+    }
+    }
+
+@media only screen and (min-width: 992px) {
+    .auth {
+        margin-top: 8% !important;
     }
     }
