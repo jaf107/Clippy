@@ -1,0 +1,36 @@
+{
+  "author": "Michael Hueter <mthueter@gmail.com>",
+  "version": "2.0.0",
+  "name": "docker-node-express-boilerplate",
+  "description": "Boilerplate Dockerized Express code to launch new RESTful APIs.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mhueter/docker-node-express-boilerplate.git"
+  },
+  "main": "app/app.js",
+  "scripts": {
+    "test": "jest",
+    "start": "nodemon app/server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "10.0.0",
+    "express": "4.17.2",
+    "jsonschema": "1.4.0",
+    "mongoose": "6.1.4",
+    "nodemon": "^2.0.20"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "babel-preset-es2017": "^6.24.1",
+    "eslint": "^8.5.0",
+    "jest": "^27.4.5",
+    "jest-environment-node": "^27.4.4",
+    "mongodb-memory-server": "^8.1.0",
+    "supertest": "^6.1.6"
+  },
+  "jest": {
+    "globalSetup": "./config/jest/globalSetup.js",
+    "globalTeardown": "./config/jest/globalTeardown.js"
+  }
+}
