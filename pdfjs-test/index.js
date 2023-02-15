@@ -52,24 +52,4 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-async function getTextOperatorList(src) {
-  const doc = await pdfjs.getDocument(src).promise;
-  const totalPageCount = doc.numPages;
-  const list = doc.get;
-
-  // console.log(doc);
-
-  fs.truncateSync("./operatorList.txt", 0);
-
-  // for (let i = 1; i <= totalPageCount; i++) {
-  const page = await doc.getPage(1);
-  // const listOp = await doc.getMarkInfo();
-  const opList = await page.getTextContent();
-  console.log(opList);
-  // writeToFile("./operatorList.txt", textContent, i);
-  // writeObjectToFile("./object.txt", textContent, i);
-  // }
-}
-
 getPdfTextContent("./sample1.pdf");
-// getTextOperatorList("./sample1.pdf");
