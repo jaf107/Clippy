@@ -1,5 +1,4 @@
 input{
-    padding: 2%;
     background-color: #626262; 
     border-color: #999999;
     color: white;
@@ -11,13 +10,6 @@ input:focus, input:active{
     outline: 2px solid #404040;
 }
 
-input::placeholder{
-    color:#999999;
-}
-.card{
-    margin: 0 auto;
-    text-align: center;
-}
 
 .submit{
     background-color: #404040;
@@ -33,6 +25,7 @@ input::placeholder{
     font-size: 1.2rem;
 }
 
-.signup{
+.signin{
+    text-align: center;
     color: #e9e9eaa9;
 }
