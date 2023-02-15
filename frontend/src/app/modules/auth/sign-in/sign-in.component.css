@@ -1,18 +1,18 @@
 input{
     padding: 2%;
-    background-color: #626262; 
-    border-color: #999999;
-    color: white;
+    background-color: #eeeeee; 
+    /* border-color: white; */
+    color: black;
 }
 
 input:focus, input:active{
-    color: white;
-    background-color: #626262; 
-    outline: 2px solid #404040;
+    color: black;
+    background-color: #eeeeee; 
+    outline: 2px solid #737373;
 }
 
 input::placeholder{
-    color:#999999;
+    color:#7f7f7f;
 }
 .card{
     margin: 0 auto;
@@ -34,5 +34,5 @@ input::placeholder{
 }
 
 .signup{
-    color: #e9e9eaa9;
+    color: #404040;
 }
