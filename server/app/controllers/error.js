@@ -1,4 +1,4 @@
-const { APP_NAME } = require("../config");
+const { APP_NAME } = require("../db.config");
 const { APIError } = require("../helpers");
 
 function bodyParserHandler(error, request, response, next) {
@@ -41,5 +41,5 @@ module.exports = {
   bodyParserHandler,
   fourOhFourHandler,
   fourOhFiveHandler,
-  globalErrorHandler
+  globalErrorHandler,
 };

@@ -1,11 +1,12 @@
 // npm packages
 const dotenv = require("dotenv");
 const express = require("express");
+const cookieSession = require("cookie-session");
 
 // app imports
-const { connectToDatabase, globalResponseHeaders } = require("./config");
+const { connectToDatabase, globalResponseHeaders } = require("./db.config");
 const { errorHandler } = require("./controllers");
-const { thingsRouter } = require("./routers");
+const { thingsRouter } = require("./routes");
 
 // global constants
 dotenv.config();
@@ -28,7 +29,17 @@ app.use(bodyParserHandler); // error handling specific to body parser only
 // response headers setup; CORS
 app.use(globalResponseHeaders);
 
+app.use(
+  cookieSession({
+    name: "clippy-session",
+    secret: "COOKIE_SECRET", // should use as secret environment variable
+    httpOnly: true,
+  })
+);
+
 app.use("/things", thingsRouter);
+require("./app/routes/auth.routes")(app);
+require("./app/routes/user.routes")(app);
 
 // catch-all for 404 "Not Found" errors
 app.get("*", fourOhFourHandler);
