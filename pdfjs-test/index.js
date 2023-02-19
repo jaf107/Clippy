@@ -52,4 +52,4 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-getPdfTextContent("./sample1.pdf");
+getPdfTextContent("./icse-template.pdf");

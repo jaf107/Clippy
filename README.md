@@ -32,4 +32,5 @@ Will update the readme for any further progress.<br>
 To install all dependencies run: `npm install` <br>
 To install pdfjs library in the project run: `npm install pdfjs-dist` <br>
 To install pdf-export-image library in the project run: `npm i pdf-export-images` <br>
+Create a `out` folder in `extract-image` folder to get the output images from a pdf-file <br>
 To run the demo: `node index.js`
