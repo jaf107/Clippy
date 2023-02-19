@@ -1,4 +1,22 @@
+span{
+    color: white;
+    padding-right: 0.3rem;
+}
+
 .navbar{
     background-color: #404040;
     box-shadow: 0 4px 2px -2px #333333;
+}
+
+.dropdown{
+    margin-top: 0.25rem;
+}
+
+#dropdownProfile{
+    background-color: transparent;
+    border: transparent
+}
+
+.dropdown-menu{
+    background-color: #ffffff9d;
 }
