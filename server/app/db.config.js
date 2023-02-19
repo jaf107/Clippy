@@ -8,7 +8,9 @@ const PORT = process.env.PORT || 8080;
  * Connect to mongoose asynchronously or bail out if it fails
  */
 async function connectToDatabase() {
-  const MONGODB_URI = process.env.MONGODB_URI;
+  const MONGODB_URI =
+    process.env.MONGODB_URI ||
+    "mongodb+srv://clippy:clippy2023@cluster0.tlrl1sh.mongodb.net/?retryWrites=true&w=majority";
 
   mongoose.Promise = Promise;
   if (ENV === "development" || ENV === "test") {
