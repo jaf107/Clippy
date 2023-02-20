@@ -64,6 +64,11 @@ h1{
     background-color: #3a3a3a;
 }
 
+a{
+    color: #e9e9eaa9;
+    text-decoration: none;
+}
+
 #footer{
     position: fixed;
     left: 0;
