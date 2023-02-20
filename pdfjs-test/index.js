@@ -1,7 +1,11 @@
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const fs = require("fs");
 
-async function getPdfTextContent(src) {
+/**
+ * Extarct texts from a pdf file
+ * @param {string} src
+ */
+export async function getPdfTextContent(src) {
   const doc = await pdfjs.getDocument(src).promise;
   const totalPageCount = doc.numPages;
 
@@ -23,6 +27,7 @@ function writeObjectToFile(filePath, content, pageNo) {
   let data = `page No: ${pageNo} \n===============\n`;
   let pos = 0;
   const items = content.items.map((item) => {
+    console.log(item);
     let style = content.styles[item.fontName];
     data += `item no ${pos}
     ------------------------
