@@ -1,1674 +1,2459 @@
 page No: 1 
 ===============
-See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/publication/341473514
+Automatic Generation of Text
+Descriptive Comments for Code Blocks
+Yuding Liang, Kenny Q. Zhu
+∗
 
-How Machine Learning Has Been Applied in Software Engineering?
+liangyuding@sjtu.edu.cn, kzhu@cs.sjtu.edu.cn
+Department of Computer Science and Engineering
+Shanghai Jiao Tong University
+800 Dongchuan Road, Shanghai, China 200240
 
-Conference Paper
+Abstract
+
+We propose a framework to automatically generate descrip-
+tive comments for source code blocks. While this problem
+has been studied by many researchers previously, their meth-
+ods are mostly based on fixed template and achieves poor
+results. Our framework does not rely on any template, but
+makes use of a new recursive neural network called Code-
+RNN to extract features from the source code and embed
+them into one vector. When this vector representation is input
+to a new recurrent neural network (Code-GRU), the overall
+framework generates text descriptions of the code with accu-
+racy (Rouge-2 value) significantly higher than other learning-
+based approaches such as sequence-to-sequence model. The
+Code-RNN model can also be used in other scenario where
+the representation of code is required.
  
-· January 2020
-
-DOI: 10.5220/0009417703060313
-
-CITATIONS
-
-2
-
-READS
-
-359
-
-4 authors:
-Some of the authors of this publication are also working on these related projects:
-
-Machine translation in GSE
- 
-View project
-
-MPS.BR Program, coordinated by SOFTEX (from 2004-2014 I was the executive coordinator of this program)
- 
-View project
-
-Olimar Teixeira Borges
-
-Pontifícia Universidade Católica do Rio Grande do Sul
-
-6
- 
-PUBLICATIONS
- 
-14
- 
-CITATIONS
-
-SEE PROFILE
-
-Julia Couto
-
-Pontifícia Universidade Católica do Rio Grande do Sul
-
-11
- 
-PUBLICATIONS
- 
-22
- 
-CITATIONS
-
-SEE PROFILE
-
-Duncan D. Ruiz
-
-Pontifícia Universidade Católica do Rio Grande do Sul
-
-98
- 
-PUBLICATIONS
- 
-737
- 
-CITATIONS
-
-SEE PROFILE
-
-Rafael Prikladnicki
-
-Pontifícia Universidade Católica do Rio Grande do Sul
-
-255
- 
-PUBLICATIONS
- 
-2,985
- 
-CITATIONS
-
-SEE PROFILE
-
-All content following this page was uploaded by Julia Couto on 01 June 2020.
-
-The user has requested enhancement of the downloaded file.
-
-page No: 2 
-===============
-How Machine Learning Has Been Applied in Software Engineering?
-
-Olimar Teixeira Borges
- 
-a
-, Julia Colleoni Couto
- 
-b
-, Duncan Dubugras A. Ruiz
- 
-c
-
-and Rafael Prikladnicki
 1
- 
-d
-
-School of Technology, PUCRS, Porto Alegre, Brazil
-
-Keywords:
- 
-Software Engineering, Machine Learning, Mapping Study.
-Abstract:
- 
-Machine Learning (ML) environments are composed of a set of techniques and tools, which can help in solving
-problems in a diversity of areas, including Software Engineering (SE). However, due to a large number of
-possible configurations, it is a challenge to select the ML environment to be used for a specific SE domain
-issue. Helping software engineers choose the most suitable ML environment according to their needs would
-be very helpful. For instance, it is possible to automate software tests using ML models, where the model
-learns software behavior and predicts possible problems in the code. In this paper, we present a mapping study
-that categorizes the ML techniques and tools reported as useful to solve SE domain issues. We found that
-the most used algorithm is Na ̈
-ıve Bayes and that WEKA is the tool most SE researchers use to perform ML
-experiments related to SE. We also identified that most papers use ML to solve problems related to SE quality.
-We propose a categorization of the ML techniques and tools that are applied in SE problem solving, linking
-with the Software Engineering Body of Knowledge (SWEBOK) knowledge areas.
 
 1
  
-INTRODUCTION
-
-Machine Learning (ML) is an Artificial Intelligence
-(AI) sub-field composed of several algorithms for
-approximating patterns in data discovery (Mitchell,
-1997). ML-based systems learn from experience, and
-its algorithms have proved to be of great practical im-
-portance to automate several Software Engineering
-(SE) tasks, such as refactoring (Kumar et al., 2019),
-software defects detection (Al-Nusirat et al., 2019),
-and effort estimation (Choetkiertikul et al., 2018).
-SE projects are highly complex and often unpre-
-dictable because they depend on interrelated factors
-to succeed (De Rezende et al., 2018).
- 
-Mostly, soft-
-ware development projects depend on people and the
-tools they have to work. As we know, human actions
-are subject to failure, mainly because of the inherent
-differences related to knowledge and experience (Anu
-et al., 2018).
-The unpredictability inherent to software projects
-can
- 
-lead
- 
-to
- 
-time-wasting,
- 
-mostly
- 
-related
- 
-to
- 
-re-
-work (Sedano et al.,
- 
-2017),
- 
-which increases the
-project cost. There are a lot of SE tasks that can be
-
-a
- 
-https://orcid.org/0000-0002-2567-2570
-
-b
- 
-https://orcid.org/0000-0002-4022-0142
-
-c
- 
-https://orcid.org/0000-0002-4071-3246
-
-d
- 
-https://orcid.org/0000-0003-3351-4916
-
-automated to reduce human effort and project cost.
-However, to automate these tasks using ML, we need
-to have the SE project’s data to explore. Fortunately,
-there is a vast amount of software project data avail-
-able in public repositories. This data can be widely
-used to extract knowledge and improve efficiency and
-quality in software development projects (Liu et al.,
-2018).
- 
-We can use a variety of ML techniques for
-each type of SE problem. However, to effectively use
-these techniques, we need to have a clear understand-
-ing of what are the problems with SE, what are the
-problems 5 that can be solved using ML, and what
-are the techniques and tools that can be used (Zhang
-and Tsai, 2003).
-In this paper, we report how ML techniques and
-tools are used in SE projects, according to the anal-
-ysis of scientific papers.
- 
-We also map the main SE
-problems that are being solved using ML. To do so,
-we perform a mapping study, searching for papers
-in eight different electronic databases.
- 
-We follow
-the steps suggested by (Kitchenham and Charters,
-2007), and we use PICO (Murdoch, 2018) to formu-
-late the research question.
- 
-Additionally, we apply
-the Cohen Kappa
- 
-(Landis and Koch, 1977) method
-to measure and help to improve the agreement be-
-tween the researchers. To reduce ambiguity and use a
-well-established guide (Duarte, 2019), we adopted the
-306
-
-Borges, O., Couto, J., Ruiz, D. and Prikladnicki, R.
-How Machine Learning Has Been Applied in Software Engineering?.
-DOI: 10.5220/0009417703060313
-In
- 
-Proceedings of the 22nd International Conference on Enterprise Information Systems (ICEIS 2020) - Volume 2
-, pages 306-313
-ISBN: 978-989-758-423-7
-Copyright
- 
-c
-©
- 
-2020 by SCITEPRESS – Science and Technology Publications, Lda. All rights reserved
-
-page No: 3 
-===============
-Guide to the SWEBOK (Bourque et al., 2014) Knowl-
-edge Areas (KA) to categorize SE domain issues.
-We found 177 papers that present solutions based
-on ML for domain issues in SE. We discovered the
-most commonly used techniques, composed by algo-
-rithms, libraries, and programming languages, and we
-also map the tools most researchers report to use dur-
-ing its experiments. We also mapped the 86 SE do-
-main issues most frequently benefited from using ML.
-These domains include prediction of software design
-defects and failures, effort and cost estimation, and
-SE requirements classification.
-
-2
- 
-MATERIALS AND METHODS
-
-Systematic literature reviews or mappings are often
-used to structure a research area, mapping, and clas-
-sifying topics to find research patterns and gaps (Pe-
-tersen et al., 2015).
- 
-According to (Kitchenham and
-Charters, 2007), a literature mapping is composed of
-three main processes, named planning, conducting,
-and reporting.
- 
-Each process has subsequent steps,
-which we follow and present from now on.
-
-2.1
- 
-Research Questions
-
-We developed three Research Questions (RQ) to in-
-vestigate the application of ML in SE domain issues:
-
-RQ1:
- 
-How has machine learning been used in soft-
-ware engineering?
-
-RQ2:
- 
-Which software engineering domain issues can
-benefit most from using machine learning?
-
-RQ3:
- 
-What computational machine learning tech-
-niques and tools are most used to solve software en-
-gineering problem domains?
-
-Based on the research questions, we used the
-PICO technique to elaborate the first search string,
-searching for the terms
- 
-(”software engineering” AND
-”machine learning” AND ”tool” AND ”technique”
-AND ”domain”)
- 
-in the papers title, abstract, or key-
-words. Using this string, we got 61 papers in the fi-
-nal accepted set. Because we aim to broadly map the
-literature about ML for SE, we decided to alter the
-search string so that we could improve the number of
-papers accepted. Then we searched only for the terms
-
-(”software engineering” AND ”machine learning”)
-
-in the same places. Thus, we accepted 177 papers in
-the second string, 116 more than in the first one. For
-this reason, we kept the results we obtained from the
-second search string.
-To answer RQ1, we classify the papers using two
-approaches: one automatically clustering the papers
-using ML and another using the SWEBOK KA. In
-the first classification approach, we use ML tech-
-niques to cluster the papers we accepted using Orange
-tool
- 
-1
-.
- 
-We create a Corpus containing the title, ab-
-stract, and keywords and used it as input for Orange.
-For text preprocessing, we use the WordNet Lemma-
-tizer parameter for normalization, remove regular ex-
-pressions and stopwords, select only words that are
-30-90% frequency and only the 500 most frequent
-tokens.
- 
-Along with stopwords, we removed words
-that appear in all papers and their radicals, such as
-”
-soft
-”, ”
-softw
-”, ”
-softwar
-”, ”
-software
-”, ”
-thi
-”, ”
-use
-”,
-”
-using
-”, ”
-learn
-”, ”
-learning
-”, ”
-machin
-”, ”
-machine
-”,
-”
-engineer
-”, and ”
-engineering
-”.
- 
-Then, we created a
-Bag of Words and set the Document Frequency pa-
-rameter to IDF (Inverse Document Frequency), which
-measures the importance of a word in a given doc-
-ument.
- 
-We used the Silhouette coefficient from K-
-means to identify an optimal amount of clusters. The
-best score was 0.236 for 2 clusters. Then we use the
-Cosine’s Distances to create the clusters. Lastly, we
-create a Hierarchical Clustering to represent the data
-visually.
-Then, in our second approach, we classified the
-papers manually using the ten SWEBOK KA. We use
-SWEBOK used because it is a well recognized and
-widely accepted standard in the SE community. Ta-
-ble 1 presents the SWEBOK KA.
-For answering RQ2, we consider domain issues as
-the contexts and tasks in SE the papers explore, such
-as software defect detection, software behavior, and
-reverse engineering. To answer RQ3, we use the def-
-initions of the terms provided by International Stan-
-dard - Systems and software engineering – Vocabu-
-lary (ISO/IEC/IEE, 2010) for the terms ”tools” and
-”techniques”. According to the Standard, a tool is a
-software product used to help in some activity, while a
-technique is a systematic procedure or method, such
-as an algorithm.
- 
-Therefore, in this paper, ML tech-
-niques are any algorithm or statistical methods used
-to make predictions, classifications, and clustering.
-
-2.2
- 
-Study Screening
-
-To increase the quality of our findings, we define in-
-clusion and exclusion criteria. We associate each pa-
-per to at least one criterion.
- 
-The papers we select
-match all the following criteria:
-
-•
- 
-(I1)
- 
-Qualitative or quantitative research about SE
-using ML.
-
-•
- 
-(I2)
- 
-Presents complete study in electronic format.
-
-•
- 
-(I3)
- 
-Conference or journal paper.
-
-1
-https://orange.biolab.si
-How Machine Learning Has Been Applied in Software Engineering?
-
-307
-
-page No: 4 
-===============
-Table 1: 10 SWEBOK (Bourque et al., 2014) Knowledge Areas (KA).
-
-Knowledge Areas (KA)
- 
-Description
-
-1. Software Requirements
- 
-Comprise requirements process, elicitation, analysis, specification, and validation.
-2. Software Design
- 
-Present processes to create the software structure and architecture, introduces how to create,
-analyze, and evaluate user interface design.
-3. Software Construction
- 
-Presents tools and technologies for software development.
-4. Software Testing
- 
-Addresses test levels, tools, techniques, processes, and test-related measures.
-5. Software Maintenance
- 
-Comprise processes, techniques, and main issues related to software development mainte-
-nance.
-6. Software Configuration
-Management
-Presents how to plan and control the software development environment.
-7.
- 
-Software Engineering
-Management
-Introduces processes related to software project management, such as planning, scope defi-
-nition, enactment, review and evaluation, closure, and how to measure the project progress.
-8.
- 
-Software Engineering
-Process
-Addresses process definition, software life cycles, how to asses and improve software
-projects, and tools to be used in the SE process.
-9.
- 
-Software Engineering
-Models and Methods
-Presents the types of models, how to analyze the models, and SE methods, such as heuristic,
-formal, prototyping, and agile.
-10. Software Quality
- 
-Introduces processes to manage and maintain the software quality process.
-Table 2: Number of papers rejected due to exclusion crite-
-ria.
-
-Exclusion Criteria
- 
-Amount
-
-(E1)
- 
-Short paper (
-6
- 
-3 pages)
- 
-28
-
-(E2)
- 
-Paper is unavailable for download
- 
-4
-
-(E3)
- 
-Paper non matching at least one
-RQ
-451
-
-(E4)
- 
-Duplicate paper
- 
-0
-
-(E5)
- 
-Written in a language other than
-English
-1
-
-(E6)
- 
-Conference proceedings index
- 
-100
-
-(E7)
- 
-Book or book chapter
- 
-24
-
-(E8)
- 
-Literature Review or Mapping
- 
-5
-We started the study having 1314 papers to ana-
-lyze.
- 
-For all papers, we read the title, abstract, and
-keywords. From the 1314 papers, 522 are duplicated,
-and we accepted 177 papers in the final set. Among
-the 613 remaining papers we reject, they match at
-least one of the criteria described in Table 2.
-We used the Cohen Kappa method to improve
-the quality of the results and measure the level of
-agreement among the researchers.
- 
-To do so, two
-researchers analyzed separately a sample containing
-140 (10%) of the 1314 papers.
- 
-We performed four
-reviews iterations, having 35 papers double-analyzed
-in each iteration. After each cycle, we discussed the
-papers where we had a different opinion about accept-
-ing or rejecting until we reach an agreement. Table 3
-presents Kappa values.
- 
-At the end of the fourth re-
-view cycle, we reached an almost perfect agreement,
-which suggests that researchers are aligned and can
-follow screening the papers independently.
-We use StArt (State of the Art through systematic
-
-Table 3: Kappa results, based on (Landis and Koch, 1977).
-
-Kappa values
- 
-Agreement
- 
-1st
- 
-2nd
- 
-3rd
- 
-4th
-
-<
-0
- 
-Poor
-0 - 0.20
- 
-Slight
-0,21-0,40
- 
-Fair
- 
-0.38 0.27
-0,41-0,60
- 
-Moderate
- 
-0.55
-0,61-0,80
- 
-Substantial
-0,81-1
- 
-Almost
-perfect
-0.82
-review)
-2
- 
-to assist us in the data extraction phase. Af-
-ter completing data extraction using StArt, we export
-the results to a Google Sheets, so that we can col-
-laboratively analyze the data. At the end of this pro-
-cess, we accept a set containing 177 accepted articles,
-which are in our Technical Report (TR) (Borges et al.,
-2020).
-
-3
- 
-RESULTS
-
-In this section, we present how we classify the 177 pa-
-pers we accepted, and also the data we extracted from
-the papers. We applied the search string in July/2019
-on the following web search engines: ACM, IEEE,
-Springer, arXiv, Science Direct, Web of Science,
-Google Scholar, and Scopus.
- 
-We do not limit the
-years to retrieve the papers because we want to un-
-derstand how this area developed since the beginning.
-Table 4 presents the amount of papers per database.
-Scopus is the search engine that returned most pa-
-pers because it indexes multiple databases, although
-
-2
-Available at http://lapes.dc.ufscar.br/tools/start tool
-ICEIS 2020 - 22nd International Conference on Enterprise Information Systems
-
-308
-
-page No: 5 
-===============
-more than half the papers we accepted are from IEEE
-and ACM. We have to mention that regarding the pre-
-sented percentages of domains, techniques, and tools,
-some papers presented more than one of the items,
-so the sum of the percentage is always greater than
-100%, for all the answers.
-
-3.1
- 
-Data Extraction
-
-We thoroughly read the 177 papers so that we could
-analyze and classify them.
- 
-We retrieved 113 jour-
-nals and 64 papers published in conferences/events.
-The oldest ones are from 1992 and 1993, written by
-the same authors, Lionel C. Briand, Victor Basili, C.
-J. Hetmanski, and W. Thomas.
- 
-The papers [R29,
-R28, R30] use a Decision Tree-based approach to Op-
-timized Set Reduction (OSR) for SE data analysis.
-These papers perform software cost estimation and
-failure classification in software projects and software
-components. Since then, the number of related papers
-has remained stable until 2008. In 2009, there was a
-growth in publications related to the use of ML tech-
-niques in SE, reaching a peak of 42 papers in the year
-2018. This scenario shows that the use of ML tech-
-niques in SE is feasible and quite useful for solving
-significant problems in the area due to its diversity of
-available applications.
-
-3.2
- 
-Classification Schema
-
-We created a schema to present our results. We divide
-the schema according to each research question. We
-now present the resulting analysis and how we answer
-each research question.
-
-RQ1: How has Machine Learning been used in
-Software Engineering?
- 
-Using ML, we create two
-hierarchical clusters (Figure 1), setting Ward as the
-Linkage parameter. A hierarchical clustering diagram
-is a form of visualization that unifies the most related
-to the least related items. The weighted link used by
-the Orange tool to create hierarchical clustering is the
-WPGMA (Weighted Pair Group Method with Averag-
-ing) method, as described in (Dubes and Jain, 1988).
-In this paper, the diagram presents the grouping of the
-most related papers. Initially, it unifies in pairs that re-
-late more strongly and from this union, will be united
-with the other papers.
- 
-In one example, papers R80
-and R58 initiate a cluster within Cluster 01. Both pa-
-pers deal with software effort estimation. From this
-union, the remaining papers are grouped by similarity
-of this context. Below we describe the clusters.
-
-A) Cluster 1 - 122 Papers
-
-Most frequent terms:
- 
-model
- 
-(248),
- 
-prediction
- 
-(221),
-
-project
- 
-(206),
- 
-data
- 
-(197),
- 
-technique
- 
-(187),
- 
-based
-
-Table 4: Papers per electronic databases.
-
-Source
- 
-Initial
- 
-Selection Accepted
-Scopus
- 
-395
- 
-30
- 
-17 papers
-IEEE Xplore
- 
-307
- 
-115
- 
-62 papers
-Web of Science
- 
-283
- 
-61
- 
-35 papers
-ACM
- 
-158
- 
-66
- 
-32 papers
-Springer
- 
-69
- 
-14
- 
-5 papers
-arXiv
- 
-42
- 
-18
- 
-7 papers
-Science Direct
- 
-42
- 
-21
- 
-19 papers
-Google Scholar
- 
-18
- 
-3
- 
-0 papers
-1314
- 
-328
- 
-177 papers
-(138), and
- 
-result
- 
-(136).
-Most papers in Cluster 1 are related to the Soft-
-ware Quality KA (66 papers) and Software Engineer-
-ing Management (40 papers).
- 
-The most mentioned
-context in these papers is defect/bug prediction (25
-papers), and the ML technique most used is LR (40
-papers). WEKA is the most used tool (38 papers).
-
-B) Cluster 2 - 55 Papers
-
-Most frequent terms:
- 
-approach
- 
-(114),
- 
-based
- 
-(73),
-
-system
- 
-(73),
- 
-model
- 
-(47),
- 
-technique
- 
-(45),
- 
-analysis
- 
-(42),
-and
- 
-problem
- 
-(39).
-Papers in Cluster 2 are mainly about Software
-Quality (25 papers), and Software Test (15 papers).
-Once again, WEKA is the most frequently used tool
-(18 papers). NB is the most used ML technique (16
-papers) to solve problems in the defect classification
-context (6 papers).
-Cluster 1 contains the papers most related to pre-
-diction, while Cluster 2 has the most related to clas-
-sification.
- 
-We found that the word
- 
-predict
- 
-appears
-392 times, considering all 177 papers. It suggests that
-most papers work to address problems in SE using
-prediction techniques. The word
- 
-defect
- 
-appears 199
-times, which is consistent with software defect being
-the most common reported domain issue.
-In the second paper classification approach we
-adopted, we link the ML tools and techniques to the
-SE domain. To do so, we use the ten SWEBOK KA
-presented in Table 1.
- 
-We present the results in de-
-scending order, according to the number of papers:
-
-•
- 
-Software Quality:
- 
-91 papers: [R1, R3, R4, R7,
-R11, R19-R21, R23-R25, R28, R30, R32, R35,
-R36, R40, R45, R48-R54, R56, R57, R61-R65,
-R68, R70, R71, R74-R78, R80-R86, R89, R90,
-R91, R96, R97, R99, R101, R102, R104, R107,
-R108, R110, R112, R115, R116, R120, R121,
-R125,
- 
-R127-R132,
- 
-R136-R138,
- 
-R144,
- 
-R146,
-R148, R149, R151, R156, R157, R159, R161,
-R164-R166, R169-R171, R174, R176].
-
-•
- 
-Software Engineering Management:
- 
-46 papers:
-How Machine Learning Has Been Applied in Software Engineering?
-
-309
-
-page No: 6 
-===============
-(a) Cluster 1
-
-(b) Cluster 2
-Figure 1: Clustering of papers.
-
-[R2, R10, R13, R15-R17, R20, R29, R31, R36,
-R39-R42, R46, R47, R55, R60, R66, R67, R72,
-R83, R89, R92-R94, R96, R98, R103, R112,
-R114, R122, R123, R126, R129, R140, R141,
-R143, R147, R152-R155, R162, R163, R175].
-
-•
- 
-Software Testing:
- 
-28 papers: [R5, R6, R19, R24,
-R27, R28, R40, R43, R58, R61, R63, R69, R78,
-R87, R91, R100, R105, R134, R135, R137-R139,
-R157, R160, R165, R168, R171, R177].
-
-•
- 
-Software Engineering Models and Methods:
-
-22 papers: [R6, R22, R28, R42, R55, R62, R69,
-R72, R73, R106, R108, R110, R111, R117, R118,
-R120, R139, R152, R165, R170, R172, R175].
-
-•
- 
-Software Configuration Management:
- 
-15 pa-
-pers: [R2, R12, R37, R44, R54, R70, R111, R113,
-R124, R142, R158, R167, R172, R173, R18].
-
-•
- 
-Software Maintenance:
- 
-13 papers [R8, R33,
-R50, R51, R52, R57, R81, R88, R102, R115,
-R139, R166, R170].
-
-•
- 
-Software Requirements:
- 
-8 papers:
- 
-[R9, R41,
-R79, R109, R114, R117, R121, R150].
-
-•
- 
-Software Engineering Process:
- 
-8 papers: [R14,
-R38, R46, R90, R95, R123, R145, R169].
-
-•
- 
-Software Design:
- 
-6 papers [R34, R40, R79,
-R117-R119].
-
-•
- 
-Software Construction:
- 
-2 papers [R76, R167].
-During the classification process, we identify that
-more than half of the papers discuss the use of ML for
-Software Quality (52%). The second KA most bene-
-fited from ML is Software Engineering Management
-(26%), followed by Software Testing (16%).
-
-RQ2: Which Software Engineering Domain Is-
-sues can Benefit most from using Machine Learn-
-ing?
- 
-We analyze the papers and identify 86 differ-
-ent domains.
- 
-The 8 most frequent domains were:
-Software Defect (56 papers), Software Effort (16 pa-
-pers), Bug Report (6 papers), Risk Management (5
-papers), Software Cost (4 papers), Software Require-
-ments (4 papers), Source Code Refactoring (4 pa-
-pers), and Change Prone Parts (4 papers). We high-
-light the three most frequent ones:
-
-•
- 
-Software Defect (31%):
- 
-the papers we classify
-in the software defect domain present the use
-of ML for bug classification, prediction, and re-
-trieval.
- 
-Papers: [R3, R7, R10, R11, R20, R21,
-R23, R24, R28, R35, R49, R50, R53, R54, R57,
-R59, R61, R63, R64, R66, R74, R75, R78, R80,
-R82, R83, R84, R85, R86, R89, R91, R99-R101,
-R104, R107, R110, R112, R120, R125, R127,
-R128, R130, R132, R136, R137, R138, R144,
-R149, R151, R157, R161, R165, R168, R171, and
-R176].
-
-•
- 
-Software Effort (9%):
- 
-ML tools and techniques
-used to predict software effort, helping in software
-project management.
- 
-Papers:
- 
-[R13, R16, R20,
-R67, R92, R96, R103, R140, R141, R143, R147,
-R153, R154, R162, R163, and R175].
-
-•
- 
-Bug Report (3%):
- 
-In the bug report domain, they
-use ML for bug deduplication. Papers: [R1, R5,
-R45, R148, R146, and R156].
-
-RQ3: What Computational Machine Learning
-Techniques and Tools are Most used to Solve Soft-
-ware Engineering Problem Domains?
- 
-From the
-ICEIS 2020 - 22nd International Conference on Enterprise Information Systems
-
-310
-
-page No: 7 
-===============
-7
-7
-7
-7
-8
-8
-9
-9
-13
-14
-18
-28
-29
-29
-31
-33
-40
-54
-57
-63
-0
- 
-10
- 
-20
- 
-30
- 
-40
- 
-50
- 
-60
- 
-70
-OneR (OR)
-Recurrent Neural Network (RNN)
-Convolutional Neural Network (CNN)
-Support Vector Regression (SVR)
-K-Means (KM)
-Boosting (Bo)
-AdaBoost (AB)
-Bagging (Ba)
-Regression Tree (CART)
-Radial Basis Function Network (RBF)
-Bayes Network (BN)
-Logistic Regression (LR)
-Artificial Neural Network (ANN)
-Decision Tree (DT)
-Multi Layer Perceptron (MLP)
-C4.5 (J48)
-K-Nearest Neighbor (KNN)
-Random Forest (RF)
-Support Vector Machine (SVM)
-Naive Bayes (NB)
-Figure 2: 20 most frequent ML techniques used in SE do-
-main.
-
-problem domains presented, we identified 328 ML
-techniques and 35 tools used to assist in solving SE
-problems. We list ML techniques, as described in the
-papers. Even though some techniques such as neural
-networks (ANN, CNN, and RNN) and tree classifi-
-cation algorithms (C4.5 (J48), DT, and CART) could
-be grouped, we choose to keep the original descrip-
-tions we found in the papers, to know exactly the most
-used algorithms. Figure 2 presents the 20 most used
-techniques and Figure 3 illustrates the 12 most used
-tools. Below we list the most frequently mentioned
-techniques and tools.
-
-•
- 
-Techniques/Methods:
-
-1.
- 
-Na ̈
-ıve Bayes (Rish et al., 2001) (36% of Pa-
-pers):
- 
-NB is a classifier that keeps statistics
-about each column of data in each class. New
-examples are classified by a statistical anal-
-ysis that reports the closest class to the test
-case.
- 
-NB classifiers are computationally ef-
-ficient and tend to perform well on relatively
-small datasets. Papers: [R1, R2, R3, R5, R7,
-R11, R13, R14, R21, R23, R24, R31, R36-R38,
-R56, R57, R60, R64, R66, R73, R74, R75,
-R77, R82, R83, R88, R91, R97, R99, R100,
-R102, R105, R107, R110, R111, R115-R120,
-R122, R126, R128, R129, R131, R132, R142,
-R145-R150, R152, R154, R155, R161, R162,
-R164, R168, and R172].
-2.
- 
-Random Forest (Liaw et al.,
- 
-2002) (30%
-of Papers):
- 
-RF is a joint learning process
-that combines multiple weaker learners into a
-stronger learner.
- 
-RF have a better general-
-ization and are less susceptible to overfitting
-(Breiman, 2001). They can be used for classi-
-fication and regression problems. Papers: [R3,
-R4, R11, R13, R21, R31, R37, R39, R49, R51,
-R54, R56, R57, R59, R60, R61, R62, R65,
-R73, R75, R80, R82, R83, R88, R99, R100,
-R102, R104, R105, R109, R110, R112, R115-
-R119, R122, R123, R127, R128, R129, R131,
-R132, R134, R140, R145, R148-R150, R152,
-R159, and R171].
-3.
- 
-Support Vector Machine (Cristianini et al.,
-2000) (32% of Papers):
- 
-It is responsible for
-creating a linear discrimination function using
-a small number of critical threshold instances
-(called support vectors) of each class, ensur-
-ing maximum possible separation (Liu et al.,
-2002). SVM is known as SMO in the WEKA
-tool. Papers: [R1, R2, R4, R7, R11, R16, R22,
-R24, R31, R32, R38, R42, R51, R57, R59,
-R60, R61, R62, R63, R66, R67, R68, R70,
-R73, R74, R77, R80, R82, R83, R84, R86,
-R89, R90, R91, R94, R105, R108, R110, R111,
-R115, R119, R120, R122, R124, R125, R126,
-R128, R143, R145, R146, R161, R162, R164,
-R165, R171, R172, R174].
-
-•
- 
-Tools:
-
-1.
- 
-WEKA (32% of Papers) (Hall et al., 2009):
-
-WEKA is a unified work environment that
-allows researchers access to ML techniques
-previously implemented and easily configured.
-Besides providing a learning algorithm tool-
-box, WEKA also provides a framework so re-
-searchers can implement new algorithms with-
-out having to worry about infrastructure sup-
-port for data manipulation and schema evalua-
-tion. Papers: [R1- R5, R7, R10, R14, R17, R19,
-R21, R23, R24, R27, R31, R34, R36, R47,
-R49, R51, R53, R54, R56, R57, R64, R67,
-R75, R77, R82-R86, R99-R101, R103, R109,
-R110, R117-R119, R121, R124, R128, R129,
-R131, R134, R135, R142, R145, R152, R154,
-R155, R161, R164, and R177].
-2.
- 
-MATLAB
- 
-(9%
+Introduction
+
+Real-world software development involves large source
+code repositories. Reading and trying to understand other
+people’s code in such repositories is a difficult and unpleas-
+ant process for many software developers, especially when
+the code is not sufficiently commented. For example, if the
+Java method in Fig. 1 does not have the comment in the be-
+ginning, it will take the programmer quite some efforts to
+grasp the meaning of the code. However, with a meaning-
+ful sentence such as “calculates dot product of two points”
+as a descriptive comment, programmer’s productivity can be
+tremendously improved.
+
+/* Calculates
+ 
+dot
+ 
+product
  
 of
  
-Papers)
-3
-:
+two
  
-Platform
+points.
+*
  
-to
-solve scientific and engineering problems. The
-matrix-based MATLAB language serves to ex-
-press computational mathematics.
+@return
  
-It is used
-for ML, signal processing, image processing,
-machine vision, communications, computer fi-
-nance, control design, robotics, and many other
-fields.
+float */
+public static float
  
-Papers: [R2, R3, R8, R35, R48, R55,
-R81, R85, R92, R93, R127, R140, R141, R144,
-R149, and R160].
-3.
+ccpDot(final CGPoint
  
-SCIKIT-LEARN
-4
+v1,
  
-(8% of Papers):
+final
+CGPoint
  
-A Python
-module that integrates a wide range of ML al-
-gorithms for medium-scale supervised and un-
+v2) {
+return
+ 
+v1.x * v2.x
+ 
++
+ 
+v1.y * v2.y;
+}
 
-3
-Available at: http://la.mathworks.com/
+Figure 1: source code example
+A related scenario happens when one wants to search for
+a piece of code with a specific functionality or meaning. Or-
+dinary keyword search would not work because expressions
+Copyright c
+©
+ 
+2018, Association for the Advancement of Artificial
+Intelligence (www.aaai.org). All rights reserved.
+1
+ 
+Kenny Q. Zhu is the contact author.
+in programs can be quite different from natural languages.
+If methods are annotated with meaningful natural language
+comments, then keyword matching or even fuzzy semantic
+search can be achieved.
+Even though comments are so useful, programmers are
+not using them enough in their coding. Table 1 shows the
+number of methods in ten actively developed Java reposito-
+ries from Github, and those of which annotated with a de-
+scriptive comment. On average, only 15.4% of the methods
+are commented.
+To automatically generate descriptive comments from
+source code, one needs a way of accurately representing the
+semantics of code blocks. One potential solution is to treat
+each code block as a document and represent it by a topic
+distribution using models such as LDA (Blei, Ng, and Jor-
+dan 2003). However, topic models, when applied to source
+code, have several limitations:
 
-4
-Available at: https://scikit-learn.org/stable
-How Machine Learning Has Been Applied in Software Engineering?
+•
+ 
+a topic model treats documents as a bag of words and ig-
+nores the structural information such as programming lan-
+guage syntax and function or method calls in the code;
 
-311
+•
+ 
+the contribution of lexical semantics to the meaning of
+code is exaggerated;
 
-page No: 8 
+•
+ 
+comments produced can only be words but not phrases or
+sentences.
+One step toward generating readable comments is to use
+templates (McBurney and McMillan 2014; Sridhara et al.
+2010). The disadvantage is that comments created by tem-
+plates are often very similar to each other and only rele-
+vant to parts of the code that fit the template. For example,
+the comment generated by McBurney’s model for Fig. 1 is
+fairly useless:
+ 
+“This method handles the ccp dot and returns
+a float. ccpDot() seems less important than average because
+it is not called by any methods.”
+
+To overcome these problems, in this paper, we propose to
+use Recursive Neural Network (RNN) (Socher et al. 2011a;
+2011b) to combine the semantic and structural information
+from code. Recursive NN has previously been applied to
+parse trees of natural language sentences, such as the ex-
+ample of two sentences in Fig. 2. In our problem, source
+codes can be accurately parsed into their parse trees, so re-
+cursive NN can be applied in our work readily. To this end,
+we design a new recursive NN called Code-RNN to extract
+the features from the source code.
+
+The Thirty-Second AAAI Conference
+on Artificial Intelligence (AAAI-18)
+5229
+
+page No: 2 
 ===============
+Table 1: Ten Active Projects on Github
+Project
+ 
+Description
+ 
+# of bytes
+ 
+# of Java Files
+ 
+# of Methods
+ 
+# Methods Commented
+Activiti
+ 
+a light-weight workflow and Business Process Management (BPM) Platform
+ 
+168M
+ 
+2939
+ 
+15875
+ 
+1080
+aima-java
+ 
+Java implementation of algorithms from “Artificial Intelligence - A Modern Approach”
+ 
+182M
+ 
+889
+ 
+4078
+ 
+1130
+neo4j
+ 
+the worlds leading Graph Database.
+ 
+270M
+ 
+4125
+ 
+24529
+ 
+1197
+cocos2d
+ 
+cocos2d for android, based on cocos2d-android-0.82
+ 
+78M
+ 
+512
+ 
+3677
+ 
+1182
+rhino
+ 
+a Java implementation of JavaScript.
+ 
+21M
+ 
+352
+ 
+4610
+ 
+1195
+spring-batch
+ 
+a framework for writing offline and batch applications using Spring and Java
+ 
+56M
+ 
+1742
+ 
+7936
+ 
+1827
+Smack
+ 
+an open source, highly modular, easy to use, XMPP client library written in Java
+ 
+41M
+ 
+1335
+ 
+5034
+ 
+2344
+guava
+ 
+Java-based projects: collections, caching, primitives
+ 
+80M
+ 
+1710
+ 
+20321
+ 
+3079
+jersey
+ 
+a REST framework that provides JAX-RS Reference Implementation and more.
+ 
+73M
+ 
+2743
+ 
+14374
+ 
+2540
+libgdx
+ 
+a cross-platform Java game development framework based on OpenGL (ES)
+ 
+989M
+ 
+1906
+ 
+18889
+ 
+2828
+A comment here refers to the description at the beginning of a method, with more than eight words.
+
+ŵĞ
+^ŚĞ
+ 
+ůŝŬĞƐ
+ŵŝĐĞ
+ĞĂƚ
+dŚĞ
+ 
+ĐĂƚƐ
+
+Figure 2: The Recursive Neural Networks of Two Sentences
+Using Code-RNN to train from the source code, we can
+get a vector representation of each code block and this vec-
+tor contains rich semantics of the code block, just like word
+vectors (Mikolov et al. 2013). We then use a Recurrent Neu-
+ral Network to learn to generate meaningful comments. Ex-
+isting recurrent NN does not take good advantage of the
+code block representation vectors. Thus we propose a new
+GRU (Cho et al. 2014) cell that does a better job.
+In sum, this paper makes the following contributions:
+
+•
+ 
+by designing a new Recursive Neural Network,
+ 
+Code-
+RNN
+, we are able to describe the
+ 
+structural information
+
+of source code;
+
+•
+ 
+with the new design of a GRU cell, namely
+ 
+Code-GRU
+,
+we make the best out of code block representation vector
+to effectively generate comments for source codes;
+
+•
+ 
+the
+ 
+overall
+ 
+framework
+ 
+achieves
+ 
+remarkable
+ 
+accuracy
+(Rouge-2 value) in the task of generating descriptive com-
+ments for Java methods, compared to state-of-the-art ap-
+proaches.
+
 2
+ 
+Framework
+
+In this section, we introduce the details of how to repre-
+sent source code and how to use the representation vector
+of source code to generate comments.
+
+2.1
+ 
+Code Representation
+
+We propose a new kind of recursive neural network called
+Code-RNN to encapsulate the critical structural informa-
+tion of the source code. Code-RNN is an arbitrary tree form
+while other recursive neural nets used in NLP are typically
+binary trees. Fig. 3 shows an example of Code-RNN for a
+small piece of Java code.
+In Code-RNN, every parse tree of a program is encoded
+into a neural network, where the structure of the network
+is exactly the parse tree itself and each syntactic node in
+the parse tree is represented by a vector representation.
+ 
 2
-2
-2
-2
-2
-5
-8
-13
-16
-58
-0
+One unique internal node “CombineName” indicates a com-
+pound identifier that is the concatenation of several primi-
+tive words, for example, “allFound” can be split into “all”
+and “found”. More on the semantics of identifier will be dis-
+cussed later in this section.
+There are two models for the Code-RNN, namely
  
-10
- 
-20
- 
-30
- 
-40
- 
-50
- 
-60
-TensorFlow
-RNNLM Toolkit
-RapidMiner
-Mulan
-libsvm library
-R language
-Java-based
-Python
-Scikit-learn
-MATLAB
-WEKA
-Figure 3: 11 most frequent ML tools used in SE domain.
-
-supervised problems. This package focuses on
-bringing ML to non-specialists using a high-
-level language for general use. Papers: [R63,
-R65, R69, R73, R80, R104, R105, R115, R116,
-R122, R148, R150, and R168].
-On the most used tools,
- 
-we found 19 papers
-(11%) reporting the programming language Python
-or Python-based Scikit-learn, libsvm, and TensorFlow
-(R45, R51, R63, R65, R69, R73, R80, R94, R104,
-R105, R115, R116, R122, R148, R150, R157, R166,
-R168, R170).
-
-4
- 
-CONCLUSION
-
-In this paper, we presented a mapping study devel-
-oped to understand how SE benefits from using ML
-tools and techniques. In the final set, we accepted 177
-papers that answer our research questions.
-During papers’ analysis, we found more than three
-hundred ML techniques, although only ten are present
-in more than 10% of the papers: NB, RF, SVM, KNN,
-C4.5, DT, ANN, LR, and BN. NB is used in 36% of
-papers, and it is because the algorithm performs well
-tasks related to text classification. NB is widely used
-in SE to classify data related to source code, bugs, and
-reports. All top 10 algorithms are classifiers or classi-
-fiers/regression, and they are in the supervised learn-
-ing paradigm. Thence, we noticed there is an oppor-
-tunity to expand the exploration of unsupervised and
-reinforcement learning techniques for the SE domain.
-We identify 35 different ML tools in 111 papers,
-being WEKA the most used. According to a survey
-performed by Kaggle
-5
-, Python is the most recom-
-mended programming language for data science (75%
-of respondents).
- 
-In our study, we found Python or
-Python-based tools in 11% of papers. As 67 papers
-do not mention the used tools, this number could be
-
-5
-Available
- 
-at
- 
-https://www.kaggle.com/kaggle/kaggle-
-survey-2018
-
-bigger. The papers that present ML techniques (37%),
-but not the tools, libraries, and frameworks make
-it difficult to replicate the experiments presented, as
-well as to understand the environment configuration.
-We also cluster the papers using ML to identify
-and rank the most similar papers in terms of content.
-We identify two hierarchical clusters, one focused on
-prediction (69%) and the other on classification (31%)
-tasks.
- 
-The word
- 
-predict
- 
-is the most frequent in all
-papers, which leads us to conclude that ML is mainly
-used to make predictions in SE. We also found that
-Software Quality is the most frequent SWEBOK KA
-target for both clusters (51%).
-ML provides a set of advantageous features for
-software quality assessment and prediction.
- 
-One of
-the most common ways to analyze quality is through
-the use of software metrics. They assist in decision
-making and serve as input to ML models to propose
-predictions or ratings about software quality. In this
-sense, we find that DT, NN, NB, and Classification
-and Regression Tree algorithms are most used for cre-
-ating models for design artifacts prediction. Quality
-analysts use these models to measure design artifacts
-to assist in quality assessment early in the develop-
-ment process. With these models, it is possible to gen-
-erate a more objective and automated project quality
-assessment. Project metrics are also used in quality
-prediction, generating models from DT, RF, LR, and
-NB algorithms. However, to speed up the models, the
-input metrics need to be specific to a particular project
-context, which is the case of the prediction of the fail-
-ure propensity of specific modules of the software. As
-a result of this type of forecasting, the test analyst can
-predict software quality even before implementation.
-Being a qualitative research, our paper has some
-limitations.
- 
-To minimize the risk of not having a
-broad and diverse range of documents, we conducted
-our research on eight popular web search engines.
-However, this is not a guarantee that all events and
-magazines in the area are covered. The fact that pa-
-pers that work on related topics appear in different
-locations may lead to different results. In the selec-
-tion phase, we did not delimit an initial year for the
-papers, so it could bring tools and techniques that are
-no longer being used. Since we wanted to map ML
-to SE from the beginning, it was an acceptable limi-
-tation, but to ensure exciting results, we also looked
-at the algorithms described in new papers since 1992
-as OSR, and are still used in recent papers. We apply
-the Kappa method to improve agreement and reduce
-interpretability bias. Two researchers worked in par-
-allel, and we had two other researchers to discuss in
-case of disagreement.
-For future work, we want to map the challenges
-ICEIS 2020 - 22nd International Conference on Enterprise Information Systems
-
-312
-
-page No: 9 
-===============
-related to using ML in SE projects.
- 
-We also sug-
-gest exploring the use of ML in areas that are little
-explored, such as Software Construction (1%), Soft-
-ware Design (3%), Software Requirements (5%), and
-Software Engineering Process (5%). Additionally, we
-suggest there is an opportunity to increase the appli-
-cation of reinforcement and unsupervised learning for
-SE tasks.
-
-ACKNOWLEDGEMENTS
-
-This study was financed in part by the Coordenac
- ̧  ̃
-ao
-de Aperfeic
- ̧oamento de Pessoal de Nivel Superior –
-Brasil (CAPES) – Finance Code 001.
- 
-This work is
-partially funded by FAPERGS (17/2551-0001/205-4)
-and CNPq.
-
-REFERENCES
-
-Al-Nusirat, A., Hanandeh, F., Kharabsheh, M., Al-Ayyoub,
-M., and Al-dhufairi, N. (2019). Dynamic detection of
-software defects using supervised learning techniques.
-
-Int. Journ. of Comm. Net. and Info. Secy.
-, 11:185–191.
-Anu, V., Hu, W., Carver, J. C., Walia, G. S., and Bradshaw,
-G. (2018). Development of a human error taxonomy
-for software requirements: a systematic literature re-
-view.
- 
-Info. and Soft. Technol.
-, 103:112–124.
-Borges,
- 
-O.,
- 
-Couto,
- 
-J.,
- 
-Ruiz,
- 
-D.,
+Sum
+Model
  
 and
  
-Priklad-
-nicki,
+Average Model
+:
+1. Sum Model
+
+V
  
-R.
+=
  
-(2020).
+V
+node
  
-Technical
++
  
-report
+f
  
--
+(
+W
  
-how
+×
  
-ma-
-chine
+∑
+
+c
+∈
+C
+
+V
+c
  
-learning
++
  
-has
+b
+)
  
-been
+(1)
+2. Average Model
+
+V
+ 
+=
+ 
+V
+node
+ 
++
+ 
+f
+ 
+(
+W
+ 
+×
+ 
+1
+
+n
+
+∑
+
+c
+∈
+C
+
+V
+c
+ 
++
+ 
+b
+)
+ 
+(2)
+Here
+ 
+V
+ 
+is the vector representation of sub-tree rooted at
+ 
+N
+ 
+;
+
+V
+node
+ 
+is the vector that represents the syntactic type of
+ 
+N
+
+itself, e.g.,
+ 
+IfStatement
+;
+ 
+C
+ 
+is the set of all child nodes of
+ 
+N
+ 
+;
+
+V
+c
+ 
+is the vector that represents a subtree rooted at
+ 
+c
+, one of
+
+N
+ 
+’s children. During the training,
+ 
+W
+ 
+and
+ 
+b
+ 
+are tuned.
+ 
+V
+ 
+,
+
+V
+node
+ 
+and
+ 
+V
+c
+ 
+are calculated based on the structure of neural
+network.
+ 
+f
+ 
+is
+ 
+RELU
+ 
+activation function.
+These
+ 
+equations
+ 
+are
  
 applied
  
+recursively,
+ 
+bottom-up
+through the Code-RNN at every internal node, to obtain the
+vector representation of the root node, which is also the vec-
+tor of the entire code piece.
+
+Identifier Semantics
+ 
+In this work, we adopt two ways to
+extract the semantics from the identifiers. One is to split all
+the long forms to multiple words and the other one is to re-
+cover the full words from abbreviations.
+Table 2 shows some example identifiers and the results
+of splitting. Many identifiers in the source code are combi-
+nation of English words, with the first letter of the word in
+upper case, or joined together using underscores. We thus
+define simple rules to extract the original English words ac-
+cordingly. These words are further connected by the “Com-
+bineName” node in the code-RNN.
+Table 3 shows some abbreviations and their intended
+meaning. We can infer the full-versions by looking for
+2
+ 
+We
+ 
+use
+ 
+JavaParser
+ 
+from
+ 
+https://github.com/javaparser/
+javaparser to generate parse tree for Java code in this paper.
+
+5230
+
+page No: 3 
+===============
+if
+ 
+(!found){
+allFound =
+false;
+}
+if
+ 
+(allFound){
+return true;
+}
+
+source code
+
+ƌŽŽƚ
+/Ĩ^ƚĂƚĞŵĞŶƚ
+ 
+/Ĩ^ƚĂƚĞŵĞŶƚ
+
+/ĨdŽŬĞŶ
+ 
+KƉĞŶWĂƌĞŶdŽŬĞŶ
+ 
+ůŽƐĞWĂƌĞŶdŽŬĞŶ
+ 
+dŚĞŶ^ƚŵƚ
+ŽŶĚŝƚŝŽŶ
+
+EĂŵĞdžƉƌ
+
+Ăůů
+ŽŵďŝŶĞEĂŵĞ
+
+ĨŽƵŶĚ
+
+ŝĨ
+ 
+;
+ 
+Ϳ
+
+ZĞƚƵƌŶ^ƚŵƚ
+
+ZĞƚƵƌŶdŽŬĞŶ
+
+ƌĞƚƵƌŶ
+ŽŽůĞĂŶ>ŝƚĞƌĂůdžƉƌ
+
+ƚƌƵĞ
+
+ůŽĐŬ^ƚŵƚ
+
+ůŽĐŬŶĚdŽŬĞŶ
+΃
+΂
+ůŽĐŬĞŐŝŶdŽŬĞŶ
+
+Code-RNN
+Figure 3: Code-RNN Example
+longer forms in the context of the identifier in the code.
+Specifically, we compare the identifier with the word list
+generated from the context of the identifier to see whether
+the identifier’s name is a substring of some word from the
+list, or is the combination of the initial of the words in the
+list. If the list contains only one word, we just check if the
+identifier is part of that word. If so, we conclude that the
+identifier is the abbreviation of that word with higher prob-
+ability. If the list contains multiple words, we can collect all
+the initials of the words in the list to see whether the iden-
+tifier is part of this collection. Suppose the code fragment
+is
+
+Matrix dm =
+ 
+new
+ 
+DoubleMatrix(confusionMatrix);
+
+We search for the original words of “dm” as follows. Since
+“dm” is not the substring of any word in the context, we col-
+lect the initials of the contextual words in a list: “m” “dm”
+and “cm”. Therefore, “dm” is an abbreviation of “Dou-
+bleMatrix”.
+Table 2: Example of Split Identifiers
+Identifier
+ 
+Words
+contextInitialize
+ 
+context, initialize
+apiSettings
+ 
+api, settings
+buildDataDictionary
+ 
+build, data, dictionary
+add result
+ 
+add, result
+Table 3: Example of Abbreviation
+Abbreviation
+ 
+Origin
+ 
+Context
+val
+ 
+value
+ 
+key.value()
+cm
+ 
+confusion, matrix
+ 
+new ConfusionMatrix()
+conf
+ 
+configuration
+ 
+context.getConfiguration()
+rnd
+ 
+random
+ 
+RandomUtils.getRandom()
+
+Training
+ 
+Each source code block in the training data has
+a class label. Our objective function is:
+
+arg min
+ 
+CrossEntropy
+(
+sof tmax
+(
+W
+s
+V
+m
+ 
++
+ 
+b
+s
+)
+, V
+label
+)
+ 
+(3)
+where
+ 
+V
+m
+ 
+is the representation vector of source code,
+ 
+V
+label
+
+is an one-hot vector to represent the class label.
+ 
+W
+s
+ 
+and
+ 
+b
+s
+
+are parameters for softmax function and will be tuned during
+training. We use AdaGrad (Duchi, Hazan, and Singer 2011)
+to apply unique learning rate to each parameter.
+
+2.2
+ 
+Comment Generation
+
+Existing work (Elman 1990; Sutskever, Martens, and Hin-
+ton 2011; Mikolov et al. 2010) has used Recurrent Neural
+Network to generate sentences. However, one challenge to
+utilize the code block representation vector in Recurrent NN
+is that we can not feed the code block representation vector
+to the Recurrent NN cell directly. We thus propose a vari-
+ation of the GRU based RNN. Fig. 4 shows our comment
+generation process.
+
+Ā
+ 
+āĀ
+ 
+ā
+Ā
+ 
+āĀ
+ 
+ā
+
+ܹ
+݄
+݅
+
+
+
+ܹ
+݄
+݄
+
+
+
+ܹ
+݄݋
+ܹ
+݄
+ݔ
+ 
+
+
+ݔ
+ݐ
+ 
+
+
+ݕ
+ݐ
+ 
+
+
+Figure 4: Comment Generation
+We use pre-trained model Code-RNN to get the represen-
+tation vector of the input code block
+ 
+V
+m
+. This vector
+ 
+V
+m
+
+is fixed during training of comment generation model. Then
+we feed code block vector into the RNN (Recurrent Neural
+Network) model at every step. For example in Fig. 4, we in-
+put the START token as the initial input of model and feed
+the code block vector into the hidden layer. After calculating
+the output of this step, we do the back-propagation. Then at
+step two, we input the word “gets” and feed the code block
+vector
+ 
+V
+m
+ 
+into hidden layer again, and receive the
+ 
+h
+t
+−
+1
+ 
+from
+the step one. We repeat the above process to tune all param-
+eters. The equations of comment generation model are listed
+below.
+
+5231
+
+page No: 4 
+===============
+z
+t
+ 
+=
+ 
+σ
+(
+W
+z
+ 
+·
+ 
+[
+h
+t
+−
+1
+, x
+t
+])
+ 
+(4)
+
+r
+t
+ 
+=
+ 
+σ
+(
+W
+r
+ 
+·
+ 
+[
+h
+t
+−
+1
+, x
+t
+])
+ 
+(5)
+
+c
+t
+ 
+=
+ 
+σ
+(
+W
+c
+ 
+·
+ 
+[
+h
+t
+−
+1
+, x
+t
+])
+ 
+(6)
+
+ ̃
+h
+t
+ 
+=
+ 
+tanh
+(
+W
+ 
+·
+ 
+[
+r
+t
+ 
+∗
+ 
+h
+t
+−
+1
+, c
+t
+ 
+∗
+ 
+V
+m
+, x
+t
+])
+ 
+(7)
+
+h
+t
+ 
+= (1
+ 
+−
+ 
+z
+t
+)
+ 
+∗
+ 
+h
+t
+−
+1
+ 
++
+ 
+z
+t
+ 
+∗
+ 
+ ̃
+h
+t
+ 
+(8)
+
+y
+t
+ 
+=
+ 
+sof tmax
+(
+W
+oh
+h
+t
+ 
++
+ 
+b
+o
+)
+ 
+(9)
+where
+ 
+V
+m
+ 
+is the code block representation vector,
+ 
+h
+t
+−
+1
+ 
+is
+the previous state and
+ 
+x
+t
+ 
+is the input word of this step.
+To better use the code block vectors, our model differs
+from existing RNNs, particularly in the definition of
+ 
+c
+t
+ 
 in
+the Equation 6 and 7. The new RNN cell, illustrated in Fig.
+5, aims to strengthen the effect of code block vectors. This
+modified GRU is hereinafter called
  
-software
-engineering?
- 
-https://figshare.com/articles/
-TR-MUNDDOS-2020 ICEIS Olimar pdf/11874231.
-Bourque, P., Fairley, R. E., et al. (2014).
- 
-Guide to the soft-
-ware engineering body of knowledge (SWEBOK (R)):
-Version 3.0
-. IEEE.
-Breiman, L. (2001). Random forests, machine learning 45.
+Code-GRU
+. Code block
+vector contains all information of code block but not all in-
+formation is useful at all steps. Therefore, we add a new gate
+called choose gate to determine which dimension of code
+block vector would work in Code-GRU. In Fig 5, the left
+gate is the choose gate, and the other two gates are the same
+as the original GRU.
 
-Journ. of Clinical Microbiology
-, 2:199–228.
-Choetkiertikul, M., Dam, H. K., Tran, T., Pham, T. T. M.,
-Ghose, A., and Menzies, T. (2018).
- 
-A deep learn-
-ing model for estimating story points.
- 
-IEEE Trans. on
-Soft. Eng.
-, 45:637–656.
-Cristianini, N., Shawe-Taylor, J., et al. (2000).
- 
-An intro-
-duction to support vector machines and other kernel-
-based learning methods
-. Cambridge university press.
-De Rezende, L. B., Blackwell, P., and Pessanha Goncalves,
-M. D. (2018).
- 
-Research focuses, trends, and major
-findings on project complexity:
- 
-a bibliometric net-
-work analysis of 50 years of project complexity re-
-search.
- 
-Proj. Mgmt. Journ.
-, 49:42–56.
-Duarte, C. H. C. (2019).
- 
-The quest for productivity in
-software engineering: A practitioners systematic lit-
-erature review. In
- 
-Int. Conf. on Soft. and Syst. Proc.
-,
-pages 145–154. ACM.
-Dubes, R. C. and Jain, A. K. (1988). Algorithms for clus-
-tering data.
-Hall, M., Frank, E., Holmes, G., Pfahringer, B., Reutemann,
-P., and Witten, I. H. (2009).
- 
-The weka data mining
-software:
- 
-an update.
- 
-SIGKDD Explor. Newsletter
-,
-11:10–18.
-ISO/IEC/IEE (2010).
- 
-Iso/iec/ieee international standard
-- systems and software engineering – vocabulary.
+X
+X
 
-ISO/IEC/IEEE 24765:2010(E)
-, pages 1–418.
-Kitchenham, B. and Charters, S. (2007).
+ܐܖ܉ܜ
+࣌
+࣌
+࣌
+
+X
+X
++
+
+࢞
+࢚
+ࢎ
+࢚
+ି
  
-Guidelines for
-performing systematic literature reviews in software
-engineering.
+૚
+ࢂ
  
-Technical Report EBSE-2007-01, Dep.
-Comp. Sci, University of Durham, Durham, UK.
-Kumar, L., Satapathy, S. M., and Murthy, L. B. (2019).
-Method level refactoring prediction on 5 open source
-java projects using machine learning techniques.
+࢓
+ࢎ
+࢚
+ࢂ
+ 
+࢓
+
+Figure 5: Structure of Code-GRU
+During test time, we input the “START” token at first and
+choose the most probable word as the output. Then from
+the second step the input words of every step are the output
+words of previous one step until the output is “END” token.
+So that we can get an automatically generated comment for
+code blocks in our model.
+To gain better results, we also apply the beam search
+while testing. We adopt a variant of beam search with a
+length penalty described in (Wu et al. 2016). In this beam
+search model, there are two parameters: beam size and
+weight for the length penalty. We tune these two parame-
+ters on the validation set to determine which values to use.
+Our tuning ranges are:
+
+•
+ 
+beam size: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+•
+ 
+weight for the length penalty: [0, 0.1, 0.2, 0.3, 0.4, 0.5,
+0.6, 0.7, 0.8, 0.9, 1.0]
+
+3
+ 
+Evaluation
+
+Our evaluation comes in two parts. In the first part, we eval-
+uate Code-RNN model’s ability to classify different source
+code blocks into
+ 
+k
+ 
+known categories. In the second part, we
+show the effectiveness of our comment generation model
+by comparing with several state-of-the-art approaches in
+both quantitative and qualitative assessments. The source
+code of our approach as well as all data set is available at
+https://adapt.seiee.sjtu.edu.cn/CodeComment/.
+
+3.1
+ 
+Source Code Classification
+Data Set
+ 
+The goal is to classify a given Java method (we
+only use the body block without name and parameters) into
+a predefined set of classes depending on its functionality.
+Our data set comes from the Google Code Jam contest
+(2008
+∼
+2016), which there are multiple problems, each as-
+sociated with a number of correct solutions contributed by
+programmers.
+ 
+3
+ 
+Each solution is a Java method. The set of
+solutions for the same problem are considered to function
+identically and belong to the same class in this work. We
+use the solutions (10,724 methods) of 6 problems as training
+set and the solutions (30 methods) of the other 6 problems
+as the test set. Notice that the problems in the training data
+and the ones in the test data do not overlap. We specifically
+design the data set this way because, many methods for the
+same problem tend to use the same or similar set of identi-
+fiers, which is not true in real world application. The details
+of training set and test set are shown in Table 4.
+Table 4: Data Sets for Source Code Clustering
+Problem
+ 
+Year
+ 
+# of methods
+Training Set
+Cookie Clicker Alpha
+ 
+2014
+ 
+1639
+Counting Sheep
+ 
+2016
+ 
+1722
+Magic Trick
+ 
+2014
+ 
+2234
+Revenge of the Pancakes
+ 
+2016
+ 
+1214
+Speaking in Tongues
+ 
+2012
+ 
+1689
+Standing Ovation
+ 
+2015
+ 
+2226
+Test Set
+All Your Base
+ 
+2009
+ 
+5
+Consonants
+ 
+2013
+ 
+5
+Dijkstra
+ 
+2015
+ 
+5
+GoroSort
+ 
+2011
+ 
+5
+Osmos
+ 
+2013
+ 
+5
+Part Elf
+ 
+2014
+ 
+5
+
+Baselines
+ 
+We compare Code-RNN with two baseline ap-
+proaches. The first one is called language embedding (
+LE
+)
+and only treats the source code as a sequence of words, mi-
+nus the special symbols (e.g., “$”, “(”, “+”,
+ 
+· · ·
+ 
+). All con-
+catenated words are preprocessed into primitive words as
+previously discussed. Then the whole code can be repre-
+sented by either the sum (
+LES
+) or the average (
+LEA
+) of word
+vectors of this sequence, trained in this model.This approach
+basically focuses on the word semantics only and ignores the
+structural information from the source code.
+The second baseline is a variant of Code-RNN, which
+preprocesses the code parse tree by consistently replacing
+the identifier names with placeholders before computing the
+overall representation of the tree. This variant focuses on the
+structural properties only and ignores the word semantics.
+3
+ 
+All solutions are available at http://www.go-hero.net/jam/16.
+
+5232
+
+page No: 5 
+===============
+Result of Classification
+ 
+At test time, when a method is
+classified into a class label, we need to determine which test
+problem this class label refers to. To that end, we compute
+the accuracy of classification for all possible class label as-
+signment and use the highest accuracy as the one given by a
+model.
+Table 5 shows the purity of the produced classes, the F1
+and accuracy of the 6-class classification problem by differ-
+ent methods. It is clear that Code-RNN (avg) perform better
+uniformly than the baselines that use only word semantics
+or only structural information. Therefore, in the rest of this
+section, we will use Code-RNN(avg) model to create vector
+representation for a given method to be used for comment
+generation. The F1 score for each individual problem is also
+included in Table 6.
+Table 5: Purity, Average F1 and Accuracy
+Purity
+ 
+F1
+ 
+Accuracy
+LEA
+ 
+0.400
+ 
+0.3515
+ 
+0.3667
+LES
+ 
+0.3667
+ 
+0.2846
+ 
+0.3667
+CRA(ni)
+ 
+0.4667
+ 
+0.4167
+ 
+0.4667
+CRS(ni)
+ 
+0.4667
+ 
+0.4187
+ 
+0.4667
+CRA
+ 
+0.533
+ 
+0.4774
+ 
+0.5
+
+CRS
+ 
+0.4667
+ 
+0.3945
+ 
+0.4333
+LEA = Language Embedding Average model; LES = Language Embedding Sum
+model; CRA = Code-RNN Average model; CRS = Code-RNN Sum model; (ni) =
+no identifier.
+Table 6: F1 scores of individual problems
+Dijkstra
+ 
+Part Elf
+ 
+All Your Base
+ 
+GoroSort
+ 
+Consonants
+ 
+Osmos
+LEA
+ 
+0.25
+ 
+0.33
+ 
+0.43
+ 
+0.33
+ 
+0.4
+ 
+0.36
+LES
+ 
+0.33
+ 
+0
+ 
+0.53
+ 
+0
+ 
+0.53
+ 
+0.31
+CRA(ni)
+ 
+0.6
+ 
+0
+ 
+0.44
+ 
+0.40
+ 
+0.56
+ 
+0.5
+CRS(ni)
+ 
+0.62
+ 
+0.29
+ 
+0.67
+ 
+0.5
+ 
+0.44
+ 
+0
+CRA
+ 
+0.67
+ 
+0
+ 
+0.6
+ 
+0.57
+ 
+0.53
+ 
+0.52
+CRS
+ 
+0.73
+ 
+0
+ 
+0.44
+ 
+0.55
+ 
+0.4
+ 
+0.25
+
+3.2
+ 
+Comment Generation Model
+Data Set
+ 
+We use ten open-source Java code repositories
+from GitHub for this experiment (see Table 1). In each of
+these repositories we extract descriptive comment and the
+corresponding method pairs. Constructor methods are ex-
+cluded from this exercise. These pairs are then used for train-
+ing and test. Notice that all the method names and parame-
+ters are excluded from training and test.
+
+Baselines
+ 
+We compare our approach with four baseline
+methods.
+
+•
+ 
+Moses
+4
+ 
+is a statistical machine translation system. We re-
+gard the source codes as the source language and the com-
+ments as the target, and use Moses to translate from the
+source to the target.
+
+•
+ 
+CODE-NN
+ 
+(Iyer et al. 2016) is the first model to use neu-
+ral network to create sentences for source code. In this
+model author used LSTM and attention mechanism to
+4
+ 
+Home page of Moses is http://www.statmt.org/moses/.
+generate sentences. The original data set for CODE-NN
+are StackOverFlow thread title and code snippet pairs.
+ 
+5
+ 
+.
+In this experiment, we use the comment-code pair data in
+place of the title-snippet data.
+
+•
+ 
+We apply the
+ 
+sequence-to-sequence (seq2seq)
+ 
+model used
+in machine translation (Britz et al. 2017) and treat the
+code as a sequence of words and the comment as another
+sequence.
+
+•
+ 
+A. Karpathy and L. Fei-Fei (Karpathy and Fei-Fei 2015)
+proposed a meaningful method to generate image de-
+scriptions. It also used Recurrent NN and representation
+vector, so we apply this method to comment generation
+model. The main equations are:
+
+b
+v
+ 
+=
+ 
+W
+hi
+V
+m
+ 
+(10)
+
+h
+t
+ 
+=
+ 
+f
+ 
+(
+W
+hx
+x
+t
+ 
++
+ 
+W
+hh
+h
+t
+−
+1
+ 
++
+ 
+b
+h
+ 
++
+ 
+b
+v
+ 
+)
+ 
+(11)
+
+y
+t
+ 
+=
+ 
+sof tmax
+(
+W
+oh
+h
+t
+ 
++
+ 
+b
+o
+)
+ 
+(12)
+where
+ 
+W
+hi
+,
+ 
+W
+hx
+,
+ 
+W
+hh
+,
+ 
+W
+oh
+,
+ 
+x
+i
+ 
+and
+ 
+b
+h
+,
+ 
+b
+o
+ 
+are parameters
+to be learned, and
+ 
+V
+m
+ 
+is the method vector. We call this
+model
+ 
+Basic RNN
+.
+Moses and CODE-NN has its own terminate condition.
+Seq2Seq, Basic RNN and our model run 800 epochs during
+training time. For one project, we separate the commented
+methods into three parts: training set, validation set and test
+set. We tune the hyper parameter on the validation set. The
+results of ten repositories are shown in Table 7.
+
+Evaluation Metric
+ 
+We evaluate the quality of comment
+generation by the Rouge method(Lin 2004). Rouge model
+counts the number of overlapping units between generated
+sentence and target sentence. We choose Rouge-2 score in
+this paper where word based 2-grams are used as the unit,
+as it is the most commonly used in evaluating automatic text
+generation such as summarization.
+Table 7: Rouge-2 Values for Different Methods
+neo4j cocos2d jersey aima-
+java
+guava Smack Activiti spring-
+batch
+libgdx rhino
+MOSES
+0.076
+ 
+0.147
+ 
+0.081 0.1440.134
+ 
+0.145
+ 
+0.104
+ 
+0.147 0.212
+ 
+0.082
+CODE-
+NN
+0.077
+ 
+0.136
+ 
+0.105 0.1240.153
+ 
+0.135
+ 
+0.103
+ 
+0.184 0.208
+ 
+0.171
+
+Seq2seq
+0.039
+ 
+0.115
+ 
+0.183 0.1080.152
+ 
+0.109
+ 
+0.158
+ 
+0.171
+ 
+0.247
+ 
+0.169
+Basic
+RNN*
+0.133
+ 
+0.152
+ 
+0.214 0.2070.156
+ 
+0.150
+ 
+0.203
+ 
+0.237
+ 
+0.218
+ 
+0.163
+Code-
+GRU*
+
+0.141
+ 
+0.158
+ 
+0.230 0.2090.164
+ 
+0.162
+ 
+0.200
+ 
+0.213 0.233
+ 
+0.165
+*: both models use the method representation vector from
+Code-RNN.
+
+Examples of Generated Comment
+ 
+Fig. 6 shows the com-
+ments generated by the competing methods for three exam-
+ple Java methods coming from different repositories. Be-
+cause we delete all punctuation from the training data, the
+generated comments are without punctuation. Nonetheless,
+we can see that comments by our Code-GRU model are gen-
+erally more readable and meaningful.
+5
+ 
+Data comes from https://stackoverflow.com/. Source code of
+CODE-NN is available from https://github.com/sriniiyer/codenn.
+
+5233
+
+page No: 6 
+===============
+Project: jersey
+public long
+ 
+tryConvertToReadLock(long stamp)
+ 
+{
+long
+ 
+a = stamp
+ 
+&
+ 
+ABITS,
+ 
+m,
+ 
+s,
+ 
+next;
+ 
+WNode
+ 
+h;
+while
+ 
+(((s =
+ 
+state)
+ 
+&
+ 
+SBITS)
+ 
+==
+ 
+(stamp
+ 
+&
+ 
+SBITS)) {
+if
+ 
+((m
+ 
+= s
+ 
+&
+ 
+ABITS)
+ 
+==
+ 
+0L)
+ 
+{
+if
+ 
+(a
+ 
+!=
+ 
+0L)
+ 
+break;
+else if
+ 
+(m
+ 
+<
+ 
+RFULL)
+ 
+{
+if
+ 
+(U.compareAndSwapLong(this,
+ 
+STATE, s,
+next
+ 
+=
+ 
+s
+ 
++ RUNIT))
+return next;}
+else if
+ 
+((next
+ 
+=
+ 
+tryIncReaderOverflow(s)) !=
+0L)
+ 
+return next;}
+else if
+ 
+(m
+ 
+==
+ 
+WBIT)
+ 
+{
+if
+ 
+(a
+ 
+!=
+ 
+m)
+ 
+break;
+state
+ 
+=
+ 
+next
+ 
+=
+ 
+s
+ 
++ (WBIT
+ 
++
+ 
+RUNIT);
+if
+ 
+((h
+ 
+=
+ 
+whead)
+ 
+!= null &&
+ 
+h.status
+ 
+!= 0)
+release(h);
+return
+ 
+next;}
+else if
+ 
+(a
+ 
+!=
+ 
+0L
+ 
+&&
+ 
+a
+ 
+<
+ 
+WBIT)
+ 
+return stamp;
+else break;}
+return
+ 
+0L;}
+
+Gold
+ 
+if the lock state matches the given stamp performs one of the fol-
+lowing actions if the stamp represents holding a write lock re-
+leases it and UNK a read lock or if a read lock returns it or if
+an optimistic read acquires a read lock and returns a read stamp
+only if immediately available this method returns zero in all other
+cases
+MOSES
+ 
+if the lock state matches the given if the lock state matches the
+given gets of processing sbits state matches the given sbits string
+of the lock hold abits l l break component of rfull that runs sets
+of processing of runit or create a new pattern if this inc reader
+overflow l create a human readable description of component of
+wbit break if the lock of processing of wbit runit h whead by the
+given status release the given action if the sum associated with
+the given component l lock state matches the given action wbit
+get returns break l
+CODE-NN
+ 
+returns code true if the lock is not a link org glassfish jersey server
+mvc
+Seq2Seq
+ 
+UNK a new item to the list of superclass timeout version
+Basic RNN*
+ 
+get a UNK to a link javax ws rs core UNK
+Code-GRU*
+ 
+if the lock state matches the given stamp performs one of the fol-
+lowing actions if the stamp represents holding a write lock returns
+it or if a read lock if the write lock is available releases the read
+lock and returns a write stamp or if an optimistic read returns
+
+project: cocos2d
+public static float
+ 
+ccpDot(final CGPoint
+ 
+v1,
+ 
+final
+CGPoint v2)
+ 
+{
+return
+ 
+v1.x * v2.x
+ 
++
+ 
+v1.y * v2.y;
+ 
+}
+
+Gold
+ 
+Calculates dot product of two points
+MOSES
+ 
+subtract another subtract another the given vector
+CODE-NN
+ 
+rotates two points
+Seq2Seq
+ 
+returns the closest long to the specified value
+Basic RNN*
+ 
+calculates cross product of two points
+Code-GRU*
+ 
+calculates cross product of two points
+
+project: libgdx
+public static
+ 
+IntBuffer
+ 
+allocate
+ 
+(int
+ 
+capacity) {
+if
+ 
+(capacity
+ 
+<
+ 
+0)
+ 
+{
+throw
+ 
+new IllegalArgumentException();
+}
+return
+ 
+BufferFactory.newIntBuffer(capacity);}
+
+Gold
+ 
+creates an int buffer based on a newly allocated int array
+MOSES
+ 
+based on the creates a new backing buffer
+CODE-NN
+ 
+creates a byte buffer based on a newly allocated char array
+Seq2Seq
+ 
+creates a float buffer based on a newly allocated float array
+Basic RNN*
+ 
+creates a char buffer based on a newly allocated char array
+Code-GRU*
+ 
+creates a long buffer based on a newly allocated long array
+Figure 6: Examples of generated comments and corresponding code snippets
+In the first example, we can see that CODE-NN, Seq2Seq
+and Basic RNN’s results are poor and have almost nothing
+to do with the Gold comment. Even though both MOSES
+produces a sequence of words that look similar to the Gold
+in the beginning, the rest of the result is less readable and
+does not have any useful information. For example, “if the
+lock state matches the given” is output repeatedly. MOSES
+also produces strange terms such as “wbit” and “runit” just
+because they appeared in the source code. In the contrast,
+Code-GRU’s result is more readable and meaningful.
+In the second example, there is not any useful word in
+the method body so the results of MOSES, CODE-NN and
+Seq2Seq are bad. Code-RNN can extract the structural in-
+formation of source code and embed it into a vector, so both
+models that use this vector, namely Basic RNN and Code-
+GRU, can generate the relevant comments.
+In the third example, although all results change the type
+of the value, that is, Basic RNN changes “int” to “char”
+while Code-GRU changes to “long”. “long” and “int” are
+both numerical types while “char” is not. Thus Code-GRU is
+better than Basic RNN. For the result of Seq2Seq, although
+“float” is also a numerical type, it is for real numbers, and
+not integers.
+
+4
+ 
+Related Work
+
+Mining of source code repositories becomes increasingly
+popular in recent years. Existing work in source code min-
+ing include code search, clone detection, software evolution,
+models of software development processes, bug localization,
+software bug prediction, code summarization and so on. Our
+work can be categorized as code summarization and com-
+ment generation.
+Sridhara et al. (Sridhara et al. 2010) proposed an au-
+tomatic comment generator that identifies the content for
+
+5234
+
+page No: 7 
+===============
+the summary and generates natural language text that sum-
+marizes the methods overall actions based on some tem-
+plates. Moreno et al. (Moreno et al. 2013) also proposed a
+template based method but it is used on summarizing Java
+classes. McBurney and McMillan (McBurney and McMil-
+lan 2014) presented a novel approach for automatically gen-
+erating summaries of Java methods that summarize the con-
+text surrounding a method, rather than details from the
+internals of the method. These summarization techniques
+(Murphy 1996; Sridhara, Pollock, and Vijay-Shanker 2011;
+Moreno et al. 2013; Haiduc et al. 2010) work by select-
+ing a subset of the statements and keywords from the code,
+and then including information from those statements and
+keywords in the summary. To improve them, Rodeghero et
+al. (Rodeghero et al. 2014) presented an eye-tracking study
+of programmers during source code summarization, a tool
+for selecting keywords based on the findings of the eye-
+tracking study.
+These models are invariably based on templates and care-
+ful selection of fragments of the input source code. In con-
+trast, our model is based on learning and neural network.
+There are also some models that apply learning methods to
+mine source code.
+Movshovitz-Attias and Cohen (Movshovitz-Attias and
+Cohen 2013) predicted comments using topic models and
+n-grams. Like source code summarization, Allamanis et
+al. (Allamanis et al. 2015) proposed a continuous embed-
+ding model to suggest accurate method and class names.
+Iyer et al. (Iyer et al. 2016) proposed a new model called
+CODE-NN that uses Long Short Term Memory (LSTM)
+networks with attention to produce sentences that can de-
+scribe C# code snippets and SQL queries. Iyer et al.’s work
+has strong performance on two tasks, code summarization
+and code retrieval. This work is very similar to our work, in
+that we both use the Recurrent NN to generate sentences
+for source code. What differs is that we propose a new
+type of Recurrent NN. Adrian et al. (Kuhn, Ducasse, and
+G ́
+ırba 2007) utilized the information of identifier names and
+comments to mine topic of source code repositories. Punya-
+murthula (Punyamurthula 2015) used call graphs to extract
+the metadata and dependency information from the source
+code and used this information to analyze the source code
+and get its topics.
+In other related domains of source code mining, code
+search is a popular research direction. Most search en-
+gines solve the problem by keyword extraction and signa-
+ture matching. Maarek et al. (Maarek, Berry, and Kaiser
+1991) used keywords extracted from man pages written in
+natural language and their work is an early example of ap-
+proaches based on keywords. Rollins and Wing (Rollins and
+Wing 1991) proposed an approach to find code with the sig-
+natures present in code. Mitchell (Mitchell 2008) combined
+signature matching with keyword matching. Then Garcia et
+al. (Garcia-Contreras, Morales, and Hermenegildo 2016) fo-
+cused on querying for semantic characteristics of code and
+proposed a new approach which combines semantic charac-
+teristics and keyword matching.
+Cai
+ 
+(Cai
+ 
+2016)
+ 
+proposed
+ 
+a
+ 
+method
+ 
+for
+ 
+code
+ 
+paral-
+lelization through sequential code search. That method
+can
+ 
+also
+ 
+be
+ 
+used
+ 
+for
+ 
+clone
+ 
+detection.
+ 
+Williams
+ 
+and
+Hollingsworth
+ 
+(Williams
+ 
+and
+ 
+Hollingsworth
+ 
+2005)
+ 
+de-
+scribed a method to use the source code change history of
+a software project to drive and help to refine the search
+for bugs. Adhiselvam et al. (Adhiselvam, Kirubakaran, and
+Sukumar 2015) used MRTBA algorithm to localize bug to
+help programmers debug. The method proposed in this paper
+can also benefit natural language search for code fragments.
+
+5
+ 
+Conclusion
+
+In this paper we introduce a new Recursive Neural Net-
+work called
+ 
+Code-RNN
+ 
+to extract the topic or function of
+the source code. This new Recursive Neural Network is the
+parse tree of the source code and we go through all the tree
+from leaf nodes to root node to get the final representation
+vector. Then we use this vector to classify the source code
+into some classes according to the function, and classifica-
+tion results are acceptable. We further propose a new kind
+of GRU called
+ 
+Code-GRU
+ 
+to utilize the vector created from
+Code-RNN to generate comments. We apply Code-GRU to
+ten source code repositories and gain the best result in most
+projects. This frame work can also be applied to other pro-
+gramming languages as long as we have access to the parse
+tree of the input program.
+As future work, we can add call graphs into our model,
+so that Code-RNN can contain invocation information and
+extract more topics from source code.
+
+Acknowledgement
+
+This
+ 
+work
+ 
+was
+ 
+supported
+ 
+by
+ 
+Oracle-SJTU
+ 
+Joint
+ 
+Re-
+search Scheme, NSFC Grant No. 9164620571421002 and
+61373031, and SJTU funding project 16JCCS08. Hongfei
+Hu contributed to the identifier semantics part of the work.
+
+References
+
+Adhiselvam, A.; Kirubakaran, E.; and Sukumar, R.
+ 
+2015.
+An enhanced approach for software bug localization using
+map reduce technique based apriori (mrtba) algorithm.
+ 
+In-
+dian Journal of Science and Technology
+ 
+8(35).
+Allamanis, M.; Barr, E. T.; Bird, C.; and Sutton, C.
+ 
+2015.
+Suggesting accurate method and class names. In
+ 
+ESEC/FSE
+,
+38–49. ACM.
+Blei, D. M.; Ng, A. Y.; and Jordan, M. I.
+ 
+2003.
+ 
+Latent
+dirichlet allocation.
+ 
+Journal of machine Learning research
+
+3(Jan):993–1022.
+Britz, D.; Goldie, A.; Luong, T.; and Le, Q.
+ 
+2017.
+ 
+Mas-
+sive Exploration of Neural Machine Translation Architec-
+tures.
+ 
+ArXiv e-prints
+.
+Cai, B. 2016. Code parallelization through sequential code
+search. In
+ 
+ICSE-C
+, 695–697. ACM.
+Cho, K.; Van Merri ̈
+enboer, B.; Bahdanau, D.; and Ben-
+gio, Y.
+ 
+2014.
+ 
+On the properties of neural machine
+translation: Encoder-decoder approaches.
+ 
+arXiv preprint
+arXiv:1409.1259
+.
+Duchi, J.; Hazan, E.; and Singer, Y. 2011. Adaptive subgra-
+dient methods for online learning and stochastic optimiza-
+
+5235
+
+page No: 8 
+===============
+tion.
+ 
+Journal of Machine Learning Research
+ 
+12(Jul):2121–
+2159.
+Elman, J. L.
+ 
+1990.
+ 
+Finding structure in time.
+ 
+Cognitive
+science
+ 
+14(2):179–211.
+Garcia-Contreras, I.; Morales, J. F.; and Hermenegildo,
+M. V.
+ 
+2016.
+ 
+Semantic code browsing.
+ 
+arXiv preprint
+arXiv:1608.02565
+.
+Haiduc, S.; Aponte, J.; Moreno, L.; and Marcus, A. 2010.
+On the use of automated text summarization techniques for
+summarizing source code. In
+ 
+WCRE
+, 35–44. IEEE.
+Iyer, S.; Konstas, I.; Cheung, A.; and Zettlemoyer, L. 2016.
+Summarizing source code using a neural attention model. In
+
+ACL
+, 2073–2083.
+Karpathy, A., and Fei-Fei, L. 2015. Deep visual-semantic
+alignments for generating image descriptions. In
+ 
+Proceed-
+ings of the IEEE Conference on Computer Vision and Pat-
+tern Recognition
+, 3128–3137.
+Kuhn, A.; Ducasse, S.; and G ́
+ırba, T. 2007. Semantic clus-
+tering: Identifying topics in source code.
+ 
+Information and
+Software Technology
+ 
+49(3):230–243.
+Lin, C.-Y.
+ 
+2004.
+ 
+Rouge: A package for automatic evalu-
+ation of summaries.
  
 In
-
-Innov. on Soft. Eng. Conf.
-, page 7. ACM.
-Landis, J. R. and Koch, G. G. (1977). The measurement of
-observer agreement for categorical data.
  
-Biometrics
-,
-33:159–174.
-Liaw, A., Wiener, M., et al. (2002). Classification and re-
-gression by randomforest.
+Text summarization branches out:
+Proceedings of the ACL-04 workshop
+, volume 8. Barcelona,
+Spain.
+Maarek, Y. S.; Berry, D. M.; and Kaiser, G. E. 1991. An in-
+formation retrieval approach for automatically constructing
+software libraries.
  
-R news
-, 2:18–22.
-Liu, B.-B., Dong, W., and Wang, J. (2018). Survey on in-
-telligent search and construction methods of program.
-
-Journ. of Soft.
-, 29:2180–2197.
-Liu, H., Li, J., and Wong, L. (2002). A comparative study
-on feature selection and classification methods us-
-ing gene expression profiles and proteomic patterns.
-
-Genome Inform.
-, 13:51–60.
-Mitchell, T. (1997).
+IEEE Transactions on software Engineer-
+ing
  
-Machine Learning
-. McGraw-Hill.
-Murdoch, U. (2018).
+17(8):800–813.
+McBurney, P. W., and McMillan, C. 2014. Automatic doc-
+umentation generation via source code summarization of
+method context. In
  
-Systematic reviews: Using pico or
-pico. https://goo.gl/fqPoCY. Accessed: 2018-12-20.
-Petersen, K., Vakkalanka, S., and Kuzniarz, L. (2015).
-Guidelines for conducting systematic mapping stud-
-ies in software engineering:
+ICPC
+, 279–290. ACM.
+Mikolov, T.; Karafi ́
+at, M.; Burget, L.; Cernock`
+y, J.; and Khu-
+danpur, S. 2010. Recurrent neural network based language
+model. In
  
-An update.
+Interspeech
+, volume 2, 3.
+Mikolov, T.; Sutskever, I.; Chen, K.; Corrado, G. S.; and
+Dean, J.
  
-Info. and
-Soft.Technol.
-, 64:1 – 18.
-Rish, I. et al. (2001). An empirical study of the naive bayes
-classifier. In
+2013.
  
-Wksh. on Emp. Meth. in AI
-, pages 41–46.
-CiteSeer.
-Sedano, T., Ralph, P., and P ́
-eraire, C. (2017). Software de-
-velopment waste.
+Distributed representations of words and
+phrases and their compositionality.
  
 In
  
-Int. Conf. on Soft. Eng.
-, pages
-130–140. IEEE.
-Zhang, D. and Tsai, J. J. (2003).
+Advances in neural
+information processing systems
+, 3111–3119.
+Mitchell, N. 2008. Hoogle overview.
  
-Machine learning and
-software engineering.
- 
-Soft. Qual. Journ.
-, 11:87–119.
-How Machine Learning Has Been Applied in Software Engineering?
+The Monad. Reader
 
-313
-View publication stats
-View publication stats
+12:27–35.
+Moreno, L.; Aponte, J.; Sridhara, G.; Marcus, A.; Pollock,
+L.; and Vijay-Shanker, K.
+ 
+2013.
+ 
+Automatic generation of
+natural language summaries for java classes. In
+ 
+ICPC
+, 23–
+32. IEEE.
+Movshovitz-Attias, D., and Cohen, W. W.
+ 
+2013.
+ 
+Natural
+language models for predicting programming comments.
+Murphy, G. C. 1996.
+ 
+Lightweight structural summarization
+as an aid to software evolution
+. Ph.D. Dissertation.
+Punyamurthula, S.
+ 
+2015.
+ 
+Dynamic model generation and
+semantic search for open source projects using big data an-
+alytics
+.
+ 
+Ph.D. Dissertation, Faculty of the University Of
+Missouri-Kansas City in partial fulfillment Of the require-
+ments for the degree MASTER OF SCIENCE By SRAVANI
+PUNYAMURTHULA B. Tech, Jawaharlal Nehru Techno-
+logical University.
+Rodeghero, P.; McMillan, C.; McBurney, P. W.; Bosch, N.;
+and D’Mello, S.
+ 
+2014.
+ 
+Improving automated source code
+summarization via an eye-tracking study of programmers.
+In
+ 
+ICSE
+, 390–401. ACM.
+Rollins, E. J., and Wing, J. M. 1991. Specifications as search
+keys for software libraries. In
+ 
+ICLP
+, 173–187. Citeseer.
+Socher, R.; Lin, C. C.; Manning, C.; and Ng, A. Y. 2011a.
+Parsing natural scenes and natural language with recursive
+neural networks. In
+ 
+ICML
+, 129–136.
+Socher, R.; Pennington, J.; Huang, E. H.; Ng, A. Y.; and
+Manning, C. D. 2011b. Semi-supervised recursive autoen-
+coders for predicting sentiment distributions.
+ 
+In
+ 
+EMNLP
+,
+151–161. Association for Computational Linguistics.
+Sridhara, G.; Hill, E.; Muppaneni, D.; Pollock, L.; and
+Vijay-Shanker, K.
+ 
+2010.
+ 
+Towards automatically generat-
+ing summary comments for java methods. In
+ 
+ASE
+, 43–52.
+ACM.
+Sridhara, G.; Pollock, L.; and Vijay-Shanker, K. 2011. Gen-
+erating parameter comments and integrating with method
+summaries. In
+ 
+ICPC
+, 71–80. IEEE.
+Sutskever, I.; Martens, J.; and Hinton, G. E. 2011. Gener-
+ating text with recurrent neural networks. In
+ 
+ICML
+, 1017–
+1024.
+Williams, C. C., and Hollingsworth, J. K. 2005. Automatic
+mining of source code repositories to improve bug finding
+techniques.
+ 
+IEEE Transactions on Software Engineering
+
+31(6):466–480.
+Wu, Y.; Schuster, M.; Chen, Z.; Le, Q. V.; Norouzi, M.;
+Macherey, W.; Krikun, M.; Cao, Y.; Gao, Q.; Macherey, K.;
+et al.
+ 
+2016.
+ 
+Google’s neural machine translation system:
+Bridging the gap between human and machine translation.
+
+arXiv preprint arXiv:1609.08144
+.
+
+5236
 

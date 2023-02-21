@@ -80,6 +80,6 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-getPdfTextContent("./sample5.pdf");
+getPdfTextContent("./sample4.pdf");
 
 // function createJsonObjectFromPdf() {}
