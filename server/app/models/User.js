@@ -6,7 +6,7 @@ const { APIError } = require("../helpers");
 
 // globals
 const userSchema = new mongoose.Schema({
-  userName: {
+  username: {
     type: String,
     required: [true, "Please Enter Your Name"],
     maxLength: [30, "Name cannot exceed 30 characters"],
@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please Enter Your Password"],
     minLength: [8, "Password should be greater than 8 characters"],
-    select: false,
   },
   roles: [
     {

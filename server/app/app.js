@@ -6,7 +6,7 @@ const cookieSession = require("cookie-session");
 // app imports
 const { connectToDatabase, globalResponseHeaders } = require("./db.config");
 const { errorHandler } = require("./controllers");
-const { thingsRouter } = require("./routes");
+const { thingsRouter, authRouter, userRouter } = require("./routes");
 
 // global constants
 dotenv.config();
@@ -38,8 +38,8 @@ app.use(
 );
 
 app.use("/things", thingsRouter);
-require("./routes/auth.routes")(app);
-require("./routes/user.routes")(app);
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 // catch-all for 404 "Not Found" errors
 app.get("*", fourOhFourHandler);
