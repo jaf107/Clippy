@@ -1,30 +1,60 @@
-.select-paper{
-    /* display: flex; */
-    height: fit-content;
-    width: fit-content;
-    margin: auto;
-    text-align: center;
-    color: white;
+h3,
+h5,
+h6 {
+  font-family: "Poppins", sans-serif;
 }
 
-.upload{
-    text-align: center;
-    background-color: #2E2E2E;
-    border: none;
-    color: #c6c6c6;
-    font-size: large;
-    margin: 5rem 0 1.5rem 0;
-    padding: 0.5rem;
-    width: 35rem;
+.select-paper {
+  /* display: flex; */
+  height: fit-content;
+  width: fit-content;
+  margin: auto;
+  text-align: center;
+  color: white;
 }
-#paper{
-    margin-top: 1.5rem;
-    color: #c6c6c6;
-    text-align: center;
-    background-color: #404040;
-    border: 2px solid #2E2E2E;
+
+.upload {
+  text-align: center;
+  background-color: #2e2e2e;
+  border: none;
+  color: #c6c6c6;
+  font-size: large;
+  margin: 5rem 0 1.5rem 0;
+  padding: 0.5rem;
+  width: 35rem;
 }
-#paper::placeholder{
-    text-align: center;
-    color: #c6c6c6;
+#paper {
+  margin-top: 1.5rem;
+  color: #c6c6c6;
+  text-align: center;
+  background-color: #404040;
+  border: 2px solid #2e2e2e;
+}
+#paper::placeholder {
+  text-align: center;
+  color: #c6c6c6;
+}
+
+.history {
+  width: 60%;
+  margin: 5% auto 0;
+}
+
+.history-files {
+  color: #c6c6c6;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 2px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+h5{
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
 }

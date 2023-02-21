@@ -1,17 +1,70 @@
 <app-navbar></app-navbar>
 <div class="container-fluid">
-    <div class="select-paper">
-        <button class="btn upload align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#c6c6c6" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16" style="margin-top:-0.3rem">
-                <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/>
-                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
-              </svg>
-              Upload PDF
-        </button>
-        <br>Or<br>
-        <div class="form-outline mb-4">
-            <!-- <label class="form-label" for="form3Example3">Email address</label> -->
-            <input type="text" id="paper" class="form-control" placeholder="Enter Paper Name"/>
-          </div>
+  <div class="select-paper">
+    <button class="btn upload align-items-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="15"
+        height="15"
+        fill="#c6c6c6"
+        class="bi bi-file-earmark-arrow-up"
+        viewBox="0 0 16 16"
+        style="margin-top: -0.3rem"
+      >
+        <path
+          d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"
+        />
+        <path
+          d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"
+        />
+      </svg>
+      Upload PDF
+    </button>
+    <br />Or<br />
+    <div class="form-outline mb-4">
+      <!-- <label class="form-label" for="form3Example3">Email address</label> -->
+      <input
+        type="text"
+        id="paper"
+        class="form-control"
+        placeholder="Enter Paper Name"
+      />
     </div>
+  </div>
+  <div class="history">
+    <h3 class="mb-5" style="color: white">History</h3>
+    <div class="list">
+        <div class="row gx-5 history-files d-flex">
+          <div class="col-9">
+            <h5>Automatic Text Summarization Methods: A Comprehensive Review</h5>
+          </div>
+          <div class="col-3">
+            <h5>11 Jan, 03:03 PM</h5>
+          </div>
+        </div>
+        <hr />
+      </div>
+      <div class="list">
+        <div class="row gx-5 history-files d-flex">
+          <div class="col-9">
+            <h5>Deep learning based abstractive text summarization</h5>
+          </div>
+          <div class="col-3">
+            <h5>11 Jan, 03:03 PM</h5>
+          </div>
+        </div>
+        <hr />
+      </div>
+      <div class="list">
+        <div class="row gx-5 history-files d-flex">
+          <div class="col-9">
+            <h5>A Survey of Text summarization extraction techniques</h5>
+          </div>
+          <div class="col-3">
+            <h5>11 Jan, 03:03 PM</h5>
+          </div>
+        </div>
+        <hr />
+      </div>
+  </div>
 </div>
