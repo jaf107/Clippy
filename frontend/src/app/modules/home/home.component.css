@@ -1,0 +1,30 @@
+.select-paper{
+    /* display: flex; */
+    height: fit-content;
+    width: fit-content;
+    margin: auto;
+    text-align: center;
+    color: white;
+}
+
+.upload{
+    text-align: center;
+    background-color: #2E2E2E;
+    border: none;
+    color: #c6c6c6;
+    font-size: large;
+    margin: 5rem 0 1.5rem 0;
+    padding: 0.5rem;
+    width: 35rem;
+}
+#paper{
+    margin-top: 1.5rem;
+    color: #c6c6c6;
+    text-align: center;
+    background-color: #404040;
+    border: 2px solid #2E2E2E;
+}
+#paper::placeholder{
+    text-align: center;
+    color: #c6c6c6;
+}

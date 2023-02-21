@@ -1,0 +1,45 @@
+input{
+    padding: 2%;
+    background-color: #eeeeeee3; 
+    /* border-color: white; */
+    color: black;
+}
+
+input:focus, input:active{
+    color: black;
+    background-color: #eeeeeee3; 
+    outline: 2px solid #737373;
+}
+
+input::placeholder{
+    color:#7f7f7f;
+}
+.card{
+    margin: 0 auto;
+    text-align: center;
+    /* From https://css.glass */
+    background: #ffffff9d;
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.76);
+}
+
+.submit{
+    background-color: #404040;
+    border: none; 
+    padding: 10px 20px;
+    font-size: 1.2rem;
+}
+
+.submit:active{
+    background-color: #1c1c1c;
+    border: none; 
+    padding: 10px 20px;
+    font-size: 1.2rem;
+}
+
+.signup{
+    color: #404040;
+}

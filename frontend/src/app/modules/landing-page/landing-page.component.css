@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Aboreto&family=Dancing+Script:wght@400;500&family=Great+Vibes&family=Poppins:wght@400;700&display=swap');
+
+.container{
+    height: fit-content;
+    width: fit-content;
+    margin: auto;
+}
+h1,h3{
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+h1{
+    font-size: 2rem;
+}
+
+.signup{
+    font-size: 120%;
+    margin-top: 15%;
+    color: #e9e9eaa9;
+}
+
+.logo{
+    /* height: 10rem; */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 25%;
+}
+
+.auth{
+    height: fit-content;
+    width: fit-content;
+    margin: auto;
+    margin-top: 6%;
+}
+
+.login{
+    width: 20rem;
+    height: 3rem;
+    font-size: 1.2rem;
+    background-color: #212020;
+    border-color: #212020;
+}
+
+.login:hover{
+    background-color: #1c1c1c;
+}
+
+.login:active:focus{
+    border-color: rgba(255, 255, 255, 0.368);
+}
+
+.guest{
+    margin-top: 5%;
+    width: 20rem;
+    height: 3rem;
+    font-size: 1.2rem;
+    color: white;
+    border-color: #212020;
+}
+
+.guest:hover{
+    background-color: #3a3a3a;
+}
+
+a{
+    color: #e9e9eaa9;
+    text-decoration: none;
+}
+
+#footer{
+    position: fixed;
+    left: 0;
+    bottom: 2%;
+    width: 100%;
+    color: rgb(138, 138, 138);
+    text-align: center;
+}
+
+@media only screen and (min-width: 1200px) {
+    .auth {
+        margin-top: 12% !important;
+    }
+    }
+
+@media only screen and (min-width: 992px) {
+    .auth {
+        margin-top: 6% !important;
+    }
+    }
