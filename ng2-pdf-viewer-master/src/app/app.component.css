@@ -98,8 +98,8 @@ a.button {
   justify-content: space-evenly;
 }
 
-a.click-elem {
-  background-color: black;
+a.clickable-text {
+  background-color: yellow !important;
 }
 
 /* MODAL WINDOW */
