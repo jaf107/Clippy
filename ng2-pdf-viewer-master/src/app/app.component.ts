@@ -244,7 +244,7 @@ export class AppComponent implements OnInit {
       .split(' ')
       .map((w) => {
         if (w.includes('95')) {
-          return `<a href="https://www.google.com" style="color:red" class="clickable-text">${w}</a>`;
+          return `<a href="https://www.google.com" style="color:red !important; background-color: red !important" class="clickable-text">${w}</a>`;
         }
         return w;
       })

@@ -9,8 +9,6 @@ async function getPdfTextContent(src) {
   const doc = await pdfjs.getDocument(src).promise;
   const totalPageCount = doc.numPages;
 
-  // console.log(doc);
-
   // clear the text file //
   fs.truncateSync("./output.txt", 0);
   fs.truncateSync("./object.txt", 0);
@@ -57,4 +55,6 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-getPdfTextContent("./sample1.pdf");
+getPdfTextContent("./sample5.pdf");
+
+// function createJsonObjectFromPdf() {}
