@@ -28,7 +28,7 @@ function writeObjectToFile(filePath, content, pageNo) {
   let pos = 0;
   const items = content.items.map((item) => {
     let style = content.styles[item.fontName];
-    console.log(item, style);
+    // console.log(item, style);
     data += `item no ${pos}
     ------------------------
     item.str=${item.str}
@@ -57,4 +57,4 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-getPdfTextContent("./icse-template.pdf");
+getPdfTextContent("./sample1.pdf");
