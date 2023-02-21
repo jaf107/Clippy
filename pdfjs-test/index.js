@@ -14,21 +14,43 @@ async function getPdfTextContent(src) {
   // clear the text file //
   fs.truncateSync("./output.txt", 0);
   fs.truncateSync("./object.txt", 0);
+  heights = [];
 
   for (let i = 1; i <= totalPageCount; i++) {
     const page = await doc.getPage(i);
     const textContent = await page.getTextContent();
     writeToFile("./output.txt", textContent, i);
     writeObjectToFile("./object.txt", textContent, i);
+    writeUniqueHeights(heights, textContent);
   }
+  const uniqueHeight = new Set(heights);
+  heights = Array.from(uniqueHeight);
+  // console.log(uniqueHeight);
+  // heights.sort();
+  heights.sort(function (a, b) {
+    return b - a;
+  });
+
+  console.log(heights);
+  // fs.appendFileSync("./heights.txt", JSON.stringify(height));
+}
+
+function writeUniqueHeights(heights, content) {
+  const items = content.items.map((item) => {
+    heights.push(item.height);
+  });
 }
 
 function writeObjectToFile(filePath, content, pageNo) {
   let data = `page No: ${pageNo} \n===============\n`;
   let pos = 0;
+
   const items = content.items.map((item) => {
     let style = content.styles[item.fontName];
     // console.log(item, style);
+
+    heights.push(item.height);
+
     data += `item no ${pos}
     ------------------------
     item.str=${item.str}
@@ -38,13 +60,16 @@ function writeObjectToFile(filePath, content, pageNo) {
     item.transforme=${item.transform}
     item.hasEOL=${item.hasEOL}
     item.fontName=${style.fontFamily}
-    content.styles object for this chuk
+    
+    content.styles object for this chunk
     ${JSON.stringify(style)}
     --------------------------------\n`;
     pos++;
   });
 
   data += `\n`;
+
+  // fs.appendFileSync("./heights.txt", uniqueHeight);
   fs.appendFileSync(filePath, data);
 }
 
