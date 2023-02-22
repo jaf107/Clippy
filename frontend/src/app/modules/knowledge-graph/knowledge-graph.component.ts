@@ -1,81 +1,104 @@
-import { Component } from '@angular/core';
-
-// import * as d3 from 'd3-selection';
-// import * as d3Scale from 'd3-scale';
-// import * as d3Shape from 'd3-shape';
-import { StatsPieChart } from 'src/app/data/data';
+import { Component, EventEmitter, OnInit } from '@angular/core';
+import * as cytoscape from 'cytoscape';
+import * as panzoom from 'cytoscape';
+import * as navigator from 'cytoscape';
 
 @Component({
   selector: 'app-knowledge-graph',
   templateUrl: './knowledge-graph.component.html',
   styleUrls: ['./knowledge-graph.component.css']
 })
-export class KnowledgeGraphComponent {
-  // title = 'D3 Pie Chart in Angular 10';
 
-  // margin = {top: 20, right: 20, bottom: 30, left: 50};
-  // width: number;
-  // height: number;
-  // radius: number;
 
-  // arc: any;
-  // labelArc: any;
-  // labelPer: any;
-  // pie: any;
-  // color: any;
-  // svg: any;
+export class KnowledgeGraphComponent implements OnInit {
 
-  // constructor() {
-  //   this.width = 900 - this.margin.left - this.margin.right ;
-  //   this.height = 500 - this.margin.top - this.margin.bottom;
-  //   this.radius = Math.min(this.width, this.height) / 2;
-  // }
+  cy: any;
 
-  // ngOnInit() {
-  //   this.initSvg();
-  //   this.drawPie();
-  // }
+  ngOnInit() {
+    // Initialize cytoscape instance
+    this.cy = cytoscape({
+      container: document.getElementById('cy'),
 
-  // initSvg() {
-  //   this.color = d3Scale.scaleOrdinal()
-  //       .range(['#FFA500', '#00FF00', '#FF0000', '#6b486b', '#FF00FF', '#d0743c', '#00FA9A']);
-  //   this.arc = d3Shape.arc()
-  //       .outerRadius(this.radius - 10)
-  //       .innerRadius(0);
-  //   this.labelArc = d3Shape.arc()
-  //       .outerRadius(this.radius - 40)
-  //       .innerRadius(this.radius - 40);
+      // Graph data
+      elements: {
+        nodes: [
+          { data: { id: 'a' } },
+          { data: { id: 'b' } },
+          { data: { id: 'c' } },
+          { data: { id: 'd' } },
+          { data: { id: 'e' } },
+        ],
+        edges: [
+          { data: { source: 'a', target: 'b' } },
+          { data: { source: 'a', target: 'c' } },
+          { data: { source: 'b', target: 'd' } },
+          { data: { source: 'd', target: 'e' } },
+          { data: { source: 'c', target: 'd' } },
+        ],
+      },
 
-  //   this.labelPer = d3Shape.arc()
-  //       .outerRadius(this.radius - 80)
-  //       .innerRadius(this.radius - 80);
+      // Graph style
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'color': 'white',
+            'background-color': '#ffffff',
+            'background-fit': 'contain',
+            'height': 30,
+            'width': 30,
+            'border-color': '#000',
+            'border-width': 3,
+            'border-opacity': 0.5,
+            'label': 'data(id)',
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 2,
+            'target-arrow-shape': 'triangle',
+            'line-color': '#c6c6c6',
+            'target-arrow-color': '#c6c6c6',
+            'curve-style': 'bezier'
+          }
+        },
+        {
+          selector: '#a',
+          style: {
+            'font-size': '15px',
+            'content': "Abstract on text summarization",
+            'background-image': '../../assets/images/paper_icon.png'
+          }
+        },
+        
+      ],
 
-  //   this.pie = d3Shape.pie()
-  //       .sort(null)
-  //       .value((d: any) => d.electionP);
-
-  //   this.svg = d3.select('#pieChart')
-  //       .append('svg')
-  //       .attr('width', '100%')
-  //       .attr('height', '100%')
-  //       .attr('viewBox', '0 0 ' + Math.min(this.width, this.height) + ' ' + Math.min(this.width, this.height))
-  //       .append('g')
-  //       .attr('transform', 'translate(' + Math.min(this.width, this.height) / 2 + ',' + Math.min(this.width, this.height) / 2 + ')');
-  // }
-
-  // drawPie() {
-  //   const g = this.svg.selectAll('.arc')
-  //       .data(this.pie(StatsPieChart))
-  //       .enter().append('g')
-  //       .attr('class', 'arc');
-  //   g.append('path').attr('d', this.arc)
-  //       .style('fill', (d: any) => this.color(d.data.party) );
-  //   g.append('text').attr('transform', (d: any) => 'translate(' + this.labelArc.centroid(d) + ')')
-  //       .attr('dy', '.35em')
-  //       .text((d: any) => d.data.party);
-
-  //   g.append('text').attr('transform', (d: any) => 'translate(' + this.labelPer.centroid(d) + ')')
-  //       .attr('dy', '.35em')
-  //       .text((d: any) => d.data.electionP + '%');
-  // }
+      // Graph layout
+      layout: {
+        name: 'breadthfirst',
+        fit: true, // whether to fit the viewport to the graph
+        directed: true, // whether the tree is directed downwards (or edges can point in any direction if false)
+        padding: 30, // padding on fit
+        circle: false, // put depths in concentric circles if true, put depths top down if false
+        grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
+        spacingFactor: 1, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
+        boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+        avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
+        nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+        roots: undefined, // the roots of the trees
+        maximal: false, // whether to shift nodes down their natural BFS depths in order to avoid upwards edges (DAGS only)
+        depthSort: undefined, // a sorting function to order nodes at equal depth. e.g. function(a, b){ return a.data('weight') - b.data('weight') }
+        animate: false, // whether to transition the node positions
+        animationDuration: 500, // duration of animation in ms if enabled
+        animationEasing: undefined, // easing of animation if enabled,
+        animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+        ready: undefined, // callback on layoutready
+        stop: undefined, // callback on layoutstop
+      },
+    });
+    // // Add panzoom and navigator extensions
+    panzoom(this.cy);
+    navigator(this.cy);
+  }
 }
