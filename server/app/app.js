@@ -2,11 +2,21 @@
 const dotenv = require("dotenv");
 const express = require("express");
 const cookieSession = require("cookie-session");
+const cloudinary = require("cloudinary");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
+const cors = require("cors");
 
 // app imports
 const { connectToDatabase, globalResponseHeaders } = require("./db.config");
 const { errorHandler } = require("./controllers");
-const { thingsRouter, authRouter, userRouter } = require("./routes");
+const {
+  thingsRouter,
+  authRouter,
+  userRouter,
+  paperRouter,
+} = require("./routes");
 
 // global constants
 dotenv.config();
@@ -24,7 +34,10 @@ connectToDatabase();
 // body parser setup
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ type: "*/*" }));
-app.use(bodyParserHandler); // error handling specific to body parser only
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(fileUpload());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 // response headers setup; CORS
 app.use(globalResponseHeaders);
@@ -37,9 +50,17 @@ app.use(
   })
 );
 
+//Cloudinary Config
+cloudinary.config({
+  cloud_name: "dpf3hdncd",
+  api_key: "397994995141357",
+  api_secret: "1-IKBhBI4GlM2iwKJ0TQ5N5fa90",
+});
+
 app.use("/things", thingsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/paper", paperRouter);
 
 // catch-all for 404 "Not Found" errors
 app.get("*", fourOhFourHandler);
