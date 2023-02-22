@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>PDF.js Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+  </head>
+  <body>
+    <canvas id="pdf-canvas"></canvas>
+    <script>
+      pdfjsLib.getDocument("sample3.pdf").promise.then(function (pdf) {
+        var pageIndex = 0; // the index of the page you want to extract the coordinates from
+        pdf.getPage(pageIndex + 1).then(function (page) {
+          page.getAnnotations().then(function (annotations) {
+            var linkAnnotation = annotations.find(function (annotation) {
+              return annotation.subtype === "Link";
+            });
+            console.log(linkAnnotation);
+            if (linkAnnotation) {
+              var x = linkAnnotation.dest[2]; // x coordinate of the destination
+              var y = linkAnnotation.dest[3]; // y coordinate of the destination
+              console.log("x: " + x + ", y: " + y);
+            }
+          });
+
+          var canvas = document.getElementById("pdf-canvas");
+          var context = canvas.getContext("2d");
+          var viewport = page.getViewport({ scale: 1.5 });
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          page.render({
+            canvasContext: context,
+            viewport: viewport,
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -223,19 +223,24 @@ export class AppComponent implements OnInit {
     }
 
     let anchor = document.querySelector('.clickable-text');
-    let overlay = document.querySelector('.overlay');
+    let modal = document.querySelector('.modal');
 
-    if (overlay)
-      overlay.addEventListener('click', (event) => {
+    if (modal)
+      modal.addEventListener('click', (event) => {
         event.preventDefault();
-        overlay.classList.add('hidden');
+        modal.classList.add('hidden');
       });
 
-    if (anchor)
-      anchor.addEventListener('click', (event) => {
+    if (anchor) {
+      anchor.addEventListener('mouseenter', (event) => {
         event.preventDefault();
-        overlay.classList.remove('hidden');
+        modal.classList.remove('hidden');
       });
+      anchor.addEventListener('mouseleave', (event) => {
+        event.preventDefault();
+        modal.classList.add('hidden');
+      });
+    }
   }
 
   replaceTextChunk(spanElement: Element) {
