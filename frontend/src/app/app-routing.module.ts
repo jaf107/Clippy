@@ -5,12 +5,14 @@ import { SignUpComponent } from './modules/auth/sign-up/sign-up.component';
 import { HomeComponent } from './modules/home/home.component';
 import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-graph.component';
 import { LandingPageComponent } from './modules/landing-page/landing-page.component';
+import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 
 const routes: Routes = [
   {path: '', component: LandingPageComponent},
   {path: 'login', component: SignInComponent},
   {path: 'signup', component: SignUpComponent},
   {path: 'home', component: HomeComponent},
+  {path: 'pdfviewer', component: PdfViewerComponent},
   {path: 'graph', component: KnowledgeGraphComponent}
 ];
 

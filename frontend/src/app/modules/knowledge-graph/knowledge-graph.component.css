@@ -16,3 +16,21 @@ body {
     opacity: 0.5;
     font-size: 1em;
   }
+
+  .wrapper {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 250px;
+    transition: all 0.3s ease;
+  }
+  
+  .content {
+    flex: 1;
+  }
+  
+  .collapsed {
+    transform: translateX(-100%);
+  }
+  
