@@ -1,6 +1,8 @@
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const fs = require("fs");
 
+let textChunkArray = [];
+
 /**
  * Extarct texts from a pdf file
  * @param {string} src
@@ -17,6 +19,7 @@ async function getPdfTextContent(src) {
   for (let i = 1; i <= totalPageCount; i++) {
     const page = await doc.getPage(i);
     const textContent = await page.getTextContent();
+    textChunkArray = textChunkArray.concat(getTextChunkObject(textContent));
     writeToFile("./output.txt", textContent, i);
     writeObjectToFile("./object.txt", textContent, i);
     writeUniqueHeights(heights, textContent);
@@ -29,7 +32,7 @@ async function getPdfTextContent(src) {
     return b - a;
   });
 
-  console.log(sortedHeights);
+  // console.log(sortedHeights);
   sortedHeights.forEach((element) => {
     fs.appendFileSync(
       "./heights.txt",
@@ -43,12 +46,23 @@ async function getPdfTextContent(src) {
   });
 
   // fs.appendFileSync("./heights.txt", JSON.stringify(height));
+  console.log(textChunkArray);
 }
 
 function writeUniqueHeights(heights, content) {
   const items = content.items.map((item) => {
     heights.push(item.height);
   });
+}
+
+function getTextChunkObject(content) {
+  let retItems = content.items.map((item) => {
+    return {
+      ...item,
+      style: content.styles[item.fontName],
+    };
+  });
+  return retItems;
 }
 
 function writeObjectToFile(filePath, content, pageNo) {
@@ -94,4 +108,4 @@ function writeToFile(filePath, content, pageNo) {
 
 getPdfTextContent("./sample3.pdf");
 
-// function createJsonObjectFromPdf() {}
+function createJsonObjectFromPdf() {}
