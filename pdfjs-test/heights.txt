@@ -1,0 +1,38 @@
+Sample1 - 
+17.9328             - Top Header    - 2
+10.9589             - Information   - 41
+9.7                 - Symbols       - 9
+8.9664              - General Text  - 1972
+8.93112             - Single Symbol - 1
+7.9701              - Bottom text   - 136
+7.1731              - Acronym       - 18
+6.9738              - Bottom Text   - 10
+6.527080000000001   - (a),(b),(c)   - 3
+6.3                 - (a),(b),(c)   - 2
+5.9776              - numbers       - 70    
+5.5                 - Symbols       - 25
+5.16984             - Figure texts  - 46
+4.8999999999999995  - Single char   - 9
+4.6622              - text          - 35
+4.6207              - Single Char   - 9
+4.46556             - Fig texts     - 17
+4.4                 - Symbols       - 52
+4.199999999999999   - text          - 14
+3.9606000000000003  - text          - 7
+3.72976             - table text    - 15
+3.5                 - number        - 9
+3.3005              - number        - 9
+0
+
+Sample3 - 
+20      - side font  - 1
+14.3462 - Header1    - 1
+11.9552 - intro text - 21
+10.9589 - Header 2   - 12
+9.9626  - reg text   - 825
+8.9664  - fig text   - 18
+7.9701  - subtext    - 2
+6.9738  - single dig - 24
+5.9776  - single dig - 2
+0
+

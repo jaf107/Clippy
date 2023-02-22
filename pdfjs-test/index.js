@@ -25,11 +25,23 @@ async function getPdfTextContent(src) {
   heights = Array.from(uniqueHeight);
   // console.log(uniqueHeight);
   // heights.sort();
-  heights.sort(function (a, b) {
+  sortedHeights = heights.sort(function (a, b) {
     return b - a;
   });
 
-  console.log(heights);
+  console.log(sortedHeights);
+  sortedHeights.forEach((element) => {
+    fs.appendFileSync(
+      "./heights.txt",
+      JSON.stringify(element) + "\n",
+      (err) => {
+        if (err) {
+          throw err;
+        }
+      }
+    );
+  });
+
   // fs.appendFileSync("./heights.txt", JSON.stringify(height));
 }
 
@@ -80,6 +92,6 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-getPdfTextContent("./sample5.pdf");
+getPdfTextContent("./sample3.pdf");
 
 // function createJsonObjectFromPdf() {}
