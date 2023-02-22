@@ -19,7 +19,7 @@ async function getPdfTextContent(src) {
   for (let i = 1; i <= totalPageCount; i++) {
     const page = await doc.getPage(i);
     const textContent = await page.getTextContent();
-    textChunkArray = textChunkArray.concat(getTextChunkObject(textContent));
+    textChunkArray.push(getTextChunkObject(textContent));
     writeToFile("./output.txt", textContent, i);
     writeObjectToFile("./object.txt", textContent, i);
     writeUniqueHeights(heights, textContent);
@@ -106,10 +106,18 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-function createJsonObjectFromPdf() {}
+function writeChunksArrayToFile(filepath, chunksArray) {
+  fs.truncateSync(filepath, 0);
+  fs.appendFileSync(filepath, JSON.stringify(chunksArray), (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+}
 
 async function wrapper() {
-  let arr = await getPdfTextContent("./sample4.pdf");
-  console.log(arr);
+  let arr = await getPdfTextContent("./sample3.pdf");
+  writeChunksArrayToFile("./chunks.json", arr);
+  // console.log(arr);
 }
 wrapper();

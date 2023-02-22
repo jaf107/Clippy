@@ -10,17 +10,22 @@
 
     <script>
       // load the PDF file
-      const pdfUrl = "sample4.pdf";
+      const pdfUrl = "sample3.pdf";
       pdfjsLib.getDocument(pdfUrl).promise.then((pdfDoc) => {
         // get the page to be rendered
-        const pageNumber = 4;
+        const pageNumber = 5;
         pdfDoc.getPage(pageNumber).then((page) => {
           // define the viewport for the specific area to be rendered
           const viewport = page.getViewport({ scale: 1.0 });
-          const region = { x: 60, y: 500, width: 400, height: 300 };
+          const region = {
+            x: 50.112,
+            y: 720.037,
+            width: 400,
+            height: 300,
+          };
           viewport.width = region.width;
           viewport.height = region.height;
-          viewport.transform = [1, 0, 0, -1, -region.x, region.y];
+          viewport.transform = [2, 0, 0, -2, -region.x * 2, region.y * 2];
 
           // render the specific area of the page
           const canvas = document.getElementById("pdf-canvas");
@@ -33,29 +38,6 @@
             console.log("Rendering complete");
           });
         });
-
-        var scale = 1.5;
-        var viewport = page.getViewport({ scale: scale });
-        // Support HiDPI-screens.
-        var outputScale = window.devicePixelRatio || 1;
-
-        var canvas = document.getElementById("the-canvas");
-        var context = canvas.getContext("2d");
-
-        canvas.width = Math.floor(viewport.width * outputScale);
-        canvas.height = Math.floor(viewport.height * outputScale);
-        canvas.style.width = Math.floor(viewport.width) + "px";
-        canvas.style.height = Math.floor(viewport.height) + "px";
-
-        var transform =
-          outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-
-        var renderContext = {
-          canvasContext: context,
-          transform: transform,
-          viewport: viewport,
-        };
-        page.render(renderContext);
       });
     </script>
   </body>
