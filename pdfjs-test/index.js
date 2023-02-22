@@ -109,7 +109,7 @@ function writeToFile(filePath, content, pageNo) {
 function createJsonObjectFromPdf() {}
 
 async function wrapper() {
-  let arr = await getPdfTextContent("./sample3.pdf");
+  let arr = await getPdfTextContent("./sample4.pdf");
   console.log(arr);
 }
 wrapper();
