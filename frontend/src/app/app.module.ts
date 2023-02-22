@@ -10,6 +10,7 @@ import { SignUpComponent } from './modules/auth/sign-up/sign-up.component';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { HomeComponent } from './modules/home/home.component';
 import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-graph.component';
+import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-gra
     SignUpComponent,
     NavbarComponent,
     HomeComponent,
-    KnowledgeGraphComponent
+    KnowledgeGraphComponent,
+    PdfViewerComponent
   ],
   imports: [
     BrowserModule,
