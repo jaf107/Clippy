@@ -1,8 +1,6 @@
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const fs = require("fs");
 
-let textChunkArray = [];
-
 /**
  * Extarct texts from a pdf file
  * @param {string} src
@@ -14,6 +12,8 @@ async function getPdfTextContent(src) {
   // clear the text file //
   fs.truncateSync("./output.txt", 0);
   fs.truncateSync("./object.txt", 0);
+
+  let textChunkArray = [];
   heights = [];
 
   for (let i = 1; i <= totalPageCount; i++) {
@@ -46,7 +46,7 @@ async function getPdfTextContent(src) {
   });
 
   // fs.appendFileSync("./heights.txt", JSON.stringify(height));
-  console.log(textChunkArray);
+  return textChunkArray;
 }
 
 function writeUniqueHeights(heights, content) {
@@ -106,6 +106,10 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-getPdfTextContent("./sample3.pdf");
-
 function createJsonObjectFromPdf() {}
+
+async function wrapper() {
+  let arr = await getPdfTextContent("./sample3.pdf");
+  console.log(arr);
+}
+wrapper();
