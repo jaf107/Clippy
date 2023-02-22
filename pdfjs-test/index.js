@@ -46,7 +46,7 @@ async function getPdfTextContent(src) {
   });
 
   // fs.appendFileSync("./heights.txt", JSON.stringify(height));
-  return textChunkArray;
+  return { textChunkArray, uniqueHeight };
 }
 
 function writeUniqueHeights(heights, content) {
@@ -116,8 +116,58 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 }
 
 async function wrapper() {
-  let arr = await getPdfTextContent("./sample3.pdf");
-  writeChunksArrayToFile("./chunks.json", arr);
-  // console.log(arr);
+  let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
+    "./sample1.pdf"
+  );
+  // arr[2];
+  let threshholdDistance = 90;
+  // let chunkWithEOL = arr[5].filter((item, index, arr) => {
+  //   if (index === 0 && item.height === 0 && item.width === 0) {
+  //     return true;
+  //   }
+  //   return (
+  //     index + 1 < arr.length &&
+  //     index + 2 < arr.length &&
+  //     arr[index + 1].height === 0 &&
+  //     arr[index + 1].width === 0 &&
+  //     item.transform[5] - arr[index + 2].transform[5] >= threshholdDistance
+  //   );
+  // });
+  // writeChunksArrayToFile("./chunks.json", arr);
+  // writeChunksArrayToFile("./chunksWithEOL.json", chunkWithEOL);
+  let freq = Array.from(heights).map((item) => {
+    return { height: item, count: 0 };
+  });
+  arr.map((page) => {
+    page.map((chunk) => {
+      for (let i = 0; i < freq.length; i++) {
+        if (freq[i].height == chunk.height) freq[i].count++;
+      }
+    });
+  });
+  let max = freq[0];
+  for (let i = 1; i < freq.length; i++) {
+    if (max.count < freq[i].count) max = freq[i];
+  }
+  console.log(max);
+
+  let regularText = arr[5].filter((item) => item.height == max.height);
+  writeChunksArrayToFile("./chunksWithEOL.json", regularText);
+
+  let chunkBeforeImage = regularText.filter((item, index, array) => {
+    if (
+      index + 1 < array.length &&
+      Math.abs(item.transform[5] - array[index + 1].transform[5]) >=
+        threshholdDistance
+    ) {
+      console.log(
+        item.str,
+        array[index + 1].str,
+        item.transform[5] - array[index + 1].transform[5]
+      );
+      return true;
+    } else return false;
+  });
+  writeChunksArrayToFile("./out.json", chunkBeforeImage);
 }
 wrapper();

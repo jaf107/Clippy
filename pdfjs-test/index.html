@@ -10,18 +10,18 @@
 
     <script>
       // load the PDF file
-      const pdfUrl = "sample3.pdf";
+      const pdfUrl = "sample1.pdf";
       pdfjsLib.getDocument(pdfUrl).promise.then((pdfDoc) => {
         // get the page to be rendered
-        const pageNumber = 5;
+        const pageNumber = 6;
         pdfDoc.getPage(pageNumber).then((page) => {
           // define the viewport for the specific area to be rendered
           const viewport = page.getViewport({ scale: 1.0 });
           const region = {
-            x: 50.112,
-            y: 720.037,
+            x: 317.0137,
+            y: 522.4992000000001,
             width: 400,
-            height: 300,
+            height: 228.75900000000007 * 2,
           };
           viewport.width = region.width;
           viewport.height = region.height;

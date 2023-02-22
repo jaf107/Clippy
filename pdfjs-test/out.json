@@ -1,0 +1,32 @@
+[
+  {
+    "str": "at that point. For example, the first recorded trace may be a cycle",
+    "dir": "ltr",
+    "width": 239.1069888000002,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 53.999999999999986, 68.44340000000001],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.678,
+      "descent": -0.216,
+      "vertical": false
+    }
+  },
+  {
+    "str": "anchor, which is the beginning of the trace tree.",
+    "dir": "ltr",
+    "width": 170.32573440000007,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 317.0137, 522.4992000000001],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.678,
+      "descent": -0.216,
+      "vertical": false
+    }
+  }
+]
