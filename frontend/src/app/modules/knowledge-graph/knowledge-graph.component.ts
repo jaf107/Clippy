@@ -22,11 +22,11 @@ export class KnowledgeGraphComponent implements OnInit {
       // Graph data
       elements: {
         nodes: [
-          { data: { id: 'a' } },
-          { data: { id: 'b' } },
-          { data: { id: 'c' } },
-          { data: { id: 'd' } },
-          { data: { id: 'e' } },
+          { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
+          { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
+          { data: { id: 'c' , name: 'Summarization' } },
+          { data: { id: 'd' , name: 'Paperrrr' } },
+          { data: { id: 'e' , name: 'SCOREEEE' } },
         ],
         edges: [
           { data: { source: 'a', target: 'b' } },
@@ -42,33 +42,43 @@ export class KnowledgeGraphComponent implements OnInit {
         {
           selector: 'node',
           style: {
-            'color': 'white',
-            'background-color': '#ffffff',
+            'shape': 'round-rectangle',
+            'text-wrap': 'wrap',
+            'text-overflow-wrap': 'whitespace',
+            'text-max-width': '140',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'color': 'black',
+            'background-color': 'white',
             'background-fit': 'contain',
-            'height': 30,
-            'width': 30,
-            'border-color': '#000',
+            'height': 60,
+            'width': 140,
+            'padding-top': '10',
+            'font-size': '12px',
+            'border-color': '#ffffff',
             'border-width': 3,
-            'border-opacity': 0.5,
-            'label': 'data(id)',
+            'border-opacity': 1,
+            'label': 'data(name)', //data(id)
+            'text-border-color': '#000000',
+            'text-background-shape': 'roundrectangle'
           }
         },
         {
           selector: 'edge',
           style: {
-            'width': 2,
+            'width': 3,
             'target-arrow-shape': 'triangle',
-            'line-color': '#c6c6c6',
-            'target-arrow-color': '#c6c6c6',
-            'curve-style': 'bezier'
+            'line-color': 'white',
+            'target-arrow-color': 'white',
+            'curve-style': 'bezier',
           }
         },
         {
           selector: '#a',
           style: {
-            'font-size': '15px',
-            'content': "Abstract on text summarization",
-            'background-image': '../../assets/images/paper_icon.png'
+            // 'font-size': '15px',
+            // 'content': "Abstract on text summarization",
+            // 'background-image': '../../assets/images/paper_icon.png'
           }
         },
         
@@ -82,7 +92,7 @@ export class KnowledgeGraphComponent implements OnInit {
         padding: 30, // padding on fit
         circle: false, // put depths in concentric circles if true, put depths top down if false
         grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
-        spacingFactor: 1, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
+        spacingFactor: 0.9, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
         boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
         avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
         nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
