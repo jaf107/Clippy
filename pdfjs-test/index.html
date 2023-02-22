@@ -17,7 +17,7 @@
         pdfDoc.getPage(pageNumber).then((page) => {
           // define the viewport for the specific area to be rendered
           const viewport = page.getViewport({ scale: 1.0 });
-          const region = { x: 100, y: 500, width: 400, height: 300 };
+          const region = { x: 60, y: 500, width: 400, height: 300 };
           viewport.width = region.width;
           viewport.height = region.height;
           viewport.transform = [1, 0, 0, -1, -region.x, region.y];
