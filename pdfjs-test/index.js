@@ -147,7 +147,7 @@ async function createJsonObjectFromPdf() {
   });
 
   for (var i = 0; i < heights.length; i++) {
-    console.log(heights[i] + " " + heightsCounter[i]);
+    // console.log(heights[i] + " " + heightsCounter[i]);
   }
 
   let titleHeightIndex = 0;
@@ -166,6 +166,80 @@ async function createJsonObjectFromPdf() {
     }
   }
 
+  let titleHeight = heights[titleHeightIndex];
+  let generalTextHeight = heights[generalTextHeightIndex];
+
+  let wiggleRoom = heights[generalTextHeightIndex] - 0.3;
+
+  let acceptedHeights = [];
+  heights.forEach((element) => {
+    if (element > wiggleRoom) acceptedHeights.push(element);
+  });
+
+  let arr = await getPdfTextContent("./sample1.pdf");
+
+  let paragraphs = [];
+
+  let maxLimit = arr.length;
+  let isAbstract = false;
+  for (let i = 0; i < maxLimit; i++) {
+    if (arr[i].height == titleHeight && arr[i].str.includes("References")) {
+      let referanceText = "";
+      let j = i;
+      if (j < maxLimit) j++;
+      while (j < maxLimit) {
+        referanceText += arr[j].str;
+        j++;
+      }
+
+      paragraphs.push(new Paragraph("References", referanceText));
+    }
+    if (arr[i].height == titleHeight && arr[i].str.includes("Abstract")) {
+      isAbstract = true;
+    }
+    if (arr[i].height == titleHeight && isAbstract) {
+      let titleString = arr[i].str;
+      let titleIterator = i;
+      while (arr[titleIterator] == titleHeight) {
+        titleString += arr[titleIterator].str;
+        titleIterator++;
+      }
+
+      if (i + 1 < maxLimit) i++;
+      let genText = "";
+      while (i < maxLimit && arr[i].height != titleHeight) {
+        if (arr[i].height == generalTextHeight) genText += arr[i].str;
+        i++;
+      }
+
+      let newPara = new Paragraph(titleString, genText);
+      paragraphs.push(newPara);
+      // console.log(titleString);
+      // console.log(genText);
+      // console.log("\n");
+
+      titleString = "";
+      genText = "";
+    }
+  }
+
+  // console.log(paragraphs);
+  fs.truncateSync("./preprocessed.json", 0);
+
+  fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
+
+  // arr.forEach((element, index) => {
+  //   titleFlag = false;
+  //   if (element.height == titleHeight) {
+  //     titleFlag = true;
+  //     while (index < arr.length) {}
+  //     console.log(element.str);
+  //   }
+  //   // if (element.height > wiggleRoom) console.log(element.str);
+  // });
+
+  console.log(wiggleRoom);
+  console.log(acceptedHeights);
   console.log("Title index is " + titleHeightIndex);
   console.log("General Text index is " + generalTextHeightIndex);
 
