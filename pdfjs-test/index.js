@@ -113,20 +113,12 @@ function writeToFile(filePath, content, pageNo) {
 }
 
 async function createJsonObjectFromPdf() {
-  // let doc = await getPdfTextContent("./sample3.pdf");
-  const doc = await pdfjs.getDocument("./sample1.pdf").promise;
-
-  const totalPageCount = doc.numPages;
+  let arr = await getPdfTextContent("./sample4.pdf");
 
   heights = [];
-  for (let i = 1; i <= totalPageCount; i++) {
-    const page = await doc.getPage(i);
-
-    const textContent = await page.getTextContent();
-
-    writeUniqueHeights(heights, textContent);
-  }
-  // console.log(heights);
+  arr.forEach((element) => {
+    heights.push(element.height);
+  });
   allHeights = heights;
 
   const uniqueHeight = new Set(heights);
@@ -139,16 +131,15 @@ async function createJsonObjectFromPdf() {
   heightsCounter = new Array(heights.length).fill(0);
   allHeights.forEach((element) => {
     for (var i = 0; i < heights.length; i++) {
-      // console.log(typeof element + typeof heights[i]);
       if (heights[i] === element) {
         heightsCounter[i]++;
       }
     }
   });
 
-  for (var i = 0; i < heights.length; i++) {
-    // console.log(heights[i] + " " + heightsCounter[i]);
-  }
+  // for (let i = 0; i < heights.length; i++) {
+  //   console.log(heights[i] + "\t" + heightsCounter[i]);
+  // }
 
   let titleHeightIndex = 0;
   let generalTextHeightIndex = 0;
@@ -176,12 +167,19 @@ async function createJsonObjectFromPdf() {
     if (element > wiggleRoom) acceptedHeights.push(element);
   });
 
-  let arr = await getPdfTextContent("./sample1.pdf");
+  arr.forEach((element) => {
+    // if (element.height == titleHeight) console.log(element.str);
+  });
 
+  // arr = arr.filter((element) => {
+  //   element.height > 0;
+  // });
+  // console.log(arr);
+  // Extract title and text
   let paragraphs = [];
-
-  let maxLimit = arr.length;
   let isAbstract = false;
+  let maxLimit = arr.length;
+
   for (let i = 0; i < maxLimit; i++) {
     if (arr[i].height == titleHeight && arr[i].str.includes("References")) {
       let referanceText = "";
@@ -193,13 +191,17 @@ async function createJsonObjectFromPdf() {
       }
 
       paragraphs.push(new Paragraph("References", referanceText));
+      break;
     }
-    if (arr[i].height == titleHeight && arr[i].str.includes("Abstract")) {
+    // if (arr[i].height == titleHeight && arr[i].str.includes("Abstract")) {
+    if (arr[i].str.includes("Abstract")) {
       isAbstract = true;
     }
     if (arr[i].height == titleHeight && isAbstract) {
       let titleString = arr[i].str;
       let titleIterator = i;
+
+      console.log(titleString);
       while (arr[titleIterator] == titleHeight) {
         titleString += arr[titleIterator].str;
         titleIterator++;
@@ -211,7 +213,7 @@ async function createJsonObjectFromPdf() {
         if (arr[i].height == generalTextHeight) genText += arr[i].str;
         i++;
       }
-
+      i--;
       let newPara = new Paragraph(titleString, genText);
       paragraphs.push(newPara);
       // console.log(titleString);
@@ -223,32 +225,14 @@ async function createJsonObjectFromPdf() {
     }
   }
 
-  // console.log(paragraphs);
+  // Writing JSON object to file
   fs.truncateSync("./preprocessed.json", 0);
-
   fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
 
-  // arr.forEach((element, index) => {
-  //   titleFlag = false;
-  //   if (element.height == titleHeight) {
-  //     titleFlag = true;
-  //     while (index < arr.length) {}
-  //     console.log(element.str);
-  //   }
-  //   // if (element.height > wiggleRoom) console.log(element.str);
-  // });
-
-  console.log(wiggleRoom);
-  console.log(acceptedHeights);
-  console.log("Title index is " + titleHeightIndex);
-  console.log("General Text index is " + generalTextHeightIndex);
-
-  // Figure out the most occuring text chunk ~ general text
-  // Identify text and title chunks
-  // append them
-
-  // extract them out
-  // make a JSON object for summarization
+  // console.log(wiggleRoom);
+  // console.log(acceptedHeights);
+  // console.log("Title index is " + titleHeightIndex);
+  // console.log("General Text index is " + generalTextHeightIndex);
 }
 
 createJsonObjectFromPdf();
