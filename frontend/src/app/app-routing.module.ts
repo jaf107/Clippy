@@ -13,7 +13,8 @@ const routes: Routes = [
   {path: 'signup', component: SignUpComponent},
   {path: 'home', component: HomeComponent},
   {path: 'pdfviewer', component: PdfViewerComponent},
-  {path: 'graph', component: KnowledgeGraphComponent}
+  {path: 'graph', component: KnowledgeGraphComponent},
+  {path:'pdf', component: PdfViewerComponent}
 ];
 
 @NgModule({

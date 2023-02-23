@@ -11,6 +11,7 @@ import { HomeComponent } from './modules/home/home.component';
 import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-graph.component';
 import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { SidebarComponent } from './layout/sidebar/sidebar.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    NgxExtendedPdfViewerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
