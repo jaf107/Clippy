@@ -121,20 +121,6 @@ async function wrapper() {
   );
   // arr[2];
   let threshholdDistance = 90;
-  // let chunkWithEOL = arr[5].filter((item, index, arr) => {
-  //   if (index === 0 && item.height === 0 && item.width === 0) {
-  //     return true;
-  //   }
-  //   return (
-  //     index + 1 < arr.length &&
-  //     index + 2 < arr.length &&
-  //     arr[index + 1].height === 0 &&
-  //     arr[index + 1].width === 0 &&
-  //     item.transform[5] - arr[index + 2].transform[5] >= threshholdDistance
-  //   );
-  // });
-  // writeChunksArrayToFile("./chunks.json", arr);
-  // writeChunksArrayToFile("./chunksWithEOL.json", chunkWithEOL);
   let freq = Array.from(heights).map((item) => {
     return { height: item, count: 0 };
   });
