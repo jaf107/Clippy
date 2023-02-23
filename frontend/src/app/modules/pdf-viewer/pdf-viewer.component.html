@@ -1,3 +1,4 @@
+<app-navbar></app-navbar>
 <ngx-extended-pdf-viewer
      [src]=""
      [textLayer]="true"
@@ -5,5 +6,10 @@
      [page]="9"
      [useBrowserLocale]="true"
      [showHandToolButton]="true"
-     [handTool]="false">
+     [showEditor]="true"
+     [handTool]="false"
+     theme="dark"
+     backgroundColor='#404040'
+     >
   </ngx-extended-pdf-viewer>
+  <app-sidebar></app-sidebar>

@@ -3,9 +3,17 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css']
+  styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
-  isCollapsed = true;
-}
+  public isActive: boolean = true;
 
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  toggleSidebar() {
+    this.isActive = !this.isActive;
+  }
+}
