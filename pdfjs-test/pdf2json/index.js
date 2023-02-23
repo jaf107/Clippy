@@ -9,5 +9,10 @@ pdfParser.on("pdfParser_dataError", (errData) =>
 pdfParser.on("pdfParser_dataReady", (pdfData) => {
   fs.writeFileSync("./sample.json", JSON.stringify(pdfData));
 });
+pdfParser.on("pdfParser_dataReady", (pdfData) => {
+  fs.writeFile("./RawSample.txt", pdfParser.getRawTextContent(), () => {
+    console.log("Done.");
+  });
+});
 
 pdfParser.loadPDF("./sample4.pdf");

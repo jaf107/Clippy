@@ -24,16 +24,11 @@ async function getPdfTextContent(src) {
     writeObjectToFile("./object.txt", textContent, i);
     writeUniqueHeights(heights, textContent);
   }
-  const uniqueHeight = new Set(heights);
-  heights = Array.from(uniqueHeight);
-  // console.log(uniqueHeight);
+
   // heights.sort();
-  sortedHeights = heights.sort(function (a, b) {
-    return b - a;
-  });
 
   // console.log(sortedHeights);
-  sortedHeights.forEach((element) => {
+  /* sortedHeights.forEach((element) => {
     fs.appendFileSync(
       "./heights.txt",
       JSON.stringify(element) + "\n",
@@ -43,7 +38,7 @@ async function getPdfTextContent(src) {
         }
       }
     );
-  });
+  }); */
 
   // fs.appendFileSync("./heights.txt", JSON.stringify(height));
   return textChunkArray;
@@ -106,10 +101,69 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-function createJsonObjectFromPdf() {}
+async function createJsonObjectFromPdf() {
+  // let doc = await getPdfTextContent("./sample3.pdf");
+  const doc = await pdfjs.getDocument("./sample1.pdf").promise;
 
-async function wrapper() {
-  let arr = await getPdfTextContent("./sample4.pdf");
-  console.log(arr);
+  const totalPageCount = doc.numPages;
+
+  heights = [];
+  for (let i = 1; i <= totalPageCount; i++) {
+    const page = await doc.getPage(i);
+
+    const textContent = await page.getTextContent();
+
+    writeUniqueHeights(heights, textContent);
+  }
+  // console.log(heights);
+  allHeights = heights;
+
+  const uniqueHeight = new Set(heights);
+
+  heights = Array.from(uniqueHeight);
+  sortedHeights = heights.sort(function (a, b) {
+    return b - a;
+  });
+
+  heightsCounter = new Array(heights.length).fill(0);
+  allHeights.forEach((element) => {
+    for (var i = 0; i < heights.length; i++) {
+      // console.log(typeof element + typeof heights[i]);
+      if (heights[i] === element) {
+        heightsCounter[i]++;
+      }
+    }
+  });
+
+  for (var i = 0; i < heights.length; i++) {
+    console.log(heights[i] + " " + heightsCounter[i]);
+  }
+
+  let titleHeightIndex = 0;
+  let generalTextHeightIndex = 0;
+
+  let tempMax = -1;
+  for (var i = 0; i < heights.length; i++) {
+    if (heightsCounter[i] > heightsCounter[generalTextHeightIndex]) {
+      generalTextHeightIndex = i;
+    }
+  }
+  tempMax = -1;
+  for (var i = 0; i < generalTextHeightIndex; i++) {
+    if (heightsCounter[i] > heightsCounter[titleHeightIndex]) {
+      titleHeightIndex = i;
+    }
+  }
+
+  console.log("Title index is " + titleHeightIndex);
+  console.log("General Text index is " + generalTextHeightIndex);
+
+  // Figure out the most occuring text chunk ~ general text
+  // Identify text and title chunks
+  // append them
+  
+  // extract them out
+  // make a JSON object for summarization
 }
-wrapper();
+
+createJsonObjectFromPdf();
