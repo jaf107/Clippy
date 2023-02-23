@@ -160,20 +160,14 @@ async function createJsonObjectFromPdf() {
   let titleHeight = heights[titleHeightIndex];
   let generalTextHeight = heights[generalTextHeightIndex];
 
-  let wiggleRoom = heights[generalTextHeightIndex] - 0.3;
-
-  let acceptedHeights = [];
-  heights.forEach((element) => {
-    if (element > wiggleRoom) acceptedHeights.push(element);
-  });
+  let wiggleHeight = heights[generalTextHeightIndex] - 0.3;
+  console.log(wiggleHeight);
 
   arr.forEach((element) => {
     // if (element.height == titleHeight) console.log(element.str);
   });
 
-  // arr = arr.filter((element) => {
-  //   element.height > 0;
-  // });
+  arr = arr.filter((element) => element.height > wiggleHeight);
   // console.log(arr);
   // Extract title and text
   let paragraphs = [];
@@ -199,14 +193,20 @@ async function createJsonObjectFromPdf() {
     }
     if (arr[i].height == titleHeight && isAbstract) {
       let titleString = arr[i].str;
-      let titleIterator = i;
+      let titleIterator = i + 1;
 
-      console.log(titleString);
-      while (arr[titleIterator] == titleHeight) {
-        titleString += arr[titleIterator].str;
+      while (arr[titleIterator].height == titleHeight) {
+        if (titleString === "") {
+          titleString += arr[titleIterator].str;
+        } else {
+          titleString += " ";
+          titleString += arr[titleIterator].str;
+        }
+        // console.log(arr[titleIterator].str);
         titleIterator++;
       }
-
+      // console.log(titleString);
+      i = titleIterator;
       if (i + 1 < maxLimit) i++;
       let genText = "";
       while (i < maxLimit && arr[i].height != titleHeight) {
