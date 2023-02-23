@@ -1,6 +1,17 @@
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const fs = require("fs");
 
+class Paragraph {
+  constructor(title, text) {
+    this.title = title;
+    this.text = text;
+  }
+
+  appendText(newtext) {
+    this.text.appendText(newtext);
+  }
+}
+
 /**
  * Extarct texts from a pdf file
  * @param {string} src
@@ -161,7 +172,7 @@ async function createJsonObjectFromPdf() {
   // Figure out the most occuring text chunk ~ general text
   // Identify text and title chunks
   // append them
-  
+
   // extract them out
   // make a JSON object for summarization
 }
