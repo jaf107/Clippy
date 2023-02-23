@@ -6,23 +6,26 @@
   </head>
   <body>
     <h1>This is the cropped part of the pdf</h1>
-    <canvas id="pdf-canvas" style="border: 2px solid black"></canvas>
+    <canvas
+      id="pdf-canvas"
+      style="border: 2px solid black; overflow: scroll"
+    ></canvas>
 
     <script>
       // load the PDF file
-      const pdfUrl = "sample2.pdf";
+      const pdfUrl = "sample3.pdf";
       pdfjsLib.getDocument(pdfUrl).promise.then((pdfDoc) => {
         // get the page to be rendered
-        const pageNumber = 2;
+        const pageNumber = 3;
         let scalingFactor = 2;
         pdfDoc.getPage(pageNumber).then((page) => {
           // define the viewport for the specific area to be rendered
           const viewport = page.getViewport({ scale: 1.0 });
           const region = {
-            x: 134.765,
-            y: 654.247,
+            x: 50.111999999999966,
+            y: 394.2509999999996,
             width: 470,
-            height: 188.84599999999995 * 2,
+            height: 122.25099999999958 * scalingFactor,
           };
           viewport.width = region.width;
           viewport.height = region.height;

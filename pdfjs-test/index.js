@@ -117,7 +117,7 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 
 async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
-    "./sample2.pdf"
+    "./sample3.pdf"
   );
   // arr[2];
   let threshholdDistance = 90;
@@ -151,7 +151,7 @@ async function wrapper() {
   }
   console.log(freq);
 
-  let regularText = arr[1].filter(
+  let regularText = arr[2].filter(
     (item) =>
       item.height < max.height + 1 &&
       item.height > max.height - 1 &&
@@ -180,7 +180,7 @@ async function wrapper() {
 wrapper();
 
 function isAlphanumeric(str) {
-  return /^[a-zA-Z0-9 :.,;?!%&()*{}\[\]$]+$/.test(str);
+  return /^[a-zA-Z0-9 =_\/+\-:.,;?!%&()*{}\[\]$]+$/.test(str);
 }
 
-// console.log(isAlphanumeric("Figuer 1: 100% coverage. arr[1$*]"));
+console.log(isAlphanumeric("Figuer 1: 100% coverage. arr[1$*]-"));

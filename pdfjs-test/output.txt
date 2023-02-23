@@ -1,181 +1,1431 @@
 page No: 1 
 ===============
-Title of the Manuscript
+Automatic Code Generation using Pre-Trained Language Models
 
-First Author
+Luis Perez
+Department of Computer Science
+Stanford University
+
+luis0@stanford.edu
+
+Lizi Ottens
+Department of Computer Science
+Stanford University
+
+lottens@stanford.edu
+
+Sudharshan Viswanathan
+Department of Computer Science
+Stanford University
+
+viswans@stanford.edu
+
+Abstract
+
+Recent advancements in natural language processing
+[1] [2] have led to near-human performance in multiple
+natural language tasks.
+ 
+In this paper, we seek to under-
+stand whether similar techniques can be applied to a highly
+structured environment with strict syntax rules.
+ 
+Specifi-
+cally, we propose an end-to-end machine learning model for
+code generation in the Python language built on-top of pre-
+trained language models. We demonstrate that a fine-tuned
+model can perform well in code generation tasks, achieving
+a BLEU score of 0.22, an improvement of 46% over a rea-
+sonable sequence-to-sequence baseline. All results and re-
+lated code used for training and data processing are avail-
+able on GitHub.
+ 
 1
-∗
-, Second Author
-1
-, Third Author
+
+1. Introduction
+
+Automating even small parts of software development is
+an active research area [3], with multiple approaches pro-
+posed methods (See Section 1). Succeeding in the automa-
+tion of even small tasks can save time for countless software
+engineers, which translates to saved resources across mul-
+tiple industries. Furthermore, as software continues to eat
+the world
+ 
 2
-, and Fourth Author
-2
+ 
+and demand for experienced software develop-
+ers continues to outpace supply, automatic code generation
+will become increasingly important.
+In this paper, we propose a machine learning model to
+automate the task of writing code by assisting developers
+in writing individual units of functionality (or “functions”).
+Automating code generation can take on many forms, from
 
 1
- 
-Affiliation, Town/City, Country
+See shared repository located at https://github.com/kandluis/code-gen.
 
 2
+See article by Marc Andreessen.
+
+auto-completing lines of source code to generating lines of
+source code from comments, generating source code from
+UI images, or generating unit tests from source code. In this
+project, we aim to take the initial lines of code (a function
+signature) along with a doc-string (function documentation)
+and generate the corresponding function body. In order to
+do this, we use a pre-trained language model and fine-tune it
+on a canonical corpus of Python code scraped from GitHub
+[4].
+
+2. Background
+
+A primary challenge in code generation is that it is still
+an active area of research, with many possible solutions and
+ongoing investigation [5]. State of the art solutions have not
+yet come close to automating basic tasks software engineers
+perform on a daily basis.
+
+2.1. Traditional Code Completion
+
+The most traditional and well-known approach used by
+multiple IDEs across a range of languages simply consists
+of token completion based on structured information ob-
+tained from static analysis of code.
  
-Affiliation, Town/City, Country
-
-Corresponding Author Email ID:
-
-Abstract.
- 
-The abstract is a mandatory element that should summarize
-the contents of the paper and should contain 15-250 words. Abstract and
-keywords are made freely available in SpringerLink.
-
-Keywords:
- 
-Please list your keywords here. They should be separated
-by middots, if possible. The first letter of each keyword should be capi-
-talized.
-
+For example, when a
+developer types a sequence of characters, the system will
+attempt to find near-matching strings corresponding to func-
+tion definitions and propose completing these function calls.
+Similarly, for object methods, on the typing of the acces-
+sor token (such as “-¿” or “.”), the IDE will propose auto-
+completing different methods belonging to the object.
+The biggest drawback of these approaches is that they
+lack true understanding of the programmers intent, and also
+lack context relating to the surrounding code other than that
+from heuristics by the tool’s developers.
 1
- 
-First Section
 
-1.1
- 
-A Subsection Sample
-
-Please note that the first paragraph of a section or subsection is not indented.
-The first paragraph that follows a table, figure, equation etc. does not need an
-indent, either.
-Subsequent paragraphs, however, are indented.
-
-Sample Heading (Third Level)
- 
-Only two levels of headings should be num-
-bered. Lower level headings remain unnumbered; they are formatted as run-in
-headings.
-
-Sample Heading (Fourth Level)
- 
-The contribution should contain no more than
-four levels of headings. Table 1 gives a summary of all heading levels.
-
-Table 1.
- 
-Table captions should be placed above the tables.
-Heading level
- 
-Example
- 
-Font size and style
-Title (centered)
- 
-Lecture Notes
- 
-14 point, bold
-1st-level heading
- 
-1 Introduction
- 
-12 point, bold
-2nd-level heading
- 
-2.1 Printing Area
- 
-10 point, bold
-3rd-level heading
- 
-Run-in Heading in Bold.
- 
-Text follows 10 point, bold
-4th-level heading
- 
-Lowest Level Heading.
- 
-Text follows
- 
-10 point, italic
-
-Displayed equations are centered and set on a separate line.
-
-x
- 
-+
- 
-y
- 
-=
- 
-z
- 
-(1)
+arXiv:2102.10535v1 [cs.CL] 21 Feb 2021
 
 page No: 2 
 ===============
-2
- 
-F. Author et al.
+2.2. Using Machine Learning for Code Search
 
-Please try to avoid rasterized images for line-art diagrams and schemas. When-
-ever possible, use vector graphics instead (see Fig. 1).
-Ϭ
-ρ
-ϭϬ
-ϭρ
-ϮϬ
-Ϯρ
-ϯϬ
-ϯρ
-κϬ
-κρ
-ρϬ
-Ϭ
- 
-ρ
- 
-ϭϬ
- 
-ϭρ
- 
-ϮϬ
- 
-Ϯρ
- 
-ϯϬ
+Another approach taken in multiple papers in the liter-
+ature [4] involves framing the problem as a code search
+problem. Rather than trying to generate code or complete
+the code that the developer is making, we can re-frame the
+problem as one of searching for relevant pre-existing snip-
+pets. This is the primary approach we take in three of our
+baseline models.
 
-ĂƚĂ
+2.3. Using Machine Learning for Code Generation
 
-ĂƚĂ
+Other more novel approaches from literature [5] are typ-
+ically applied to restricted language domains, and have
+massive complexity in evaluation results, etc. Specifically,
+while pre-trained models are trained on free-form language
+data, programming languages often utilize non-natural vari-
+able names, function names, and syntax with more structure
+[5]. Work in this area has focused on creating more struc-
+tured models that take advantage of specific architectures
+[6]. In [7], the authors work to first decompose the input
+sequence of text tokens for the context into a tree-like struc-
+ture. Other approaches involve restricting the output of the
+model to a context-free grammar (CFG) or domain-specific
+language (DSL) [8]. A code generation model’s output must
+adhere to a very specific form in order to be syntactically
+correct.
+In this paper, we instead focus on taking a different ap-
+proach. As has been demonstrated by ever-increasing sizes
+of language models, we focus on improving the perfor-
+mance on the code prediction task by making use of pre-
+trained language models that are then fine-tuned on code.
 
-Fig. 1.
- 
-A figure caption is always placed below the illustration. Please note that short
-captions are centered, while long ones are justified by the macro package automatically.
+2.4. Dataset and Feature
 
-Theorem 1.
+In this project, we are leveraging the CodeSearchNet
+dataset [4].
  
-This is a sample theorem. The run-in heading is set in bold, while
-the following text appears in italics. Definitions, lemmas, propositions, and corol-
-laries are styled the same way.
-Proof.
+The dataset consists of 2 million (comment,
+code) pairs from open source libraries, ranging in languages
+from Python to Javascript, PHP, Java, Go and Ruby. Median
+code-length consists of 60-100 text tokens, with 95% code-
+length of up to 350 tokens. Median documentation length
+consists of 10 text tokens. The distributions of methods and
+(comment, code) pairs across programming language are vi-
+sualized in Figure 3.
+We restrict our dataset to samples in the Python program-
+ming language rather than the others available.
  
-Proofs, examples, and remarks have the initial word in italics, while the
-following text appears in normal font.
-For citations of references, we prefer the use of square brackets and consecutive
-numbers. Citations using labels or the author/year convention are also accept-
-able. The following bibliography provides a sample reference list with entries
-for journal articles [1], an LNCS chapter [2], a book [3], proceedings without
-editors [4], and a homepage [5]. Multiple citations are grouped [1–3], [1, 3–5].
+Focusing
+on Python, there are over 1M methods and approximately
+500k (comment, code) pairs that make up our dataset. We
+make this decision both for practical and modeling reasons.
+From a practical perspective, restricting to a reasonably-
+sized dataset focused on a single-language domains permits
+for more thorough ablation studies. From a modeling per-
+spective, we belief that transfer learning from natural lan-
+guage to a programming language such as Python is an eas-
+ier task to accomplish.
+
+3. Methodology
+
+In this section, we explain our methodology for multiple
+experiments and baselines proposed as well as details on the
+training data and distribution.
+
+3.1. CodeSearchNet Models
+
+Figure 4 explains the general architecture of the base-
+line models from the CodeSearchNet task. We successfully
+trained and evaluated two baselines: Neural-Bag-Of-Words
+and an RNN-based baseline. See Section 4.
+Generally speaking, the baselines models take as input
+examples of (comments, code) pairs and learn to retrieve a
+specific code snippet. Each programming language has its
+own encoder network (see three columns to the right in Fig-
+ure 4), which are tasked with encoding a set of candidate
+code snippets. They are then combined through a dot prod-
+uct operation with the embedding generated by the query
+(docstring) encoder to produce a matrix comparison.
+The matrix diagonal serves as the scores of each query
+doc string/code snippet. Through this methodology, these
+baseline models are able to extract meaningful information
+and learn a joint distribution over the query and comment
+pairs. We train these models as a baseline since we believe
+they will be useful in the downstream task of code genera-
+tion. The models are trained on the following loss function:
+
+−
+ 
+1
+
+N
+
+∑
+
+i
+
+log
+
+(
+
+exp(
+E
+c
+(
+c
+T
+i
+ 
+)
+E
+q
+ 
+(
+d
+i
+))
+
+∑
+
+j
+ 
+exp(
+E
+c
+(
+c
+T
+j
+ 
+)
+E
+q
+ 
+(
+d
+j
+ 
+))
+
+)
+
+(1)
+
+3.2. From Scratch RNN Models
+
+The above baseline is useful only in the sense that it
+would allow our system to find pre-existing code snippets
+which might be relevant to the developer. Since our goal is
+rather to make novel code, we propose a different baseline
+based on a more traditional sequence-to-sequence model.
+In this case, we use a traditional RNN architecture which
+takes as input individual characters. The reason we take this
+approach is to circumvent the need to learn word-level em-
+beddings. Furthermore, we hypothesize that making use of
+entire words, from NLP models, will actually harm the per-
+formance of the model for code generation.
+ 
+The primary
+reason for this being that most of the syntax involved in
+writing code does not generally map directly to the English
+language. Concretely, we encode each character present in
+the training data as a 1-of-k encoding (one-hot encoding)
+and feed them into an RNN one at a time. Our output will
+be a k-dimensional output vector corresponding to a proba-
+bility distribution over the entire set of characters.
+For the model architecture, we sweep over multiple types
+of RNN cells, including LSTM, RNN, and GRU. We find
+the best performing model to consists of an LSTM-based
+
+page No: 3 
+===============
+model using a hidden state size of
+ 
+128
+ 
+with two hidden lay-
+ers in the internal RNN cell. Our training takes place using
+sequences of
+ 
+50
+ 
+characters, sampled at random from our in-
+put code. Given a sequence from
+ 
+i
+ 
+to
+ 
+i
+ 
++ 50
+, the model is
+trained to predict the sequence from
+ 
+i
+ 
++ 1
+ 
+to
+ 
+i
+ 
++ 51
+. This
+means we have a many-to-many sequence model (See Fig-
+ure 6.2.1). We use batch size of
+ 
+50
+ 
+and train for a total of
+
+50
+ 
+epochs.
+To avoid issues with gradient explosion and stabilize
+training, we make liberal use of gradient-clipping. In par-
+ticular, we clip all gradients to an absolute size of
+ 
+5
+.
+We sweep over learning rates and find that a started
+learning rate of
+ 
+0
+.
+002
+ 
+with an exponentially decaying
+schedule appears to perform best as measured by a held-
+out validation set. We use a decay rate of
+ 
+0
+.
+97
+ 
+per epoch.
+We also experiment with the use of dropout, but find little
+impact on final performance.
+
+3.3. Fine-Tuned Pre-Trained Large Language Mod-
+els
+
+Our final approach relies on the use of pre-trained lan-
+guage models. We fine tune our code generator using the
+small GPT-2 model with 117 million parameters.
+ 
+Using
+such a large backbone and continuing to fine tune allows us
+to generate synthetic code samples with even higher quality,
+treating programming languages as another specific domain
+alongside encyclopedia articles, news or books.
+
+Figure 1. Decoder-Only Architecture used by GPT-2.
+
+The general architecture of the GPT-2 model consists of
+a sequence-to-sequence predictive task based on the trans-
+former architecture [9] [1]. However, it consists solely of
+the 12-layer decoder-only, as visualized in Figure 1. Each
+layer has 12 independent attention heads, leading to 144 dis-
+tinct attention patterns. By making use of an attention-based
+framework, the model is more adept at dealing with long-
+range dependencies. This is because the attention mecha-
+nism allows the model to focus on the encoding of any of
+the input sequence tokens.
+
+4. Results
+
+CodeSearchNet provides a good starting point as we are
+able to train different models on the input code streams. We
+trained a simple LSTM model as well as a neural bag of
+words model on a combination of all the available (code,
+documentation) pairs. For details on these simple baselines,
+please see Appendix Section 6.1.
+
+4.1. Code Generation with Char-RNN
+
+As both of the above baselines focus on understanding
+and extracting useful embeddings for our overall task, our
+primary baseline consists of a straight-forward sequence-to-
+sequence model. Given that code typically does not consist
+of English words and can instead have quite a varied syntax,
+our baseline model is a model which uses character level
+embedding, so it is character aware [10].
+Due to computational constraints, we train only on the
+Python subset of the data and only on 10% of the total data
+available. For the char-rnn model [10], this corresponds to
+around 50MB of raw text, or 78,357,395 characters with
+1,618 distinct symbols.
+ 
+Figure 9 shows the training and
+validation losses on the model. The loss is simply a soft-
+max loss on the 1,618 characters for a sequence of length
+128 (the model is trained on sequences of length 128 by
+default). Figure 10 shows the perplexity, or the amount of
+meaningful information encoded.
+We include a sample generated from the best performing
+model for reference (See Section 2 in Appendix). A hyper-
+parameter tuning of learning rate and batch side for a total
+of 20 epochs has final measured performance as shown in
+Table 4.1.
+
+Batch
+Size
+Starter
+Learning
+Rate
+Regularization
+Weight
+BLEU Score
+on Train
+BLEU Score
+on Eval
+
+64
+ 
+0.02
+ 
+0.1
+ 
+0.022
+ 
+0.012
+64
+ 
+0.02
+ 
+0.01
+ 
+0.023
+ 
+0.019
+64
+ 
+0.002
+ 
+0.1
+ 
+0.034
+ 
+0.028
+64
+ 
+0.002
+ 
+0.01
+ 
+0.037
+ 
+0.012
+64
+ 
+0.0002
+ 
+0.1
+ 
+0.09
+ 
+0.073
+64
+ 
+0.0002
+ 
+0.01
+ 
+0.094
+ 
+0.014
+128
+ 
+0.02
+ 
+0.1
+ 
+0.024
+ 
+0.021
+128
+ 
+0.02
+ 
+0.01
+ 
+0.021
+ 
+0.013
+128
+ 
+0.002
+ 
+0.1
+ 
+0.033
+ 
+0.029
+128
+ 
+0.002
+ 
+0.01
+ 
+0.038
+ 
+0.011
+128
+ 
+0.0002
+ 
+0.1
+ 
+0.117
+ 
+0.093
+
+128
+ 
+0.0002
+ 
+0.01
+ 
+0.113
+ 
+0.034
+
+4.2. Code Generation with GPT-2
+
+We have been working with the publicly available small
+GPT-2 model with 117 million parameters. We trained us-
+ing the small GPT-2 model for 100,000 mini-batch itera-
+tions with a batch size of 2. We have included some sample
+code that our model generated directly in the report. Qual-
+itatively, our model generates code which is far more rea-
+sonable than our baseline.
+ 
+The generated code is novel,
+
+page No: 4 
+===============
+as verified by doing n-gram overlap analysis between the
+generated code and the training dataset. We also note that
+the model learns appropriate understanding of Python syn-
+tax, with uses of if-statements, function and method calls,
+as well as regularly commented code. For full output, see
+Appendix Section 6.2.
+We observed that the idea of using Byte Pair encod-
+ing as used in GPT-2 is a much better strategy to generate
+code than just using characters, while of course the size of
+the models itself has a very observable effect in generating
+Python-like code.
+Overall, the GPT-2 model quickly achieves performance
+that’s much better than the baseline.
+ 
+Continued training
+of the model shows that our BLEU score performance will
+continue to increase, as seen in Figure 2
+
+Figure 2. BLEU Score During Training of GPT-2 Based Model for
+Python Code Generation
+
+5. Conclusions
+
+In this paper, we explore the problem of automatically
+completing a function from the given function signature and
+human-readable documentation. We find the best perform-
+ing model to be a fine-tuned version GPT-2, a transformer-
+based NLP model which is trained to generate natural text
+on an extremely large dataset.
+ 
+Despite the fact that our
+model focuses specifically on code rather than natural lan-
+guage, we hypothesize that it is able to treat programming
+language as another specific domain alongside the encyclo-
+pedia articles, news or books that its backbone has been
+trained on. We are able to achieve a BLEU score of 0.22,
+improving our baseline by ¿40%.
+
+6. Contributions
+
+All team member contributed equally to this project.
+Baselines from the CodeSearchNet models for code search
+were trained and tuned by Luis Perez and Sudharshan
+Viswanathan. Data analysis and understanding of the fea-
+tures (including histograms, distribution of tokens, and
+other data insights) was primarily performed by Lizi Ottens.
+Training of the baseline char-rnn model, as well as anal-
+ysis of results and discussion was contributed primarily by
+Luis Perez.
+ 
+Fine-tuning and training with the small and
+medium GPT-2 models was primarily explored and ana-
+lyzed by Lizi Ottens and Sudharshan Viswanathan.
+All written submissions were co-written by all three au-
+thors.
 
 References
 
-1. Author, F.: Article title. Journal
+[1] Alec Radford, Jeff Wu, Rewon Child, David Luan,
+Dario Amodei, and Ilya Sutskever.
  
+Language mod-
+els are unsupervised multitask learners.
+ 
+None
+, 2019.
+1, 3
+[2] Kenton Lee Kristina Toutanova Jacob Devlin, Ming-
+Wei Chang. BERT: pre-training of deep bidirectional
+transformers for language understanding.
+ 
+CoRR
+,
+abs/1810.04805, 2018. 1
+[3] Miltiadis Allamanis, Earl T. Barr, Premkumar T. De-
+vanbu, and Charles A. Sutton.
+ 
+A survey of ma-
+chine learning for big code and naturalness.
+ 
+CoRR
+,
+abs/1709.06182, 2017. 1
+[4] Hamel Husain, Ho-Hsiang Wu, Tiferet Gazit, Mil-
+tiadis Allamanis, and Marc Brockschmidt.
+ 
+Code-
+searchnet challenge: Evaluating the state of semantic
+code search, 2019. 1, 2, 6
+[5] Yasir Hussain, Zhiqiu Huang, Senzhang Wang, and
+Yu Zhou. Codegru: Context-aware deep learning with
+gated recurrent unit for source code modeling.
+ 
+CoRR
+,
+abs/1903.00884, 2019. 1, 2
+[6] Zeyu Sun, Qihao Zhu, Yingfei Xiong, Yican Sun, Lili
+Mou, and Lu Zhang.
+ 
+Treegen:
+ 
+A tree-based trans-
+former architecture for code generation, 2019. 2
+[7] Xinyue Liu, Xiangnan Kong, Lei Liu, and Kuorong
+Chiang.
+ 
+Treegan:
+ 
+Syntax-aware sequence genera-
+tion with generative adversarial networks.
+ 
+CoRR
+,
+abs/1808.07582, 2018. 2
+[8] Zeyu Sun,
+ 
+Qihao Zhu,
+ 
+Lili Mou,
+ 
+Yingfei Xiong,
+Ge Li,
+ 
+and Lu Zhang.
+ 
+A grammar-based struc-
+tural CNN decoder for code generation.
+ 
+CoRR
+,
+abs/1811.06837, 2018. 2
+[9] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob
+Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz
+Kaiser, and Illia Polosukhin. Attention is all you need.
+
+CoRR
+, abs/1706.03762, 2017. 3
+[10] Yoon Kim, Yacine Jernite, David A. Sontag, and
+Alexander M. Rush. Character-aware neural language
+models.
+ 
+CoRR
+, abs/1508.06615, 2015. 3
+
+page No: 5 
+===============
+[11] KyungHyun Cho,
+ 
+Bart van Merrienboer,
+ 
+Dzmitry
+Bahdanau, and Yoshua Bengio.
+ 
+On the properties
+of neural machine translation:
+ 
+Encoder-decoder ap-
+proaches.
+ 
+CoRR
+, abs/1409.1259, 2014. 6
+
+page No: 6 
+===============
+Appendix and Figures
+
+6.1. CodeSearchNet Results
+
+The Neural Bag of Words and LSTM CodeSearchNet baselines both report metrics in the same fashion. Below, we show
+the training curves, which correspond to the loss in Equation (1).
+Additionally, given that the baselines models for CodeSearchNet focus on code snippet retrieval, we also report the
+achieved mean reciprocal rank. The MRR is a statistic measure for evaluating any process that produces a list of possible
+responses to a sample of queries, ordered by probability of correctness.
+ 
+The reciprocal rank of a query response is the
+multiplicative inverse of the rank of the first correct answer: 1 for first place,
+ 
+1
 2
-(5), 99–110 (2016)
-2. Author, F., Author, S.: Title of a proceedings paper. In: Editor, F., Editor, S.
-(eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1–13. Springer, Heidelberg (2016).
-https://doi.org/10.10007/1234567890
-3. Author, F., Author, S., Author, T.: Book title. 2nd edn. Publisher, Location (1999)
-4. Author, A.-B.: Contribution title. In: 9th International Proceedings on Proceedings,
-pp. 1–2. Publisher, Location (2010)
-5. LNCS Homepage, http://www.springer.com/lncs. Last accessed 4 Oct 2017
+ 
+for second place,
+ 
+1
+3
+ 
+for third place and so on.
+The mean reciprocal rank is the average of the reciprocal ranks of results for a sample of queries, as in Equation (2).
+MRR
+ 
+=
+ 
+1
+
+|
+Q
+|
+
+|
+Q
+|
+
+∑
+
+i
+=1
+
+1
+
+rank
+i
+
+(2)
+
+6.1.1
+ 
+Neural Bag of Words Baselines
+
+This baseline consists of a simple encoder architecture which takes as input bag-of-words representation of the code and
+using a single neural network encodes these token representation into an embedding [4]. This baseline actually performs the
+best, achieving the lowest overall training and validation losses (see Figure 5) as well as the highest MRR on the validation
+set (See Figure 6).
+
+6.1.2
+ 
+Bi-directional RNN Model
+
+In this model, we employ the GRU cell [11] to summarize the input sequence. This baseline performs significantly worse,
+suffering from what appears to be obvious over-fitting. In Figure 7, we can see that while the training loss appears to plateau,
+the validation loss begins quickly climbing. While this behavior does not appear to affect the overall MRR achieved on the
+validation set, it is still clear that the model performs worse than the bag of words baseline as per Figure 8.
+
+6.2. Example Code
+
+Listing 1. Sample generated using Char-RNN model.
+
+Downloads
+ 
+D a i l y m o t i o n
+ 
+v i d e o s
+ 
+by
+ 
+URL .
+ 
+( x
+ 
+or
+ 
+p i l l a r e s
+ 
+(
+ 
+i f
+ 
+macks ) ,
+ 
+s t y l e
+ 
+a s
+ 
+a
+ 
+b o o l
+ 
+t o
+ 
+you
+ 
+e x t n e r
+t o
+ 
+o i o
+ 
+i n s t a n c e
+ 
+o f
+ 
+t h a t
+ 
+S e i r
+ 
+t o
+ 
+be
+ 
+two
+ 
+c a t e g o r i c a l
+ 
+S t r i n g
+ 
+t o
+ 
+m a n d a t i o n
+ 
+: a t t r : ‘ Columnserv
+z r ,
+ 
+j )
+d i m e n s e d
+ 
+s o u r c e
+a l s o
+ 
+=
+ 
+‘ ‘ a x i s ‘ ‘ .
+ 
+E l e m e n t .
+ 
+T h i s
+ 
+r e p r
+ 
+d u r e s
+ 
+a
+ 
+s u b s t i m c l e
+ 
+o f
+
+”””
+c o d e
+ 
+=
+ 
+i t e m
+r e t u r n
+ 
+s e l f . f i l e n a m e
+r e s t r o x i g ,
+ 
+s e l f . g e t
+ 
+c h a n n e l s ( ) :
+”””
+ 
+Get
+ 
+t h e
+ 
+f u n c t i o n
+ 
+a s
+ 
+f i r m a p
+ 
+l i s t
+ 
+{
+1
+}
+ 
+and
+ 
+a
+ 
+: a t t r a c t e d
+ 
+c o o r d i n t :
+ 
+v a l u e
+ 
+o f
+ 
+Time
+e n d
+ 
+a e s :
+t a r g e t
+ 
+e x t
+ 
+=
+ 
+i n t
+ 
+( c m d
+ 
+d i c t ) :
+
+#
+ 
+I n
+ 
+d a t a
+ 
+a p p l i c a t e
+ 
+h o r i n a d ( s t r i n g ) :
+ 
+t h e
+ 
+c h a n n e l
+ 
+f o r
+ 
+d e c o d e d
+ 
+c o l l f i l e
+
+Runnee
+ 
+n e t w o r k
+ 
+number
+ 
+o f
+ 
+e l e m e n t .
+ 
+What
+ 
+yo u ’ s
+ 
+a s s o c i a t e s
+ 
+py
+ 
+ch
+ 
+o f
+ 
+L i s t
+ 
+d o e s
+ 
+r e q u e s t
+‘ ‘ i n d e x ‘ ‘ .
+d e f
+ 
+v e r t
+ 
+e v e n t
+ 
+n o t i f y
+ 
+c h a n n e l ( s e l f ,
+ 
+i n f n a = 1 )
+e l i f
+ 
+t r y i n g . f o r m a t (
+comps
+ 
++
+ 
+’ , ’ %
+ 
+( random )
+ 
++
+ 
+1 ,
+H . d a t a :
+i f
+ 
+l i s t
+ 
++
+ 
+l o o k b i n g . g e t ( ’ g e t
+ 
+d i c t . g e t ’ ]
+ 
+}
+
+page No: 7 
+===============
+Listing 2. Sample generated using small (117M) GPT-2 model after 40000 iterations.
+
+i n p u t
+ 
+s n i p p e t
+ 
+=
+ 
+d e f
+ 
+s e m i l o c a l
+ 
+l i n e a r
+ 
+t r e n d
+ 
+t r a n s i t i o n
+ 
+m a t r i x ( a u t o r e g r e s s i v e
+ 
+c o e f ) :
+
+””” B u i l d
+ 
+t h e
+ 
+t r a n s i t i o n
+ 
+m a t r i x
+ 
+f o r
+ 
+a
+ 
+semi − l o c a l
+ 
+l i n e a r
+ 
+t r e n d
+ 
+model . ”””
+ 
+,
+o u t p u t
+ 
+c o d e
+ 
+=
+
+#
+ 
+C r e a t e
+ 
+t h e
+ 
+m a t r i x
+#
+ 
+( a u t o r e g r e s s i v e
+ 
+l i n e a r
+ 
+t r e n d
+ 
+m a t r i x )
+ 
+where
+ 
+: param
+ 
+s e m i l o c a l
+ 
+l i n e a r
+ 
+t r e n d
+ 
+m a t r i x :
+#
+ 
+( n
+ 
+s a m p l e s )
+ 
+i s
+ 
+l e n g t h
+ 
+o f
+ 
+t h e
+ 
+semi − s p a r s e
+ 
+l i n e a r
+ 
+r e g r e s s i o n
+ 
+m a t r i x ;
+#
+ 
+i ,
+ 
+j
+ 
+=
+ 
+s e m i l o c a l
+ 
+l i n e a r
+ 
+t r e n d
+#
+ 
+C r e a t e
+ 
+t h e
+ 
+c o l u m n s
+
+c o l u m n s
+ 
+=
+ 
+np . a s a r r a y ( c o l u m n s )
+
+i f
+ 
+a u t o
+ 
+c o r r e l a t e d
+ 
+t r e n d
+ 
+m a t r i x :
+column
+ 
+=
+ 
+np . a s a r r a y ( c o l u m n s )
+
+#
+ 
+C r e a t e
+ 
+t h e
+ 
+i n d i c e s
+ 
+f o r
+ 
+t h e
+ 
+c o l u m n s
+
+i
+ 
+=
+ 
+column .
+ 
+min
+ 
+( )
+j
+ 
+=
+ 
+column .
+ 
+max
+ 
+( )
+
+#
+ 
+E n s u r e
+ 
+t h e
+ 
+c o l u m n s
+ 
+h a v e
+ 
+u n i f o r m i t y
+ 
+and
+ 
+t h e
+ 
+a x i s
+ 
+p o s i t i o n
+
+a s s e r t
+ 
+h a s a t t r
+ 
+(
+column ,
+ 
+” s i g m a ” )
+a s s e r t
+ 
+h a s a t t r
+ 
+( a x e s ,
+ 
+” a x i s ” )
+
+#
+ 
+C r e a t e
+ 
+t h e
+ 
+c o l u m n s
+
+i
+ 
+=
+ 
+c o l u m n s . copy ( )
+j
+ 
+=
+ 
+c o l u m n s . copy ( )
+
+#
+ 
+E n s u r e
+ 
+t h e
+ 
+i n d i c e s
+ 
+f o r
+ 
+t h e
+ 
+i n d i c e s
+ 
+f o r
+ 
+t h e
+ 
+c o l u m n s
+
+ax
+ 
+=
+ 
+ColumnSetAxes ( i ,
+ 
+j )
+a x e s . s e t
+ 
+a x e s ( ax )
+
+#
+ 
+C r e a t e
+ 
+t h e
+ 
+c o l u m n s
+
+ax . s e t
+ 
+x l a b e l ( s e l f . d e f a u l t
+ 
+l a b e l )
+ax . s e t
+ 
+y l a b e l ( s e l f . d e f a u l t
+ 
+y l a b e l )
+a x e s . s e t
+ 
+t i t l e ( s e l f .
+ 
+t i t l e )
+a x e s . t e x t ( u ” Subsim ” ]
+
+#
+ 
+C r e a t e
+ 
+t h e
+ 
+column
+ 
+i n d e x
+
+s e l f . g e t
+ 
+i n d e x ( a x i s
+ 
+=
+ 
+columns ,
+ 
+c o l s
+ 
+=
+ 
+c o l s )
+
+#
+ 
+C r e a t e
+ 
+t h e
+ 
+c o l u m n s
+ 
+i f
+ 
+n o t
+ 
+a l r e a d y
+ 
+p r o v i d e d
+ 
+by
+ 
+t h i s
+ 
+f u n c t i o n
+
+i f
+ 
+n o t
+ 
+c o l u m n s :
+
+i f
+ 
+a u t o
+ 
+c o r r e l a t e d
+ 
+t r e n d
+ 
+m a t r i x :
+ax . c o l u m n s
+ 
+=
+ 
+c o l u m n s
+
+e l s e
+ 
+:
+
+i f
+ 
+i
+ 
+<
+ 
+0
+ 
+or
+ 
+j
+ 
+<
+ 
+0
+ 
+or
+ 
+i +1
+ 
+<
+=
+ 
+i
+
+6.2.1
+ 
+Figures
+
+page No: 8 
+===============
+Figure 3. Histogram of the the number of (comment, code) pairs available in our dataset, as well as the number of unique function methods
+for each language.
+
+Figure 4. General CodeSearchNet architecture for all of our baselines. Each language is processed through different encoder mechanisms.
+The query encoder is shared (an NLP encoder), and the purpose of the CodeSearchNet tasks is to retrieve the most relevant code snippets
+subject to the natural language query.
+
+Figure 5. Training and Validation losses for the Neural Bag of Words model in CodeSearchNet.
+
+Figure 6. MRR on validation set for the baseline neural bag of words model in the CodeSearchNet Challenge.
+
+Figure 7. Training and Validation losses for the RNN model in CodeSearchNet.
+
+page No: 9 
+===============
+Figure 8. MRR on validation set for the baseline RNN in the CodeSearchNet Challenge.
+
+Figure 9. Training and Validation Losses on the Baseline Char-RNN Model. This is the cross-entropy loss over 128 predicted character
+sequence.
+
+Figure 10. Training and Validation Perplexity on the Baseline Char-RNN Model. This is the cross-entropy loss over 128 predicted character
+sequence.
 
