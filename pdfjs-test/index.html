@@ -10,22 +10,30 @@
 
     <script>
       // load the PDF file
-      const pdfUrl = "sample1.pdf";
+      const pdfUrl = "sample2.pdf";
       pdfjsLib.getDocument(pdfUrl).promise.then((pdfDoc) => {
         // get the page to be rendered
-        const pageNumber = 6;
+        const pageNumber = 2;
+        let scalingFactor = 2;
         pdfDoc.getPage(pageNumber).then((page) => {
           // define the viewport for the specific area to be rendered
           const viewport = page.getViewport({ scale: 1.0 });
           const region = {
-            x: 317.0137,
-            y: 522.4992000000001,
-            width: 400,
-            height: 228.75900000000007 * 2,
+            x: 134.765,
+            y: 654.247,
+            width: 470,
+            height: 188.84599999999995 * 2,
           };
           viewport.width = region.width;
           viewport.height = region.height;
-          viewport.transform = [2, 0, 0, -2, -region.x * 2, region.y * 2];
+          viewport.transform = [
+            scalingFactor,
+            0,
+            0,
+            -scalingFactor,
+            -region.x * scalingFactor,
+            region.y * scalingFactor,
+          ];
 
           // render the specific area of the page
           const canvas = document.getElementById("pdf-canvas");

@@ -117,7 +117,7 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 
 async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
-    "./sample1.pdf"
+    "./sample2.pdf"
   );
   // arr[2];
   let threshholdDistance = 90;
@@ -147,11 +147,18 @@ async function wrapper() {
   });
   let max = freq[0];
   for (let i = 1; i < freq.length; i++) {
-    if (max.count < freq[i].count) max = freq[i];
+    if (max.count < freq[i].count && freq[i].height > 0) max = freq[i];
   }
-  console.log(max);
+  console.log(freq);
 
-  let regularText = arr[5].filter((item) => item.height == max.height);
+  let regularText = arr[1].filter(
+    (item) =>
+      item.height < max.height + 1 &&
+      item.height > max.height - 1 &&
+      isAlphanumeric(item.str)
+  );
+
+  // let regularText = arr[1].filter((item) => item.height === max.height);
   writeChunksArrayToFile("./chunksWithEOL.json", regularText);
 
   let chunkBeforeImage = regularText.filter((item, index, array) => {
@@ -171,3 +178,9 @@ async function wrapper() {
   writeChunksArrayToFile("./out.json", chunkBeforeImage);
 }
 wrapper();
+
+function isAlphanumeric(str) {
+  return /^[a-zA-Z0-9 :.,;?!%&()*{}\[\]$]+$/.test(str);
+}
+
+// console.log(isAlphanumeric("Figuer 1: 100% coverage. arr[1$*]"));
