@@ -1,0 +1,97 @@
+.nav__cont {
+    position: fixed;
+    width: 4rem;
+    right:0;
+    top:3.8rem;
+    height: 100vh;
+    z-index: 100;
+    background-color: #2e2e2e;
+    overflow:hidden;
+    transition:width .3s ease;
+    cursor:pointer;
+    box-shadow:4px 7px 10px rgba(0,0,0,.4);
+    &:hover {
+      width:18rem;
+    }
+    @media screen and (min-width: 600px) {
+      width: 4rem;
+    }
+  }
+  
+  .nav {
+    list-style-type: none;
+    color:white;
+    padding-left: 2.0rem;
+    &:first-child {
+      padding-top:2rem;
+    }
+  }
+  
+  .nav__items {
+    padding-bottom:1rem;
+    font-family: 'roboto';
+     a {
+      position: relative;
+      display:block;
+      top:-35px;
+      padding-left:25px;
+      padding-right:15px;
+      transition:all .3s ease;
+      margin-left:25px;
+      margin-right:10px;
+      text-decoration: none;
+      color:white;
+      font-family: 'Poppins';
+      font-weight: 70;
+      font-size: 1.05em;
+       &:after {
+         content:'';
+         width: 100%;
+         height: 100%;
+         position: absolute;
+         top:0;
+         left:0;
+         border-radius:2px;
+         background:radial-gradient(circle at 94.02% 88.03%, #54a4ff, transparent 100%);
+         opacity:0;
+         transition:all .5s ease;
+         z-index: -10;
+       }
+    }
+    &:hover a:after {
+      opacity:1;
+    }
+     svg{
+      width:20px;
+      height:20px;
+      position: relative;
+      left:-25px;
+      cursor:pointer;
+      @media screen and (min-width:600px) {
+        width:30px;
+      height:30px;
+  left:-15px;
+      }
+    }
+  }
+  
+  body {
+    height: 100vh;
+    background: radial-gradient(circle at 94.02% 88.03%, #54a4ff, transparent 100%),radial-gradient(circle at 25.99% 27.79%, #ff94fb, transparent 100%),radial-gradient(circle at 50% 50%, #000000, #000000 100%);
+  }
+  
+  h1 {
+    margin-top: 6rem;
+    margin-left:80px;
+    text-align: center;
+    font-family: 'Roboto';
+    font-weight: 100;
+    font-size: 4rem;
+    text-transform:uppercase;
+    color:white;
+    letter-spacing:6px;
+    text-shadow:10px 10px 10px rgba(0,0,0,.3);
+  }
+  
+  
+  
