@@ -4,7 +4,13 @@ const fs = require("fs");
 class Paragraph {
   constructor(title, text) {
     this.title = title;
+    this.noOfSentences = 0;
     this.text = text;
+    this.summaryText = "";
+  }
+
+  setNoOfSentences(noOfSentences) {
+    this.noOfSentences = noOfSentences;
   }
 
   appendText(newtext) {
@@ -161,7 +167,7 @@ async function createJsonObjectFromPdf() {
   let generalTextHeight = heights[generalTextHeightIndex];
 
   let wiggleHeight = heights[generalTextHeightIndex] - 0.3;
-  console.log(wiggleHeight);
+  // console.log(wiggleHeight);
 
   arr.forEach((element) => {
     // if (element.height == titleHeight) console.log(element.str);
@@ -225,14 +231,50 @@ async function createJsonObjectFromPdf() {
     }
   }
 
+  paragraphs.map((element) => {
+    let sentenceNo = noOfSentences(element.text);
+    // console.log(sentenceNo);
+    element.setNoOfSentences(sentenceNo);
+  });
   // Writing JSON object to file
   fs.truncateSync("./preprocessed.json", 0);
   fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
 
+  return paragraphs;
   // console.log(wiggleRoom);
   // console.log(acceptedHeights);
   // console.log("Title index is " + titleHeightIndex);
   // console.log("General Text index is " + generalTextHeightIndex);
 }
 
+function noOfSentences(context) {
+  let noOfSentence = 0;
+  for (var i = 0; i < context.length; i++) {
+    if (context[i] == ".") noOfSentence++;
+  }
+  // console.log(noOfSentence);
+  return noOfSentence;
+}
+
+// noOfSentences("Hello. I'm Jaf. Whatcha doin?");
+
+async function summary() {
+  let paragraphs = await createJsonObjectFromPdf();
+  const textSummarizer = new TextSummarizer();
+  let noOfSentenceInSummary = 0;
+  paragraphs.forEach((element) => {
+    noOfSentenceInSummary = element.noOfSentences / 3;
+    let contextString = element.text;
+
+    // let summary = textSummarizer.summaryText(
+    //   contextString,
+    //   noOfSentenceInSummary
+    // );
+    console.log(summary);
+  });
+
+  // console.log(paragraphs);
+}
+
+summary();
 createJsonObjectFromPdf();

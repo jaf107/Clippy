@@ -10,7 +10,9 @@
   "author": "Kazi Muktadir Ahmed",
   "license": "ISC",
   "dependencies": {
-    "pdfjs-dist": "^3.1.81"
+    "oneai": "^0.7.9",
+    "pdfjs-dist": "^3.1.81",
+    "text-summarizer-ai": "^1.0.1"
   },
   "keywords": []
 }
