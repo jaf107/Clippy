@@ -149,7 +149,7 @@ async function wrapper() {
   for (let i = 1; i < freq.length; i++) {
     if (max.count < freq[i].count && freq[i].height > 0) max = freq[i];
   }
-  console.log(freq);
+  console.log(max);
 
   let regularText = arr[2].filter(
     (item) =>
@@ -164,8 +164,7 @@ async function wrapper() {
   let chunkBeforeImage = regularText.filter((item, index, array) => {
     if (
       index + 1 < array.length &&
-      Math.abs(item.transform[5] - array[index + 1].transform[5]) >=
-        threshholdDistance
+      item.transform[5] - array[index + 1].transform[5] >= threshholdDistance
     ) {
       console.log(
         item.str,
