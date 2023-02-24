@@ -1,1 +1,1873 @@
-[{"str":"model using a hidden state size of","dir":"ltr","width":134.29584800000006,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.112,710.037],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"128","dir":"ltr","width":14.9439,"height":9.9626,"transform":[9.9626,0,0,9.9626,186.778,710.037],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"with two hidden lay-","dir":"ltr","width":82.27115080000004,"height":9.9626,"transform":[9.9626,0,0,9.9626,204.09,710.037],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"ers in the internal RNN cell. Our training takes place using","dir":"ltr","width":236.25309640000015,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,698.082],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"sequences of","dir":"ltr","width":50.918848600000004,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,686.127],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"50","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,103.273,686.127],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"characters, sampled at random from our in-","dir":"ltr","width":170.88847780000003,"height":9.9626,"transform":[9.9626,0,0,9.9626,115.472,686.127],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"put code. Given a sequence from","dir":"ltr","width":134.66446420000005,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,674.1719999999999],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"i","dir":"ltr","width":3.4321157,"height":9.9626,"transform":[9.9626,0,0,9.9626,187.73999999999998,674.1719999999999],"fontName":"g_d0_f7","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"to","dir":"ltr","width":7.7509028,"height":9.9626,"transform":[9.9626,0,0,9.9626,194.13799999999998,674.1719999999999],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"i","dir":"ltr","width":3.4321157,"height":9.9626,"transform":[9.9626,0,0,9.9626,204.855,674.1719999999999],"fontName":"g_d0_f7","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"+ 50","dir":"ltr","width":20.271898480000008,"height":9.9626,"transform":[9.9626,0,0,9.9626,210.85299999999998,674.1719999999999],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":", the model is","dir":"ltr","width":55.23265439999997,"height":9.9626,"transform":[9.9626,0,0,9.9626,231.13,674.1719999999999],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"trained to predict the sequence from","dir":"ltr","width":146.45022000000006,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,662.2169999999999],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"i","dir":"ltr","width":3.4321157,"height":9.9626,"transform":[9.9626,0,0,9.9626,199.623,662.2169999999999],"fontName":"g_d0_f7","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"+ 1","dir":"ltr","width":15.37029927999999,"height":9.9626,"transform":[9.9626,0,0,9.9626,205.69299999999998,662.2169999999999],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"to","dir":"ltr","width":7.7509028,"height":9.9626,"transform":[9.9626,0,0,9.9626,224.123,662.2169999999999],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"i","dir":"ltr","width":3.4321157,"height":9.9626,"transform":[9.9626,0,0,9.9626,234.93599999999998,662.2169999999999],"fontName":"g_d0_f7","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"+ 51","dir":"ltr","width":20.35159927999999,"height":9.9626,"transform":[9.9626,0,0,9.9626,241.00599999999997,662.2169999999999],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":". This","dir":"ltr","width":25.006126000000023,"height":9.9626,"transform":[9.9626,0,0,9.9626,261.354,662.2169999999999],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"means we have a many-to-many sequence model (See Fig-","dir":"ltr","width":236.25309640000015,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,650.2609999999999],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"ure 6.2.1). We use batch size of","dir":"ltr","width":130.20121940000007,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,638.3059999999998],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"50","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,183.36599999999999,638.3059999999998],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"and train for a total of","dir":"ltr","width":89.98220320000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,196.384,638.3059999999998],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"50","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,626.3509999999998],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"epochs.","dir":"ltr","width":30.1567902,"height":9.9626,"transform":[9.9626,0,0,9.9626,62.565,626.3509999999998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"To avoid issues with gradient explosion and stabilize","dir":"ltr","width":224.29797640000018,"height":9.9626,"transform":[9.9626,0,0,9.9626,62.067,613.9029999999998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"training, we make liberal use of gradient-clipping. In par-","dir":"ltr","width":236.25309640000012,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.112,601.9479999999998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"ticular, we clip all gradients to an absolute size of","dir":"ltr","width":197.15985400000005,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.112,589.9919999999997],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"5","dir":"ltr","width":4.9813,"height":9.9626,"transform":[9.9626,0,0,9.9626,249.761,589.9919999999997],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":".","dir":"ltr","width":2.49065,"height":9.9626,"transform":[9.9626,0,0,9.9626,254.742,589.9919999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"We sweep over learning rates and find that a started","dir":"ltr","width":224.29797640000012,"height":9.9626,"transform":[9.9626,0,0,9.9626,62.06699999999998,577.5439999999998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"learning rate of","dir":"ltr","width":67.45676460000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.11199999999998,565.5889999999997],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0","dir":"ltr","width":4.9813,"height":9.9626,"transform":[9.9626,0,0,9.9626,123.35199999999998,565.5889999999997],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":".","dir":"ltr","width":2.76761028,"height":9.9626,"transform":[9.9626,0,0,9.9626,128.33399999999997,565.5889999999997],"fontName":"g_d0_f7","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"002","dir":"ltr","width":14.9439,"height":9.9626,"transform":[9.9626,0,0,9.9626,131.10099999999997,565.5889999999997],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"with an exponentially decaying","dir":"ltr","width":134.53495040000004,"height":9.9626,"transform":[9.9626,0,0,9.9626,151.83199999999997,565.5889999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"schedule appears to perform best as measured by a held-","dir":"ltr","width":236.2530964000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,553.6339999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"out validation set. We use a decay rate of","dir":"ltr","width":170.11139500000004,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,541.6789999999996],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0","dir":"ltr","width":4.9813,"height":9.9626,"transform":[9.9626,0,0,9.9626,223.36599999999996,541.6789999999996],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":".","dir":"ltr","width":2.76761028,"height":9.9626,"transform":[9.9626,0,0,9.9626,228.34699999999995,541.6789999999996],"fontName":"g_d0_f7","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"97","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,231.11499999999995,541.6789999999996],"fontName":"g_d0_f6","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.694,"descent":-0.194,"vertical":false}},{"str":"per epoch.","dir":"ltr","width":42.141797999999994,"height":9.9626,"transform":[9.9626,0,0,9.9626,244.21799999999996,541.6789999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"We also experiment with the use of dropout, but find little","dir":"ltr","width":236.25309640000015,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,529.7229999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"impact on final performance.","dir":"ltr","width":115.09791780000006,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,517.7679999999996],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"3.3. Fine-Tuned Pre-Trained Large Language Mod-","dir":"ltr","width":236.25196620000006,"height":10.9589,"transform":[10.9589,0,0,10.9589,50.111999999999966,496.3639999999996],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"els","dir":"ltr","width":12.1753379,"height":10.9589,"transform":[10.9589,0,0,10.9589,74.76999999999997,484.40799999999956],"fontName":"g_d0_f1","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"Our final approach relies on the use of pre-trained lan-","dir":"ltr","width":224.29797640000007,"height":9.9626,"transform":[9.9626,0,0,9.9626,62.066999999999965,465.98299999999955],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"guage models. We fine tune our code generator using the","dir":"ltr","width":236.25309640000015,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,454.02699999999953],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"small GPT-2 model with 117 million parameters.","dir":"ltr","width":204.67165440000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,442.07199999999955],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"Using","dir":"ltr","width":23.8006514,"height":9.9626,"transform":[9.9626,0,0,9.9626,262.56444500000003,442.07199999999955],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"such a large backbone and continuing to fine tune allows us","dir":"ltr","width":236.25309640000017,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,430.11699999999956],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"to generate synthetic code samples with even higher quality,","dir":"ltr","width":236.25309640000023,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,418.1619999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"treating programming languages as another specific domain","dir":"ltr","width":236.25309640000017,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,406.2069999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"alongside encyclopedia articles, news or books.","dir":"ltr","width":189.12999840000006,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999966,394.2509999999996],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"Figure 1. Decoder-Only Architecture used by GPT-2.","dir":"ltr","width":190.73326080000012,"height":8.9664,"transform":[8.9664,0,0,8.9664,72.871,282],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"The general architecture of the GPT-2 model consists of","dir":"ltr","width":224.2979764000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,62.06699999999999,257.319],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"a sequence-to-sequence predictive task based on the trans-","dir":"ltr","width":236.25309640000017,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,245.364],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"former architecture [9] [1]. However, it consists solely of","dir":"ltr","width":236.25309640000003,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,233.40800000000002],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"the 12-layer decoder-only, as visualized in Figure 1. Each","dir":"ltr","width":236.25309640000012,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,221.453],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"layer has 12 independent attention heads, leading to 144 dis-","dir":"ltr","width":236.2530964000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,209.498],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"tinct attention patterns. By making use of an attention-based","dir":"ltr","width":236.25309640000017,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,197.54299999999998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"framework, the model is more adept at dealing with long-","dir":"ltr","width":236.25309640000006,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,185.58799999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"range dependencies. This is because the attention mecha-","dir":"ltr","width":236.2530964000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,173.63299999999995],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"nism allows the model to focus on the encoding of any of","dir":"ltr","width":236.25309640000015,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,161.67699999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"the input sequence tokens.","dir":"ltr","width":105.04565440000005,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,149.72199999999995],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"CodeSearchNet provides a good starting point as we are","dir":"ltr","width":224.2979764000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,62.06699999999999,104.90999999999995],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"able to train different models on the input code streams. We","dir":"ltr","width":236.25309640000015,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,92.95499999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"trained a simple LSTM model as well as a neural bag of","dir":"ltr","width":236.25309640000012,"height":9.9626,"transform":[9.9626,0,0,9.9626,50.111999999999995,80.99999999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"words model on a combination of all the available (code,","dir":"ltr","width":236.25309640000035,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,710.037],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"documentation) pairs. For details on these simple baselines,","dir":"ltr","width":236.25309640000026,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,698.082],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"please see Appendix Section 6.1.","dir":"ltr","width":131.7055720000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,686.127],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"4.1. Code Generation with Char-RNN","dir":"ltr","width":176.7451392,"height":10.9589,"transform":[10.9589,0,0,10.9589,308.86199999999997,667],"fontName":"g_d0_f1","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"As both of the above baselines focus on understanding","dir":"ltr","width":224.2979764000004,"height":9.9626,"transform":[9.9626,0,0,9.9626,320.81699999999995,649.067],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"and extracting useful embeddings for our overall task, our","dir":"ltr","width":236.25309640000046,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,637.112],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"primary baseline consists of a straight-forward sequence-to-","dir":"ltr","width":236.2530964000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,625.156],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"sequence model. Given that code typically does not consist","dir":"ltr","width":236.2530964000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,613.2009999999999],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"of English words and can instead have quite a varied syntax,","dir":"ltr","width":236.25309640000032,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,601.2459999999999],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"our baseline model is a model which uses character level","dir":"ltr","width":236.25309640000026,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,589.2909999999998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"embedding, so it is character aware [10].","dir":"ltr","width":161.8723248000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,577.3359999999998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"Due to computational constraints, we train only on the","dir":"ltr","width":224.29797640000015,"height":9.9626,"transform":[9.9626,0,0,9.9626,320.81699999999995,565.3809999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"Python subset of the data and only on 10% of the total data","dir":"ltr","width":236.25309640000037,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,553.4249999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"available. For the char-rnn model [10], this corresponds to","dir":"ltr","width":236.25309640000026,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,541.4699999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"around 50MB of raw text, or 78,357,395 characters with","dir":"ltr","width":236.25309640000023,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,529.5149999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"1,618 distinct symbols.","dir":"ltr","width":95.45167060000007,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,517.5599999999996],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"Figure 9 shows the training and","dir":"ltr","width":133.18999940000018,"height":9.9626,"transform":[9.9626,0,0,9.9626,411.92509699999965,517.5599999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"validation losses on the model. The loss is simply a soft-","dir":"ltr","width":236.25309640000012,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,505.6049999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"max loss on the 1,618 characters for a sequence of length","dir":"ltr","width":236.25309640000032,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,493.64999999999964],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"128 (the model is trained on sequences of length 128 by","dir":"ltr","width":236.25309640000023,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,481.6939999999996],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"default). Figure 10 shows the perplexity, or the amount of","dir":"ltr","width":236.2530964000001,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,469.73899999999963],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"meaningful information encoded.","dir":"ltr","width":133.09037340000006,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,457.78399999999965],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"We include a sample generated from the best performing","dir":"ltr","width":224.29797640000024,"height":9.9626,"transform":[9.9626,0,0,9.9626,320.81699999999995,445.82899999999967],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"model for reference (See Section 2 in Appendix). A hyper-","dir":"ltr","width":236.2530964000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,433.8739999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"parameter tuning of learning rate and batch side for a total","dir":"ltr","width":236.2530964000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,421.9189999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"of 20 epochs has final measured performance as shown in","dir":"ltr","width":236.2530964000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,409.9629999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"Table 4.1.","dir":"ltr","width":39.322382200000014,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.86199999999997,398.0079999999997],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"Batch","dir":"ltr","width":24.9065,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,371.992],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"Size","dir":"ltr","width":17.1555972,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,360.03700000000003],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"Starter","dir":"ltr","width":30.4257804,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.70099999999996,377.97],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"Learning","dir":"ltr","width":39.153018000000024,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.70099999999996,366.014],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"Rate","dir":"ltr","width":19.9152374,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.70099999999996,354.059],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"Regularization","dir":"ltr","width":63.0931458,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.80899999999997,371.992],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"Weight","dir":"ltr","width":30.346079600000028,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.80899999999997,360.03700000000003],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"BLEU Score","dir":"ltr","width":53.2301718,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.85699999999997,371.992],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"on Train","dir":"ltr","width":36.63248020000004,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.85699999999997,360.03700000000003],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"BLEU Score","dir":"ltr","width":53.230171799999944,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.0419999999999,371.992],"fontName":"g_d0_f1","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"on Eval","dir":"ltr","width":32.288786600000016,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.0419999999999,360.03700000000003],"fontName":"g_d0_f1","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"64","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,341.706],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.02","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,341.706],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.1","dir":"ltr","width":12.45325,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,341.706],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.022","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,341.706],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.012","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,341.706],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"64","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,329.352],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.02","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,329.352],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.01","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,329.352],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.023","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,329.352],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.019","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,329.352],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"64","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,316.998],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.002","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,316.998],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.1","dir":"ltr","width":12.45325,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,316.998],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.034","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,316.998],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.028","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,316.998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"64","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,304.645],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.002","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,304.645],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.01","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,304.645],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.037","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,304.645],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.012","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,304.645],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"64","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,292.291],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.0002","dir":"ltr","width":27.397150000000003,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,292.291],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.1","dir":"ltr","width":12.45325,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,292.291],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.09","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,292.291],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.073","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,292.291],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"64","dir":"ltr","width":9.9626,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,279.937],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.0002","dir":"ltr","width":27.397150000000003,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,279.937],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.01","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,279.937],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.094","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,279.937],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.014","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,279.937],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"128","dir":"ltr","width":14.9439,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,267.584],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.02","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,267.584],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.1","dir":"ltr","width":12.45325,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,267.584],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.024","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,267.584],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.021","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,267.584],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"128","dir":"ltr","width":14.9439,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,255.23],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.02","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,255.23],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.01","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,255.23],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.021","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,255.23],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.013","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,255.23],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"128","dir":"ltr","width":14.9439,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,242.876],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.002","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,242.876],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.1","dir":"ltr","width":12.45325,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,242.876],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.033","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,242.876],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.029","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,242.876],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"128","dir":"ltr","width":14.9439,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,230.523],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.002","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,230.523],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.01","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,230.523],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.038","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,230.523],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.011","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,230.523],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"128","dir":"ltr","width":14.9439,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,218.169],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.0002","dir":"ltr","width":27.397150000000003,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,218.169],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.1","dir":"ltr","width":12.45325,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,218.169],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.117","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,218.169],"fontName":"g_d0_f1","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"0.093","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,218.169],"fontName":"g_d0_f1","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"128","dir":"ltr","width":14.9439,"height":9.9626,"transform":[9.9626,0,0,9.9626,314.84,205.815],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.0002","dir":"ltr","width":27.397150000000003,"height":9.9626,"transform":[9.9626,0,0,9.9626,351.701,205.815],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.01","dir":"ltr","width":17.43455,"height":9.9626,"transform":[9.9626,0,0,9.9626,402.809,205.815],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.113","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,477.857,205.815],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"0.034","dir":"ltr","width":22.415850000000002,"height":9.9626,"transform":[9.9626,0,0,9.9626,543.042,205.815],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"4.2. Code Generation with GPT-2","dir":"ltr","width":156.0656949000001,"height":10.9589,"transform":[10.9589,0,0,10.9589,308.862,170.664],"fontName":"g_d0_f1","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.69,"descent":-0.209,"vertical":false}},{"str":"We have been working with the publicly available small","dir":"ltr","width":224.2979764,"height":9.9626,"transform":[9.9626,0,0,9.9626,320.817,152.731],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"GPT-2 model with 117 million parameters. We trained us-","dir":"ltr","width":236.25309640000017,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.862,140.77599999999998],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"ing the small GPT-2 model for 100,000 mini-batch itera-","dir":"ltr","width":236.25309640000023,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.862,128.82099999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"tions with a batch size of 2. We have included some sample","dir":"ltr","width":236.25309640000037,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.862,116.86599999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"code that our model generated directly in the report. Qual-","dir":"ltr","width":236.25309640000035,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.862,104.90999999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"itatively, our model generates code which is far more rea-","dir":"ltr","width":236.25309640000006,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.862,92.95499999999997],"fontName":"g_d0_f2","hasEOL":true,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"sonable than our baseline.","dir":"ltr","width":108.19383599999999,"height":9.9626,"transform":[9.9626,0,0,9.9626,308.862,80.99999999999997],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}},{"str":"The generated code is novel,","dir":"ltr","width":120.24858199999991,"height":9.9626,"transform":[9.9626,0,0,9.9626,424.8665143999997,80.99999999999997],"fontName":"g_d0_f2","hasEOL":false,"style":{"fontFamily":"sans-serif","ascent":0.678,"descent":-0.216,"vertical":false}}]
+[
+  {
+    "str": "Table 4: Privacy Topic themes occurring in App Categories",
+    "dir": "ltr",
+    "width": 237.19714560000006,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 187.254, 700.643],
+    "fontName": "g_d0_f3",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.714,
+      "descent": -0.231,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Tools",
+    "dir": "ltr",
+    "width": 19.667646329856005,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 160.93085056, 677.3645112],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Games",
+    "dir": "ltr",
+    "width": 24.720704805888,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 190.51748176, 677.3645112],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Communi-",
+    "dir": "ltr",
+    "width": 39.38885865062401,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 225.15818464, 677.3645112],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Maps",
+    "dir": "ltr",
+    "width": 19.685501660160003,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 284.77352896, 677.3645112],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Enter-",
+    "dir": "ltr",
+    "width": 22.961954770944004,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 329.63588272000004, 677.3645112
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Parenting",
+    "dir": "ltr",
+    "width": 35.53210730496005,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 367.46774, 677.3645112],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Health",
+    "dir": "ltr",
+    "width": 24.568934498304007,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 413.31581696, 677.3645112],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Photo-",
+    "dir": "ltr",
+    "width": 24.577862163456015,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 448.86258864, 677.3645112],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Medical",
+    "dir": "ltr",
+    "width": 28.738154124288023,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 484.02104512000005, 677.3645112
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Auto",
+    "dir": "ltr",
+    "width": 17.962462285824,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 522.67832112, 677.3645112],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "cations",
+    "dir": "ltr",
+    "width": 25.961650262016,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 231.87105920000002, 666.4528540800001
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "&",
+    "dir": "ltr",
+    "width": 6.294003932160001,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 291.46848128, 666.4528540800001
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "tainment",
+    "dir": "ltr",
+    "width": 32.86273542451201,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 324.68536176, 666.4528540800001
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "&",
+    "dir": "ltr",
+    "width": 6.294003932160001,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 422.45317232, 666.4528540800001
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "graphy",
+    "dir": "ltr",
+    "width": 25.899156605952,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 448.20145712, 666.4528540800001
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Navigation",
+    "dir": "ltr",
+    "width": 40.299480496128005,
+    "height": 8.927665152,
+    "transform": [8.927665152, 0, 0, 8.927665152, 274.4662496, 655.54119696],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Fitness",
+    "dir": "ltr",
+    "width": 25.363496696832,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 412.91854064000006, 655.54119696
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Permissions",
+    "dir": "ltr",
+    "width": 43.816980566016,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 73.59079664000001, 644.2332592
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Personal Information",
+    "dir": "ltr",
+    "width": 77.420712198144,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 73.59079664000001, 632.9253214400001
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Privacy Controls",
+    "dir": "ltr",
+    "width": 61.25271060787199,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 73.59079664000001, 621.616388
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Tracking",
+    "dir": "ltr",
+    "width": 32.66632679116801,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 73.59079664000001, 610.3084502400001
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Selling Data",
+    "dir": "ltr",
+    "width": 44.227653163008,
+    "height": 8.927665152,
+    "transform": [
+      8.927665152, 0, 0, 8.927665152, 73.59079664000001, 598.9995168
+    ],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(1)",
+    "dir": "ltr",
+    "width": 9.5133504,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 64.708, 570.423],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "“i really enjoyed this app until i realized it had access to all of",
+    "dir": "ltr",
+    "width": 215.84100994559992,
+    "height": 8.9664,
+    "transform": [8.8408704, 0, 0, 8.9664, 78.207, 570.423],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "my photos , media and storage ! why the heck would a simple",
+    "dir": "ltr",
+    "width": 215.8337112960001,
+    "height": 8.9664,
+    "transform": [8.8857024, 0, 0, 8.9664, 78.207, 559.464],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "permissions before i install anything . i promptly deleted this",
+    "dir": "ltr",
+    "width": 215.83702886400002,
+    "height": 8.9664,
+    "transform": [9.011232, 0, 0, 8.9664, 78.207, 537.546],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(Games)",
+    "dir": "ltr",
+    "width": 30.082272000000007,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 253.185, 515.629],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(2)",
+    "dir": "ltr",
+    "width": 9.5133504,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 64.708, 504.67],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "“why does this app require access to my contacts? purpose? i",
+    "dir": "ltr",
+    "width": 215.83684953600002,
+    "height": 8.9664,
+    "transform": [9.100895999999999, 0, 0, 8.9664, 78.207, 504.67],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "take my privacy very seriously. no one should install this app",
+    "dir": "ltr",
+    "width": 215.83530731519994,
+    "height": 8.9664,
+    "transform": [8.9395008, 0, 0, 8.9664, 78.207, 493.711],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "if you value your privacy.”",
+    "dir": "ltr",
+    "width": 93.28642560000002,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 78.207, 482.752],
+    "fontName": "g_d0_f4",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(Maps & Navigation)",
+    "dir": "ltr",
+    "width": 76.39372800000002,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 173.73399999999998, 482.752],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(3)",
+    "dir": "ltr",
+    "width": 9.5133504,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 64.70799999999998, 471.793],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "“good app, but i hate it when apps request permissions it has",
+    "dir": "ltr",
+    "width": 215.8366074431999,
+    "height": 8.9664,
+    "transform": [9.047097599999999, 0, 0, 8.9664, 78.207, 471.793],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "no business for (in this case, access to my contacts), no thanks”",
+    "dir": "ltr",
+    "width": 216.51345407999997,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 78.207, 460.834],
+    "fontName": "g_d0_f4",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(Auto & Vehicles)",
+    "dir": "ltr",
+    "width": 64.0738944,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 77.938, 449.875],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "The first two reviews focus on whether the data collected is really",
+    "dir": "ltr",
+    "width": 230.52004684800025,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 63.761, 436.998],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "needed for the functionality of the app. In example 1, the disconnect",
+    "dir": "ltr",
+    "width": 240.2473355520001,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 53.798, 426.039],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "app functionality caused this user to uninstall the app, and switch",
+    "dir": "ltr",
+    "width": 240.24923642879997,
+    "height": 8.9664,
+    "transform": [8.9305344, 0, 0, 8.9664, 53.798, 404.122],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "to a more privacy-friendly app. In example 2, the user is asking for",
+    "dir": "ltr",
+    "width": 240.41622666240005,
+    "height": 8.9664,
+    "transform": [8.8229376, 0, 0, 8.9664, 53.798, 393.163],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "the purpose of collecting contacts (presumably because it is not",
+    "dir": "ltr",
+    "width": 240.24912883200014,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 53.798, 382.204],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "clear from the context). The importance of sharing purpose with",
+    "dir": "ltr",
+    "width": 240.24912883199997,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 53.798, 371.245],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "users has been established in the academic literature [",
+    "dir": "ltr",
+    "width": 191.4439376640001,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 53.798, 360.286],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "6",
+    "dir": "ltr",
+    "width": 4.169376000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 245.243, 360.286],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": ",",
+    "dir": "ltr",
+    "width": 1.9331558400000002,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 249.413, 360.286],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "36",
+    "dir": "ltr",
+    "width": 8.338752000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 253.28, 360.286],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": ",",
+    "dir": "ltr",
+    "width": 1.9331558400000002,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 261.619, 360.286],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "73",
+    "dir": "ltr",
+    "width": 8.338752000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 265.486, 360.286],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "], and",
+    "dir": "ltr",
+    "width": 20.219052671999986,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 273.825, 360.286],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "; it is interesting to now",
+    "dir": "ltr",
+    "width": 86.01609189120006,
+    "height": 8.9664,
+    "transform": [8.8050048, 0, 0, 8.9664, 208.359, 349.327],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "see users effectively demanding that. It is important for developers",
+    "dir": "ltr",
+    "width": 240.2512269695999,
+    "height": 8.9664,
+    "transform": [8.8139712, 0, 0, 8.9664, 53.798, 338.368],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "to learn when users have such concerns, as they can be mitigated",
+    "dir": "ltr",
+    "width": 240.2439641856001,
+    "height": 8.9664,
+    "transform": [9.0201984, 0, 0, 8.9664, 53.798, 327.409],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "by providing explanations [",
+    "dir": "ltr",
+    "width": 103.39245504000006,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 53.798, 316.45],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "40",
+    "dir": "ltr",
+    "width": 8.338752000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 157.193, 316.45],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": ",",
+    "dir": "ltr",
+    "width": 2.0120601600000003,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 165.531, 316.45],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "70",
+    "dir": "ltr",
+    "width": 8.338752000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 169.927, 316.45],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "] to address the “purpose” type",
+    "dir": "ltr",
+    "width": 115.77577075200001,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 178.266, 316.45],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "questions. In example 3, users state they feel that data collection",
+    "dir": "ltr",
+    "width": 240.24912883200014,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 53.798, 305.492],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "from some permission requests is “unacceptable” or a “risk”.",
+    "dir": "ltr",
+    "width": 219.7843968000002,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 53.798, 294.533],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Figure 3: Privacy reviews that discuss permissions",
+    "dir": "ltr",
+    "width": 202.44337920000004,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 72.7, 134.566],
+    "fontName": "g_d0_f3",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.714,
+      "descent": -0.231,
+      "vertical": false
+    }
+  },
+  {
+    "str": "We also examined which reviews mention a specific permission,",
+    "dir": "ltr",
+    "width": 231.26979031680008,
+    "height": 8.9664,
+    "transform": [8.8139712, 0, 0, 8.9664, 63.761, 121.699],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "such as microphone, location, etc. To do this we used simple key-",
+    "dir": "ltr",
+    "width": 241.76123149439996,
+    "height": 8.9664,
+    "transform": [9.0829632, 0, 0, 8.9664, 53.798, 110.74],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "word matching such as",
+    "dir": "ltr",
+    "width": 82.65119923200001,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 53.467, 99.781],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "phone, call log, contact, microphone, location,",
+    "dir": "ltr",
+    "width": 156.80529983999998,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 138.217, 99.781],
+    "fontName": "g_d0_f4",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "sms",
+    "dir": "ltr",
+    "width": 13.083950208000001,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 317.955, 570.423],
+    "fontName": "g_d0_f4",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": ", and checked if the word",
+    "dir": "ltr",
+    "width": 88.40673139199993,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 331.039, 570.423],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "permission",
+    "dir": "ltr",
+    "width": 37.43292672000001,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 421.235, 570.423],
+    "fontName": "g_d0_f4",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "appeared somewhere in the",
+    "dir": "ltr",
+    "width": 97.73860185599993,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 460.462, 570.423],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "review. Figure 3 shows the number of privacy reviews that mention",
+    "dir": "ltr",
+    "width": 240.2473355520002,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 317.955, 559.464],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "each permission group as well as the percentage of reviews they",
+    "dir": "ltr",
+    "width": 240.47777203200013,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 317.955, 548.505],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "represent. We see that the location permission is the most discussed",
+    "dir": "ltr",
+    "width": 240.24733555200032,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 317.955, 537.546],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "permission, appearing in over 40,000 reviews (13% of the privacy",
+    "dir": "ltr",
+    "width": 240.4817531136002,
+    "height": 8.9664,
+    "transform": [9.1188288, 0, 0, 8.9664, 317.955, 526.587],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "reviews). Contacts is the second most discussed permission.",
+    "dir": "ltr",
+    "width": 218.69946240000004,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 317.955, 515.629],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Reviews in which users complain that too much personally identi-",
+    "dir": "ltr",
+    "width": 241.7655712320001,
+    "height": 8.9664,
+    "transform": [8.921568, 0, 0, 8.9664, 317.955, 479.754],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "fiable information (PII) is being collected is the second dominant",
+    "dir": "ltr",
+    "width": 240.25114627200008,
+    "height": 8.9664,
+    "transform": [9.1367616, 0, 0, 8.9664, 317.955, 468.795],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "privacy concern, and occurred in eight of our ten categories exam-",
+    "dir": "ltr",
+    "width": 241.75790496000016,
+    "height": 8.9664,
+    "transform": [8.876736, 0, 0, 8.9664, 317.955, 457.837],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "ined herein. While prior work has shown that users are concerned",
+    "dir": "ltr",
+    "width": 240.25074278400012,
+    "height": 8.9664,
+    "transform": [8.8588032, 0, 0, 8.9664, 317.955, 446.878],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "about too much personal information being collected, both in the",
+    "dir": "ltr",
+    "width": 240.24396418560005,
+    "height": 8.9664,
+    "transform": [9.0201984, 0, 0, 8.9664, 317.955, 435.919],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "context of mobile apps [",
+    "dir": "ltr",
+    "width": 90.38722982400004,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 317.955, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "36",
+    "dir": "ltr",
+    "width": 8.338752000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 408.341, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": ",",
+    "dir": "ltr",
+    "width": 2.0120601600000003,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 416.68, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "77",
+    "dir": "ltr",
+    "width": 8.338752000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 421.03, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "] and generally [",
+    "dir": "ltr",
+    "width": 62.11778457599999,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 429.369, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "2",
+    "dir": "ltr",
+    "width": 4.169376000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 491.487, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": ",",
+    "dir": "ltr",
+    "width": 2.0120601600000003,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 495.656, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "11",
+    "dir": "ltr",
+    "width": 8.338752000000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 500.006, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "], unlike ours",
+    "dir": "ltr",
+    "width": 49.853363327999986,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 508.345, 424.96],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "they do not rely on experiences users have using their own devices",
+    "dir": "ltr",
+    "width": 240.24733555200015,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 317.955, 414.001],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "in the wild. Our analysis additionally shows that users warn oth-",
+    "dir": "ltr",
+    "width": 241.75871193599994,
+    "height": 8.9664,
+    "transform": [9.1367616, 0, 0, 8.9664, 317.955, 403.042],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "ers not to download an app explicitly because of PII collection, as",
+    "dir": "ltr",
+    "width": 240.24801699839998,
+    "height": 8.9664,
+    "transform": [9.029164799999998, 0, 0, 8.9664, 317.955, 392.083],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "shown in the following two examples:",
+    "dir": "ltr",
+    "width": 139.59788159999997,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 317.955, 381.124],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(1)",
+    "dir": "ltr",
+    "width": 9.5133504,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 328.865, 367.28000000000003],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(Games)",
+    "dir": "ltr",
+    "width": 30.08227199999998,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 443.24399999999997, 345.362],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(2)",
+    "dir": "ltr",
+    "width": 9.5133504,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 328.86499999999995, 334.404],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "“dont do this!!! youre only giving the app your personal info!",
+    "dir": "ltr",
+    "width": 215.83684953600013,
+    "height": 8.9664,
+    "transform": [9.100895999999999, 0, 0, 8.9664, 342.364, 334.404],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "what you look like, your finger prints, everything! i downloaded",
+    "dir": "ltr",
+    "width": 215.8368495360002,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 342.364, 323.445],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "this app just to warn everyone not to give this app permission to",
+    "dir": "ltr",
+    "width": 215.83684953600024,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 342.364, 312.486],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "anything on your device! ... this is dangerous!”",
+    "dir": "ltr",
+    "width": 157.30616294400002,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 342.364, 301.527],
+    "fontName": "g_d0_f4",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(Entertainment)",
+    "dir": "ltr",
+    "width": 57.212625792000004,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 501.527, 301.527],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Other users indicate their suspicion i.e., there is no good reason",
+    "dir": "ltr",
+    "width": 230.2871087424001,
+    "height": 8.9664,
+    "transform": [8.8677696, 0, 0, 8.9664, 327.918, 287.683],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "for the data collection. These suspicions, which are in essence",
+    "dir": "ltr",
+    "width": 240.249128832,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 317.955, 276.724],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "requests for data collection justification, reflects the same issue we",
+    "dir": "ltr",
+    "width": 240.2454526080003,
+    "height": 8.9664,
+    "transform": [8.831904, 0, 0, 8.9664, 317.955, 265.765],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "saw in the reviews about",
+    "dir": "ltr",
+    "width": 95.16129984000005,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 317.955, 254.806],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "too-many-permissions",
+    "dir": "ltr",
+    "width": 93.92662655999996,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 415.941, 254.806],
+    "fontName": "g_d0_f3",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.714,
+      "descent": -0.231,
+      "vertical": false
+    }
+  },
+  {
+    "str": "different data items. In the first two examples below, the users are",
+    "dir": "ltr",
+    "width": 240.24844738560031,
+    "height": 8.9664,
+    "transform": [8.9484672, 0, 0, 8.9664, 317.955, 243.847],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "clearly quite annoyed. The user in the 3rd example implies that",
+    "dir": "ltr",
+    "width": 240.24912883200017,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 317.955, 232.888],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "they might have uninstalled the app because of this reason.",
+    "dir": "ltr",
+    "width": 216.9958464000002,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 317.955, 221.929],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(1)",
+    "dir": "ltr",
+    "width": 9.5133504,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 328.865, 208.086],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "“why the hell you need access to everything, you are service",
+    "dir": "ltr",
+    "width": 215.83918080000012,
+    "height": 8.9664,
+    "transform": [9.145728, 0, 0, 8.9664, 342.364, 208.086],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "provider or intruder in privacy.”",
+    "dir": "ltr",
+    "width": 111.91860480000007,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 342.364, 197.127],
+    "fontName": "g_d0_f4",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(Auto & Vehicles)",
+    "dir": "ltr",
+    "width": 64.07389440000001,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 456.52299999999997, 197.127],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(2)",
+    "dir": "ltr",
+    "width": 9.5133504,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 328.86499999999995, 186.168],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "“horrific registration process; requiring personal information",
+    "dir": "ltr",
+    "width": 215.83837382400012,
+    "height": 8.9664,
+    "transform": [9.0650304, 0, 0, 8.9664, 342.364, 186.168],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(Maps and Navigation)",
+    "dir": "ltr",
+    "width": 81.07831334400001,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 477.663, 175.209],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(3)",
+    "dir": "ltr",
+    "width": 9.5133504,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 328.865, 164.25],
+    "fontName": "g_d0_f2",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "“why does it need my device ids and the phone numbers of my",
+    "dir": "ltr",
+    "width": 215.83684953600005,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 342.364, 164.25],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "callers. who i communicate with is none of their business. this",
+    "dir": "ltr",
+    "width": 215.8415120640001,
+    "height": 8.9664,
+    "transform": [8.8677696, 0, 0, 8.9664, 342.364, 153.291],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "app appears to be collecting more info than it requires to offer",
+    "dir": "ltr",
+    "width": 215.83783584000017,
+    "height": 8.9664,
+    "transform": [8.876736, 0, 0, 8.9664, 342.364, 142.332],
+    "fontName": "g_d0_f4",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "useful.”",
+    "dir": "ltr",
+    "width": 25.53630720000003,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 342.364, 120.414],
+    "fontName": "g_d0_f4",
+    "hasEOL": false,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.696,
+      "descent": -0.234,
+      "vertical": false
+    }
+  },
+  {
+    "str": "(Health and Fitness)",
+    "dir": "ltr",
+    "width": 73.47068160000003,
+    "height": 8.9664,
+    "transform": [8.9664, 0, 0, 8.9664, 370.14099999999996, 120.414],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "Yet other users express themselves with terms relating to theft",
+    "dir": "ltr",
+    "width": 230.28482231040005,
+    "height": 8.9664,
+    "transform": [9.047097599999999, 0, 0, 8.9664, 327.918, 106.57],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  },
+  {
+    "str": "or harassment, as the following two examples convey. Clearly trust",
+    "dir": "ltr",
+    "width": 240.24733555200007,
+    "height": 8.9664,
+    "transform": [8.787072, 0, 0, 8.9664, 317.955, 95.611],
+    "fontName": "g_d0_f2",
+    "hasEOL": true,
+    "style": {
+      "fontFamily": "sans-serif",
+      "ascent": 0.701,
+      "descent": -0.233,
+      "vertical": false
+    }
+  }
+]
