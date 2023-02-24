@@ -1,5 +1,4 @@
-var request = require('request');   // For meaning cloud summarization
-let  axios = require('axios'); 
+
 var apiKey = 'b93d9d2475ed072f999710c6949f6a65';
 
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
@@ -267,57 +266,49 @@ function noOfSentences(context) {
 
 async function summary() {
   let paragraphs = await createJsonObjectFromPdf();
+  let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-paragraphs.forEach(async(element, index) => {
-    noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
-     let contextString = element.text;
+  paragraphs.forEach(async (element, index) => {
 
-      let summary = await requestSummary (contextString,noOfSentenceInSummary);
-      console.log("Summary holo: "+JSON.stringify(summary));
-
-      paragraphs[index].summaryText = summary;
-
-// Get form data
-
-
-
-  });
-
-
-  let text = 'One month after the United States began what has become a \ntroubled rollout of a national COVID vaccination campaign, the effort is finally \ngathering real steam. Close to a million doses -- over 951,000, to be more exact -- \nmade their way into the arms of Americans in the past 24 hours, the U.S. Centers \nfor Disease Control and Prevention reported Wednesday. That s the largest number \nof shots given in one day since the rollout began and a big jump from the \nprevious day, when just under 340,000 doses were given, CBS News reported. \nThat number is likely to jump quickly after the federal government on Tuesday \ngave states the OK to vaccinate anyone over 65 and said it would release all \nthe doses of vaccine it has available for distribution. Meanwhile, a number \nof states have now opened mass vaccination sites in an effort to get larger \nnumbers of people inoculated, CBS News reported.';
-
-  // let summary = await requestSummary (text,5);
-  // console.log("Summary holo: "+JSON.stringify(summary));
-
-
-  async function requestSummary (contextString, noOfSentences) {
-  let returnVal;
-  const formData = new FormData();
-
-  formData.append( 'key', apiKey);
-  formData.append('txt', contextString);
-  formData.append('sentences',noOfSentences);
-
-  const requestOptions = {
-    method: 'POST',
-    body: formData,
-    redirect: 'follow'
-  };
+    if(element.noOfSentences>50) noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
+    else noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+    let contextString = element.text;
   
-  const response = fetch("https://api.meaningcloud.com/summarization-1.0", requestOptions)
-    .then(response => {
-      return response.json()
-    })
-    .then((res) => res )
-    .catch(error => console.log('error', error));
+    let summary = await requestSummary(contextString, noOfSentenceInSummary);
+    console.log("Summary holo: index "+index+" " + JSON.stringify(summary));
+  
+    paragraphs[index].summaryText = summary;
+  
+    await delay(1000); // Wait for 1 second before making the next request
+  });
+  // fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
+  
+  async function requestSummary(contextString, noOfSentences) {
 
-   return response;
-  }
-// Need to be updated
- //  fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
+      let formData = new FormData();
+    
+      formData.append('key', apiKey);
+      formData.append('txt', contextString);
+      formData.append('sentences', noOfSentences);
+    
+      let requestOptions = {
+        method: 'POST',
+        body: formData,
+        redirect: 'follow'
+      };
+    
+      let response = await fetch("https://api.meaningcloud.com/summarization-1.0", requestOptions);
+      let summary = await response.json();
+    
+      return summary;
+    }
+    
+
 }
 
 
 summary();
 
 createJsonObjectFromPdf();
+
+
