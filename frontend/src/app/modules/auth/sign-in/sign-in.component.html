@@ -20,29 +20,60 @@
         <div class="col-lg-6 mb-5 mt-5 mb-lg-0">
           <div class="card" style="border-radius: 25px; padding: 2%">
             <div class="card-body py-5 px-md-5">
-              <form>
+              <form
+                *ngIf="!isLoggedIn"
+                name="form"
+                (ngSubmit)="f.form.valid && onSubmit()"
+                #f="ngForm"
+                novalidate
+              >
                 <!-- Email input -->
                 <div class="form-outline mb-4">
                   <!-- <label class="form-label" for="form3Example3">Email address</label> -->
                   <input
-                    type="email"
+                    type="text"
+                    placeholder="Username"
                     id="form3Example3"
                     class="form-control"
-                    placeholder="Email Address"
+                    name="username"
+                    [(ngModel)]="form.username"
+                    required
+                    #username="ngModel"
                   />
                 </div>
-
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="username.errors && f.submitted"
+                >
+                  Username is required!
+                </div>
                 <!-- Password input -->
                 <div class="form-outline mb-4">
                   <!-- <label class="form-label" for="form3Example4">Password</label> -->
                   <input
                     type="password"
-                    id="form3Example4"
+                    name="password"
+                    [(ngModel)]="form.password"
+                    required
+                    minlength="6"
+                    #password="ngModel"
                     class="form-control"
                     placeholder="Password"
                   />
                 </div>
-
+                <div
+                  class="alert alert-danger"
+                  role="alert"
+                  *ngIf="password.errors && f.submitted"
+                >
+                  <div *ngIf="password.errors['required']">
+                    Password is required
+                  </div>
+                  <div *ngIf="password.errors['minlength']">
+                    Password must be at least 6 characters
+                  </div>
+                </div>
                 <!-- Submit button -->
                 <button
                   type="submit"
