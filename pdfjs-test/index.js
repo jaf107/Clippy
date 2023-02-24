@@ -1,9 +1,8 @@
-
-var apiKey = 'b93d9d2475ed072f999710c6949f6a65';
+var apiKey = "b93d9d2475ed072f999710c6949f6a65";
 
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const fs = require("fs");
-var endpoint = 'https://api.meaningcloud.com/summarization-1.0';
+var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 
 class Paragraph {
   constructor(title, text) {
@@ -122,8 +121,8 @@ function writeToFile(filePath, content, pageNo) {
   fs.appendFileSync(filePath, data);
 }
 
-async function createJsonObjectFromPdf() {
-  let arr = await getPdfTextContent("./sample4.pdf");
+async function createJsonObjectFromPdf(src) {
+  let arr = await getPdfTextContent(src);
 
   heights = [];
   arr.forEach((element) => {
@@ -245,7 +244,6 @@ async function createJsonObjectFromPdf() {
   fs.truncateSync("./preprocessed.json", 0);
   fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
 
-  
   // console.log(paragraphs);
   return paragraphs;
 
@@ -257,7 +255,8 @@ async function createJsonObjectFromPdf() {
 function noOfSentences(context) {
   let noOfSentence = 0;
   for (var i = 0; i < context.length; i++) {
-    if (context[i] == ".") noOfSentence++;
+    if (context[i] == "." || context[i] == "?" || context[i] == "!")
+      noOfSentence++;
   }
   // console.log(noOfSentence);
   return noOfSentence;
@@ -266,14 +265,14 @@ function noOfSentences(context) {
 // noOfSentences("Hello. I'm kauwa. Whatcha doin?");
 
 async function summary() {
-  let paragraphs = await createJsonObjectFromPdf();
+  let paragraphs = await createJsonObjectFromPdf("./sample4.pdf");
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   let apiKey = "b93d9d2475ed072f999710c6949f6a65";
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
 
-    if(element.noOfSentences > 50) {
+    if (element.noOfSentences > 50) {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
     } else {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
@@ -284,7 +283,12 @@ async function summary() {
 
     while (retryCount < 3) {
       try {
-        let summary = await requestSummaryWithRetry(contextString, noOfSentenceInSummary, apiKey, retryCount);
+        let summary = await requestSummaryWithRetry(
+          contextString,
+          noOfSentenceInSummary,
+          apiKey,
+          retryCount
+        );
         console.log(`Summary holo: index ${i} ${JSON.stringify(summary)}`);
 
         paragraphs[i].summaryText = summary;
@@ -299,33 +303,37 @@ async function summary() {
 
   fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
 
-  async function requestSummaryWithRetry(contextString, noOfSentences, apiKey, retryCount) {
+  async function requestSummaryWithRetry(
+    contextString,
+    noOfSentences,
+    apiKey,
+    retryCount
+  ) {
     let formData = new FormData();
-    formData.append('key', apiKey);
-    formData.append('txt', contextString);
-    formData.append('sentences', noOfSentences);
-    formData.append('retry', retryCount); // Add retry count to formData
+    formData.append("key", apiKey);
+    formData.append("txt", contextString);
+    formData.append("sentences", noOfSentences);
+    formData.append("retry", retryCount); // Add retry count to formData
 
     let requestOptions = {
-      method: 'POST',
+      method: "POST",
       body: formData,
-      redirect: 'follow'
+      redirect: "follow",
     };
 
-    let response = await fetch("https://api.meaningcloud.com/summarization-1.0", requestOptions);
+    let response = await fetch(
+      "https://api.meaningcloud.com/summarization-1.0",
+      requestOptions
+    );
 
     if (response.status !== 200) {
       throw new Error(`Request failed with status ${response.status}`);
     }
 
-    let {summary} = await response.json();
+    let { summary } = await response.json();
 
     return summary;
   }
 }
 
 summary();
-
-createJsonObjectFromPdf();
-
-
