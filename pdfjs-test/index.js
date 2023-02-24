@@ -2,6 +2,7 @@
 var apiKey = 'b93d9d2475ed072f999710c6949f6a65';
 
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
+const {OneAI} = require("oneai");
 const fs = require("fs");
 var endpoint = 'https://api.meaningcloud.com/summarization-1.0';
 
@@ -264,7 +265,7 @@ function noOfSentences(context) {
 
 // noOfSentences("Hello. I'm kauwa. Whatcha doin?");
 
-async function summary() {
+async function ExtractiveSummary() {
   let paragraphs = await createJsonObjectFromPdf();
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   let apiKey = "b93d9d2475ed072f999710c6949f6a65";
@@ -291,7 +292,7 @@ async function summary() {
       } catch (error) {
         console.log(`Error: index ${i} ${error}`);
         retryCount++;
-        await delay(1000); // Wait for 5 seconds before making the next request
+        await delay(1000); // Wait for 1 second before making the next request
       }
     }
   }
@@ -323,8 +324,83 @@ async function summary() {
   }
 }
 
-summary();
 
-createJsonObjectFromPdf();
+
+async function AbstractiveSummary () {
+  let paragraphs = await createJsonObjectFromPdf();
+  let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  let absApiKey = "453265e9-a392-4e2b-aacc-ecc527a3f41f";
+
+  
+
+  for (let i = 0; i < paragraphs.length; i++) {
+    let element = paragraphs[i];
+    let contextString = element.text;
+    let retryCount = 0;
+
+    if(element.noOfSentences > 50) {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
+    } else {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+    }
+
+    while (retryCount < 3) {
+      try {
+        let summary = await requestAbsSummaryWithRetry(contextString, absApiKey, retryCount, noOfSentenceInSummary);
+        console.log(`Abstractive Summary holo: index ${i} ${JSON.stringify(summary)}`);
+
+        paragraphs[i].summaryText = summary;
+        break; // Exit the retry loop if request succeeds
+      } catch (error) {
+        console.log(`Error: index ${i} ${error}`);
+        retryCount++;
+        await delay(1000); // Wait for 1 second before making the next request
+      }
+    }
+  }
+
+   fs.writeFileSync("./preprocessedAbs.json", JSON.stringify(paragraphs));
+
+  async function requestAbsSummaryWithRetry(contextString, absApiKey, retryCount, noOfSentenceInSummary) {
+
+    const oneai = new OneAI(absApiKey, {
+      multilingual: true
+  });
+
+  const pipeline = new oneai.Pipeline(
+    oneai.skills.summarize({ min_length: noOfSentenceInSummary }),
+  );
+  
+  // let Abssummary = pipeline
+  //     .run(contextString)
+  //     .then((output) => {//console.log("output holo: "+JSON.stringify(output))
+  //     return output;})
+  //     .catch((error) => console.error(error));
+
+  //     console.log("Testing Summ: "+JSON.stringify(Abssummary))
+   
+  async function absTesting () {
+    
+    let demo = await pipeline
+    .run(contextString)
+    
+    console.log("Testing  :"+ JSON.stringify(demo.summary.text))
+
+    return demo.summary.text;
+     }
+
+     return await absTesting();
+    
+
+  //  return {pipeline};
+
+  }
+}
+
+ ExtractiveSummary();
+
+AbstractiveSummary();
+
+// createJsonObjectFromPdf();
 
 
