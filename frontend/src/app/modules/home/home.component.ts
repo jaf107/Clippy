@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { pdfs } from 'src/app/interfaces/file';
 import { PdfShareService } from '../shared/pdf-share.service';
+
 
 @Component({
   selector: 'app-home',
@@ -15,6 +17,8 @@ export class HomeComponent {
   private file: File | null;
   private url: any;
 
+  visitedFiles = [];
+
   openFileDialog(){
     document.querySelector('input').click();
   }
@@ -22,7 +26,10 @@ export class HomeComponent {
   handle(e){
     console.log('change input file');
     this.file = e.target.files[0];
-    console.log('size', this.file.size);
+    console.log('size', this.file.name);
+
+    this.visitedFiles.push({name:this.file.name, lastVisited: new Date()});
+    console.log(this.visitedFiles);
 
     if(this.file.type != 'application/pdf'){
       console.log('Not supported file type!');
@@ -31,8 +38,6 @@ export class HomeComponent {
 
     const reader = new FileReader();
     reader.onload = () => {
-      // this.url = new Uint8Array(reader.result as ArrayBuffer);
-      // this.url = new Uint8Array(e.target.files[0].arrayBuffer());
       this.url = reader.result;
       this.pdfShareService.sendFile(this.url);
 

@@ -34,13 +34,13 @@
   </div>
   <div class="history">
     <h3 class="mb-5" style="color: white">History</h3>
-    <div class="list">
+    <div class="list" *ngFor="let visited of visitedFiles">
         <div class="row gx-5 history-files d-flex">
           <div class="col-9">
-            <h5>Automatic Text Summarization Methods: A Comprehensive Review</h5>
+            <h5>{{visited.name}}</h5>
           </div>
           <div class="col-3">
-            <h5>11 Jan, 03:03 PM</h5>
+            <h5>{{visited.lastVisited}}</h5>
           </div>
         </div>
         <hr />
