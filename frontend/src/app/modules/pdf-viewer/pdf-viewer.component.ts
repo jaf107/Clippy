@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, OnInit} from '@angular/core';
 import { NgxExtendedPdfViewerService, pdfDefaultOptions, TextLayerRenderedEvent } from 'ngx-extended-pdf-viewer';
 import { PdfShareService } from '../shared/pdf-share.service';
 
@@ -7,13 +7,19 @@ import { PdfShareService } from '../shared/pdf-share.service';
   templateUrl: './pdf-viewer.component.html',
   styleUrls: ['./pdf-viewer.component.css']
 })
-export class PdfViewerComponent {
+export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   pdfPath: any;
 
   ngOnInit(){
-    // let pdfPath = this.pdfShareService.getFile();
-    this.pdfPath = "./assets/SCORE_intro.pdf";
+    
+    this.pdfPath = this.pdfShareService.getFile();
+    console.log(this.pdfPath);
+    // this.pdfPath = "./assets/SCORE_intro.pdf";
+  }
+
+  ngAfterViewInit(){
+    console.log("View is initialized " + this.pdfPath);
   }
 
   constructor(private pdfService: NgxExtendedPdfViewerService, public pdfShareService: PdfShareService) {
@@ -28,6 +34,19 @@ export class PdfViewerComponent {
 
     
     }
+
+    loaded(){
+      console.log("Loaded " + this.pdfPath);
+    }
+
+    failed(){
+      console.log("Failed " + this.pdfPath);
+    }
+
+    starts(){
+      console.log("Started " + this.pdfPath);
+    }
+
 
 
   private alreadyRendered: Array<HTMLSpanElement> = [];

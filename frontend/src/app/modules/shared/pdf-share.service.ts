@@ -9,12 +9,12 @@ export class PdfShareService {
 
   public file: any;
 
-  sendFile(uploadedFile: File){
+  sendFile(uploadedFile: any){
     this.file = uploadedFile;
-    console.log(uploadedFile.size);
   }
 
-  getFile():File{
+  getFile():any{
+    console.log(this.file);
     return this.file;
   }
 }
