@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 <ngx-extended-pdf-viewer
-     [src]=""
+     [src]=pdfPath
      [textLayer]="true"
      (textLayerRendered)=highlightWords($event);
      [page]="9"

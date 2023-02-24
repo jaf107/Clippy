@@ -1,8 +1,8 @@
 <app-navbar></app-navbar>
-<app-sidebar></app-sidebar>
 <div class="container-fluid">
   <div class="select-paper">
-    <button class="btn upload align-items-center">
+    <button class="btn upload align-items-center" (click)="openFileDialog()">
+      <input type="file" style="display:none" (change)="handle($event)" accept="application/pdf">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="15"

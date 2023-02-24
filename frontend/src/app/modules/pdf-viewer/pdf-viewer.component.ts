@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NgxExtendedPdfViewerService, pdfDefaultOptions, TextLayerRenderedEvent } from 'ngx-extended-pdf-viewer';
+import { PdfShareService } from '../shared/pdf-share.service';
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -7,6 +8,28 @@ import { NgxExtendedPdfViewerService, pdfDefaultOptions, TextLayerRenderedEvent 
   styleUrls: ['./pdf-viewer.component.css']
 })
 export class PdfViewerComponent {
+
+  pdfPath: any;
+
+  ngOnInit(){
+    // let pdfPath = this.pdfShareService.getFile();
+    this.pdfPath = "./assets/SCORE_intro.pdf";
+  }
+
+  constructor(private pdfService: NgxExtendedPdfViewerService, public pdfShareService: PdfShareService) {
+    /* More likely than not you don't need to tweak the pdfDefaultOptions.
+       They are a collecton of less frequently used options.
+       To illustrate how they're used, here are two example settings: */
+    pdfDefaultOptions.doubleTapZoomFactor = '150%'; // The default value is '200%'
+    pdfDefaultOptions.maxCanvasPixels = 4096 * 4096 * 5; // The default value is 4096 * 4096 pixels,
+    // but most devices support much higher resolutions.
+    // Increasing this setting allows your users to use higher zoom factors,
+    // trading image quality for performance.
+
+    
+    }
+
+
   private alreadyRendered: Array<HTMLSpanElement> = [];
 
   private _showBoxes = false;
@@ -92,16 +115,4 @@ export class PdfViewerComponent {
     }
   }
 
-  constructor(private pdfService: NgxExtendedPdfViewerService) {
-    /* More likely than not you don't need to tweak the pdfDefaultOptions.
-       They are a collecton of less frequently used options.
-       To illustrate how they're used, here are two example settings: */
-    pdfDefaultOptions.doubleTapZoomFactor = '150%'; // The default value is '200%'
-    pdfDefaultOptions.maxCanvasPixels = 4096 * 4096 * 5; // The default value is 4096 * 4096 pixels,
-    // but most devices support much higher resolutions.
-    // Increasing this setting allows your users to use higher zoom factors,
-    // trading image quality for performance.
-
-    
-    }
 }
