@@ -137,6 +137,7 @@ async function wrapper() {
   }
   console.log(max);
 
+  // Filter page chunk for regular text chunks
   let regularText = arr[8].filter(
     (item) =>
       item.height < max.height + 1 &&
@@ -145,17 +146,19 @@ async function wrapper() {
   );
 
   // let regularText = arr[1].filter((item) => item.height === max.height);
+  writeChunksArrayToFile("./chunks.json", arr[8]);
   writeChunksArrayToFile("./chunksWithEOL.json", regularText);
 
+  // Filter the starting chunk of the image
   let chunkBeforeImage = regularText.filter((item, index, array) => {
     if (
       index + 1 < array.length &&
       item.transform[5] - array[index + 1].transform[5] >= threshholdDistance
     ) {
       console.log(
-        item.str,
-        array[index + 1].str,
-        item.transform[5] - array[index + 1].transform[5]
+        item.str, // start chuk
+        array[index + 1].str, // end chunk
+        item.transform[5] - array[index + 1].transform[5] // height of the image
       );
       return true;
     } else return false;
