@@ -117,7 +117,7 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 
 async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
-    "./sample7.pdf"
+    "./sample4.pdf"
   );
   // arr[2];
   let threshholdDistance = 90;
@@ -138,7 +138,7 @@ async function wrapper() {
   console.log(max);
 
   // Filter page chunk for regular text chunks
-  let regularText = arr[8].filter(
+  let regularText = arr[3].filter(
     (item) =>
       item.height < max.height + 1 &&
       item.height > max.height - 1 &&
@@ -146,7 +146,7 @@ async function wrapper() {
   );
 
   // let regularText = arr[1].filter((item) => item.height === max.height);
-  writeChunksArrayToFile("./chunks.json", arr[8]);
+  writeChunksArrayToFile("./chunks.json", arr);
   writeChunksArrayToFile("./chunksWithEOL.json", regularText);
 
   // Filter the starting chunk of the image

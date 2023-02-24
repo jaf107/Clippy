@@ -1,17 +1,1 @@
-[
-  {
-    "str": "from some permission requests is “unacceptable” or a “risk”.",
-    "dir": "ltr",
-    "width": 219.7843968000002,
-    "height": 8.9664,
-    "transform": [8.9664, 0, 0, 8.9664, 53.798, 294.533],
-    "fontName": "g_d0_f2",
-    "hasEOL": false,
-    "style": {
-      "fontFamily": "sans-serif",
-      "ascent": 0.701,
-      "descent": -0.233,
-      "vertical": false
-    }
-  }
-]
+[{"str":"Table 4: Data Sets for Source Code Clustering","dir":"ltr","width":184.32546299999996,"height":9.963,"transform":[9.963,0,0,9.963,346.5919744,442.9446567000002],"fontName":"g_d0_f3","hasEOL":true,"style":{"fontFamily":"serif","ascent":0.701,"descent":-0.208,"vertical":false}}]
