@@ -217,6 +217,7 @@ async function createJsonObjectFromPdf() {
       }
       // console.log(titleString);
       i = titleIterator;
+      i--;
       if (i + 1 < maxLimit) i++;
       let genText = "";
       while (i < maxLimit && arr[i].height != titleHeight) {
