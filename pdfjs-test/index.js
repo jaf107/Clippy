@@ -267,45 +267,61 @@ function noOfSentences(context) {
 async function summary() {
   let paragraphs = await createJsonObjectFromPdf();
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  let apiKey = "b93d9d2475ed072f999710c6949f6a65";
 
-  paragraphs.forEach(async (element, index) => {
+  for (let i = 0; i < paragraphs.length; i++) {
+    let element = paragraphs[i];
 
-    if(element.noOfSentences>50) noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
-    else noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
-    let contextString = element.text;
-  
-    let summary = await requestSummary(contextString, noOfSentenceInSummary);
-    console.log("Summary holo: index "+index+" " + JSON.stringify(summary));
-  
-    paragraphs[index].summaryText = summary;
-  
-    await delay(1000); // Wait for 1 second before making the next request
-  });
-  // fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
-  
-  async function requestSummary(contextString, noOfSentences) {
-
-      let formData = new FormData();
-    
-      formData.append('key', apiKey);
-      formData.append('txt', contextString);
-      formData.append('sentences', noOfSentences);
-    
-      let requestOptions = {
-        method: 'POST',
-        body: formData,
-        redirect: 'follow'
-      };
-    
-      let response = await fetch("https://api.meaningcloud.com/summarization-1.0", requestOptions);
-      let summary = await response.json();
-    
-      return summary;
+    if(element.noOfSentences > 50) {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
+    } else {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
     }
-    
 
+    let contextString = element.text;
+    let retryCount = 0;
+
+    while (retryCount < 3) {
+      try {
+        let summary = await requestSummaryWithRetry(contextString, noOfSentenceInSummary, apiKey, retryCount);
+        console.log(`Summary holo: index ${i} ${JSON.stringify(summary)}`);
+
+        paragraphs[i].summaryText = summary;
+        break; // Exit the retry loop if request succeeds
+      } catch (error) {
+        console.log(`Error: index ${i} ${error}`);
+        retryCount++;
+        await delay(1000); // Wait for 5 seconds before making the next request
+      }
+    }
+  }
+
+  fs.writeFileSync("./preprocessed.json", JSON.stringify(paragraphs));
+
+  async function requestSummaryWithRetry(contextString, noOfSentences, apiKey, retryCount) {
+    let formData = new FormData();
+    formData.append('key', apiKey);
+    formData.append('txt', contextString);
+    formData.append('sentences', noOfSentences);
+    formData.append('retry', retryCount); // Add retry count to formData
+
+    let requestOptions = {
+      method: 'POST',
+      body: formData,
+      redirect: 'follow'
+    };
+
+    let response = await fetch("https://api.meaningcloud.com/summarization-1.0", requestOptions);
+
+    if (response.status !== 200) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+
+    let {summary} = await response.json();
+
+    return summary;
+  }
 }
-
 
 summary();
 
