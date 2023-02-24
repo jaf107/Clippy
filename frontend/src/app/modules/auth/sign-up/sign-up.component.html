@@ -79,8 +79,16 @@
                       Register
                     </button>
                   </div>
+                  <div
+                    class="alert alert-warning"
+                    *ngIf="f.submitted && isSignUpFailed"
+                  >
+                    Signup failed!<br />{{ errorMessage }}
+                  </div>
                 </form>
-
+                <div class="alert alert-success" *ngIf="isSuccessful">
+                  Your registration is successful!
+                </div>
                 <h6 class="mt-4 mb-3 signin">
                   Already have an account?<span routerLink="/login"
                     ><b> Sign In</b></span

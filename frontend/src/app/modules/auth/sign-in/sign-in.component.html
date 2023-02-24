@@ -81,8 +81,19 @@
                 >
                   Sign In
                 </button>
+                <div class="form-group">
+                  <div
+                    class="alert alert-danger"
+                    role="alert"
+                    *ngIf="f.submitted && isLoginFailed"
+                  >
+                    Login failed: {{ errorMessage }}
+                  </div>
+                </div>
               </form>
-
+              <div class="alert alert-success" *ngIf="isLoggedIn">
+                Logged in as {{ roles }}.
+              </div>
               <h6 class="mt-4 mb-0 signup">
                 Don't have an account?<span routerLink="/signup"
                   ><b> Sign Up</b></span
