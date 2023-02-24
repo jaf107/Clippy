@@ -1,4 +1,5 @@
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
+const pdfLinkService = require("pdfjs-dist/lib/web/pdf_link_service");
 const fs = require("fs");
 
 /**
@@ -8,7 +9,7 @@ const fs = require("fs");
 async function getPdfTextContent(src) {
   const doc = await pdfjs.getDocument(src).promise;
   const totalPageCount = doc.numPages;
-
+  doc.getDestination;
   // clear the text file //
   fs.truncateSync("./output.txt", 0);
   fs.truncateSync("./object.txt", 0);

@@ -9,7 +9,7 @@
     <canvas id="pdf-canvas"></canvas>
     <script>
       pdfjsLib.getDocument("sample3.pdf").promise.then(function (pdf) {
-        var pageIndex = 0; // the index of the page you want to extract the coordinates from
+        var pageIndex = 3; // the index of the page you want to extract the coordinates from
         pdf.getPage(pageIndex + 1).then(function (page) {
           page.getAnnotations().then(function (annotations) {
             // console.log("annotations:", annotations);
