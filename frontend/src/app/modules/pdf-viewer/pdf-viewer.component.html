@@ -1,18 +1,21 @@
 <app-navbar></app-navbar>
-<ngx-extended-pdf-viewer *ngIf="pdfPath"
-     [(src)]="pdfPath"
-     [textLayer]="true"
-     (textLayerRendered)=highlightWords($event);
-     [page]="1"
-     [useBrowserLocale]="true"
-     [showHandToolButton]="true"
-     [showEditor]="true"
-     [handTool]="true"
-     theme="dark"
-     backgroundColor='#404040'
-     (pdfLoaded)="loaded()"
-     (pdfLoadingFailed)="failed()"
-     (pdfLoadingStarts)="starts()"
-     >
-  </ngx-extended-pdf-viewer>
-  <app-sidebar></app-sidebar>
+<div class="container-fluid">
+   <div class="left">
+      <ngx-extended-pdf-viewer *ngIf="pdfPath"    
+      [(src)]="pdfPath" [textLayer]="true"
+      (textLayerRendered)=highlightWords($event); 
+      [page]="1" [useBrowserLocale]="true" 
+      [showHandToolButton]="true"
+      [showEditor]="true" 
+      [handTool]="true" 
+      theme="dark" 
+      backgroundColor='#404040' 
+      (pdfLoaded)="loaded()"
+      (pdfLoadingFailed)="failed()" 
+      (pdfLoadingStarts)="starts()">
+      </ngx-extended-pdf-viewer>
+   </div>
+   <div class="right">
+      <app-sidebar></app-sidebar>
+   </div>
+</div>
