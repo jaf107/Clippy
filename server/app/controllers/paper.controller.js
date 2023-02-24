@@ -13,6 +13,7 @@ exports.uploadPaper = async (req, res) => {
     })
     .catch((err) => console.log(err));
   var paper = {
+    user_id: req.userId,
     public_id: result.public_id,
     url: result.secure_url,
   };
@@ -25,16 +26,18 @@ exports.uploadPaperByUrl = async (req, res) => {
     .upload(req.body.url, {
       folder: "papers",
     })
-    .then((res) => console.log(res))
+    .then((res) => {
+      console.log(res);
+    })
     .catch((err) => console.log(err));
-  var paper = {
-    public_id: result.public_id,
-    url: result.secure_url,
-  };
-  await Paper.create(paper);
-  res.status(200).send({
-    username: user.username,
-    email: user.email,
-    roles: user.roles,
-  });
+
+  if (result) {
+    var paper = {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+    await Paper.create(paper);
+  }
+
+  res.status(200).send("Paper Added");
 };
