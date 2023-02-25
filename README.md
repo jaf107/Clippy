@@ -12,7 +12,7 @@ Will update the readme for any further progress.<br>
 🖼 Extract embedded images from pdf ✅ <br>
 📊 Extract tables as JSON from pdf (ongoing) 🔃 <br>
 📈 Extarct Chart data as JSON from pdf (ongoing) 🔃 <br>
-🌐 Render pdf using HTML canvas in the browser (Ongoing) 🔃 <br>
+🌐 Render pdf using HTML canvas in the browser (Ongoing) ✅ <br>
 
 ### To do
 
