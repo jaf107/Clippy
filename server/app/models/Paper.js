@@ -2,6 +2,9 @@
 const mongoose = require("mongoose");
 // globals
 const paperSchema = new mongoose.Schema({
+  paper_id: {
+    type: String,
+  },
   user_id: {
     type: String,
     ref: "User",
@@ -10,11 +13,11 @@ const paperSchema = new mongoose.Schema({
   public_id: {
     type: String,
   },
-  knowlegde_graph : {
-    edge_list : []
+  knowlegde_graph: {
+    edge_list: [],
   },
-  abstract : {
-    type : String
+  abstract: {
+    type: String,
   },
   url: {
     type: String,
