@@ -466,12 +466,16 @@ async function AbstractiveSummary(src) {
 
 async function createChunkForHighlighting() {
   let paragraphs = require("./preprocessed.json");
-  let { textChunkArray: originalArr } = await getPdfTextContent(src);
+  let { textChunkArray: originalArr } = await getPdfTextContent(
+    "./sample4.pdf"
+  );
 
   let summaryArray = [];
   paragraphs.forEach((element) => {
-    let summarySentencesArr = breakTextChunkIntoSentence(element.summaryText);
-    summaryArray.push(summarySentencesArr);
+    if (element.title.toLowerCase().localeCompare("references")) {
+      let summarySentencesArr = breakTextChunkIntoSentence(element.summaryText);
+      summaryArray.push(summarySentencesArr);
+    }
   });
   fs.truncateSync("./sentences.json", 0);
   fs.writeFileSync("./sentences.json", JSON.stringify(summaryArray));
@@ -490,9 +494,10 @@ async function createChunkForHighlighting() {
   fs.writeFileSync("./test.json", JSON.stringify(chunkSentencesArr));
 
   let highlightsSegments = [];
-  chunkSentencesArr.map((page, pageIndex) => {
-    for (let i = 0; i < page.length; i++) {}
-  });
+  for (let i = 0; i < summaryArray.length; i++) {
+    let summary = summaryArray[i];
+    for (let j = 0; j < summary.length; j++) {}
+  }
 
   // originalArr.forEach((element, index) => {
   //   let chunkString = element.str.trim().split(".");
@@ -546,9 +551,9 @@ async function objectForIndex(index) {
 
 // objectForIndex(1130);
 // createChunkForHighlighting();
-const src = "./sample4.pdf";
+// const src = "./sample4.pdf";
 
-createJsonObjectFromPdf(src);
+// createJsonObjectFromPdf(src);
 function breakTextChunkIntoSentence(textChunk) {
   let sentences = textChunk
     .split(/[.?!]/g)
