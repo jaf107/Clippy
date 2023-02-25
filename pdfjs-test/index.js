@@ -5,6 +5,12 @@ const { OneAI } = require("oneai");
 const fs = require("fs");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 
+class Title {
+  constructor(titleText, titleIndex) {
+    (this.titleText = titleText), (this.titleIndex = titleIndex);
+  }
+}
+
 class Paragraph {
   constructor(title, text) {
     this.title = title;
@@ -46,22 +52,6 @@ async function getPdfTextContent(src) {
     writeUniqueHeights(heights, textContent);
   }
 
-  // heights.sort();
-
-  // console.log(sortedHeights);
-  /* sortedHeights.forEach((element) => {
-    fs.appendFileSync(
-      "./heights.txt",
-      JSON.stringify(element) + "\n",
-      (err) => {
-        if (err) {
-          throw err;
-        }
-      }
-    );
-  }); */
-
-  // fs.appendFileSync("./heights.txt", JSON.stringify(height));
   return textChunkArray;
 }
 
@@ -263,8 +253,6 @@ function noOfSentences(context) {
   return noOfSentence;
 }
 
-// noOfSentences("Hello. I'm kauwa. Whatcha doin?");
-
 async function ExtractiveSummary(src) {
   let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -330,6 +318,8 @@ async function ExtractiveSummary(src) {
     if (response.status !== 200) {
       throw new Error(`Request failed with status ${response.status}`);
     }
+
+    // return paragraphs;
 
     let { summary } = await response.json();
 
@@ -415,9 +405,55 @@ async function AbstractiveSummary(src) {
 }
 
 const src = "./sample4.pdf";
+// ExtractiveSummary(src);
+// AbstractiveSummary(src);
 
-ExtractiveSummary(src);
+async function createChunkForHighlighting() {
+  let paragraphs = require("./preprocessed.json");
+  let mainChunkArray = await getPdfTextContent(src);
+  // fs.writeFileSync("./chunkArray.json", JSON.stringify(mainChunkArray));
 
-AbstractiveSummary(src);
+  let summaryArray = [];
+  paragraphs.forEach((element) => {
+    // let summary = element.summaryText.split(".");
+    // summary = summary.split("?");
+    // summary = summary.split("!");
+    summaryArray.push(element.summaryText);
+  });
+  // fs.writeFileSync("./sentences.json", JSON.stringify(summaryArray));
 
+  // console.log(summaryArray);
+  let chunkIndexes = [];
+
+  mainChunkArray.forEach((element, index) => {
+    let chunkString = element.str.trim().split(".");
+    // console.log(element.str.trim());
+    fs.appendFileSync(
+      "./chunkStrings.json",
+      JSON.stringify(chunkString) + "\n"
+    );
+    summaryArray.forEach((sentences) => {
+      chunkString.forEach((chunkstrs) => {
+        if (chunkstrs != "") {
+          if (sentences.includes(chunkstrs)) {
+            chunkIndexes.push({
+              index: index,
+              str: chunkstrs,
+            });
+            // console.log(element);
+          }
+        }
+      });
+    });
+  });
+
+  // console.log(chunkIndexes);
+  fs.writeFileSync("./matchedChunks.json", JSON.stringify(chunkIndexes));
+
+  let maxLimit = mainChunkArray.length;
+  for (let i = 0; i < maxLimit; i++) {}
+  // console.log(mainChunkArray);
+}
+
+createChunkForHighlighting();
 // createJsonObjectFromPdf();
