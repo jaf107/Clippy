@@ -27,8 +27,6 @@ async function getPdfTextContent(src) {
   }
   const uniqueHeight = new Set(heights);
   heights = Array.from(uniqueHeight);
-  // console.log(uniqueHeight);
-  // heights.sort();
   sortedHeights = heights.sort(function (a, b) {
     return b - a;
   });
@@ -181,7 +179,7 @@ async function test() {
       console.log(
         "page NO:",
         pageIndex + 1,
-        "chunk count: ",
+        "Chunks in a page:",
         pageChunks.length,
         "starting chunk height:",
         pageChunks[0].height,
@@ -190,9 +188,22 @@ async function test() {
         "last chunk y:",
         pageChunks[lastChunkIndex].transform[5],
         "y diffrence:",
-        pageChunks[0].transform[5] - pageChunks[lastChunkIndex].transform[5]
+        pageChunks[0].transform[5] - pageChunks[lastChunkIndex].transform[5],
+        "max page chunk distance:",
+        getMaxChunkDistanceInAPage(pageChunks)
       );
     });
+  }
+
+  function getMaxChunkDistanceInAPage(pageChunks) {
+    let maxDis = 0;
+    for (let i = 1; i < pageChunks.length; i++) {
+      let dis = Math.abs(
+        pageChunks[i].transform[5] - pageChunks[i - 1].transform[5]
+      );
+      if (dis > maxDis) maxDis = dis;
+    }
+    return maxDis;
   }
 
   getPageHeight(pdfChunks);
