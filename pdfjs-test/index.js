@@ -441,7 +441,6 @@ async function createChunkForHighlighting() {
   fs.writeFileSync("./sentences.json", JSON.stringify(summaryArray));
 
   let chunkSentencesArr = [];
-
   originalArr.map((page) => {
     let pageChunks = page.map((chunk) => {
       let chunkSentences = breakTextChunkIntoSentence(chunk.str).filter(
@@ -451,7 +450,13 @@ async function createChunkForHighlighting() {
     });
     chunkSentencesArr.push(pageChunks.filter((item) => item.length > 0));
   });
+  fs.truncateSync("./test.json", 0);
   fs.writeFileSync("./test.json", JSON.stringify(chunkSentencesArr));
+
+  let highlightsSegments = [];
+  chunkSentencesArr.map((page, pageIndex) => {
+    for (let i = 0; i < page.length; i++) {}
+  });
 
   // originalArr.forEach((element, index) => {
   //   let chunkString = element.str.trim().split(".");
