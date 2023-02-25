@@ -176,8 +176,22 @@ async function test() {
 
   function getPageHeight(pdfChunks) {
     let max = 0;
-    pdfChunks.map((pageChunks) => {
-      console.log(pageChunks.length, pageChunks[0].height);
+    pdfChunks.map((pageChunks, pageIndex) => {
+      let lastChunkIndex = pageChunks.length - 1;
+      console.log(
+        "page NO:",
+        pageIndex + 1,
+        "chunk count: ",
+        pageChunks.length,
+        "starting chunk height:",
+        pageChunks[0].height,
+        "starting chunk y:",
+        pageChunks[0].transform[5],
+        "last chunk y:",
+        pageChunks[lastChunkIndex].transform[5],
+        "y diffrence:",
+        pageChunks[0].transform[5] - pageChunks[lastChunkIndex].transform[5]
+      );
     });
   }
 
