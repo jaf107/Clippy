@@ -1,19 +1,16 @@
 .left{
     /* width: 96%; */
     width: 70%;
-    /* display: inline-block; */
+    display: inline-block;
 }
 
 .right{
-    /* display: inline-block; */
+    display: inline-block;
     width: 4%;
 }
 
 .middle{
-    /* display: inline-block; */
-    width: 26%;
-}
-
-.container-fluid{
-    display: block;
+    display: inline-block;
+    width: 0%;
+    vertical-align: top;
 }

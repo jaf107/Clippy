@@ -15,8 +15,7 @@
       (pdfLoadingStarts)="starts()">
       </ngx-extended-pdf-viewer>
    </div>
-   <div class="middle" [ngStyle]="{'width':summarizerOn == true ?'26%':'0%'}">
-      <h1>SEE</h1>
+   <div class="middle" *ngIf="summarizerOn" [ngStyle]="{'width': summarizerOn == true ? '27%' : '0%'}">
       <app-summarizer></app-summarizer>
    </div>
    <div class="right">
