@@ -454,6 +454,25 @@ async function createChunkForHighlighting() {
   for (let i = 0; i < maxLimit; i++) {}
   // console.log(mainChunkArray);
 }
+async function objectForIndex(index) {
+  const ogArray = await getPdfTextContent(src);
+  const oneDim = Array.flat(ogArray);
+  console.log(oneDim);
+  for (let i = 0; i < ogArray.length; i++) {
+    let pageLen = ogArray[i].length;
+    if (index > pageLen) {
+      index -= pageLen;
+    } else {
+      let object = {
+        pageNo: i,
+        chunkNo: index,
+      };
+      console.log(object);
+      return object;
+    }
+  }
+}
 
+objectForIndex(953);
 createChunkForHighlighting();
 // createJsonObjectFromPdf();
