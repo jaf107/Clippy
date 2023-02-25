@@ -132,7 +132,8 @@ function writeToFile(filePath, content, pageNo) {
 }
 
 async function createJsonObjectFromPdf(src) {
-  let arr = await getPdfTextContent(src);
+  let { textChunkArray: arr } = await getPdfTextContent(src);
+  arr = arr.flat();
 
   heights = [];
   arr.forEach((element) => {
@@ -429,51 +430,59 @@ const src = "./sample4.pdf";
 
 async function createChunkForHighlighting() {
   let paragraphs = require("./preprocessed.json");
-  let { textChunkArray: mainChunkArray } = await getPdfTextContent(src);
-  // fs.writeFileSync("./chunkArray.json", JSON.stringify(mainChunkArray));
+  let { textChunkArray: originalArr } = await getPdfTextContent(src);
 
   let summaryArray = [];
   paragraphs.forEach((element) => {
-    let summary = element.summaryText
-      .split(/[.?!]/g)
-      .map((sumSentence) => sumSentence.trim())
-      .filter((sumSentence) => sumSentence.length > 0);
-    summaryArray.push(summary);
+    let summarySentencesArr = breakTextChunkIntoSentence(element.summaryText);
+    summaryArray.push(summarySentencesArr);
   });
+  fs.truncateSync("./sentences.json", 0);
   fs.writeFileSync("./sentences.json", JSON.stringify(summaryArray));
 
-  // console.log(summaryArray);
-  let chunkIndexes = [];
+  let chunkSentencesArr = [];
 
-  mainChunkArray.forEach((element, index) => {
-    let chunkString = element.str.trim().split(".");
-    // console.log(element.str.trim());
-    fs.appendFileSync(
-      "./chunkStrings.json",
-      JSON.stringify(chunkString) + "\n"
-    );
-    summaryArray.forEach((sentences) => {
-      chunkString.forEach((chunkstrs) => {
-        if (chunkstrs != "") {
-          if (sentences.includes(chunkstrs)) {
-            chunkIndexes.push({
-              index: index,
-              str: chunkstrs,
-            });
-            // console.log(element);
-          }
-        }
-      });
+  originalArr.map((page) => {
+    let pageChunks = page.map((chunk) => {
+      let chunkSentences = breakTextChunkIntoSentence(chunk.str).filter(
+        (item) => item.length > 0
+      );
+      return chunkSentences;
     });
+    chunkSentencesArr.push(pageChunks.filter((item) => item.length > 0));
   });
+  fs.writeFileSync("./test.json", JSON.stringify(chunkSentencesArr));
+
+  // originalArr.forEach((element, index) => {
+  //   let chunkString = element.str.trim().split(".");
+  //   // console.log(element.str.trim());
+  //   fs.appendFileSync(
+  //     "./chunkStrings.json",
+  //     JSON.stringify(chunkString) + "\n"
+  //   );
+  //   summaryArray.forEach((sentences) => {
+  //     chunkString.forEach((chunkstrs) => {
+  //       if (chunkstrs != "") {
+  //         if (sentences.includes(chunkstrs)) {
+  //           chunkIndexes.push({
+  //             index: index,
+  //             str: chunkstrs,
+  //           });
+  //           // console.log(element);
+  //         }
+  //       }
+  //     });
+  //   });
+  // });
 
   // console.log(chunkIndexes);
-  fs.writeFileSync("./matchedChunks.json", JSON.stringify(chunkIndexes));
+  // fs.writeFileSync("./matchedChunks.json", JSON.stringify(chunkIndexes));
 
-  let maxLimit = mainChunkArray.length;
+  let maxLimit = originalArr.length;
   for (let i = 0; i < maxLimit; i++) {}
   // console.log(mainChunkArray);
 }
+
 async function objectForIndex(index) {
   const { textChunkArray } = await getPdfTextContent(src);
   // const oneDim = Array.flat(ogArray);
@@ -492,6 +501,14 @@ async function objectForIndex(index) {
       return object;
     }
   }
+}
+
+function breakTextChunkIntoSentence(textChunk) {
+  let sentences = textChunk
+    .split(/[.?!]/g)
+    .map((sumSentence) => sumSentence.trim())
+    .filter((sumSentence) => sumSentence.length > 0);
+  return sentences;
 }
 
 // objectForIndex(1130);
