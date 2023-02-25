@@ -3,6 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { PDFDocumentProxy, PageViewport, RenderTask } from 'pdfjs-dist';
 import * as PDFJS from 'pdfjs-dist/legacy/build/pdf';
 import { pdfjsWorker } from 'pdfjs-dist/build/pdf.worker.entry'
+import { TextLayerRenderedEvent } from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'app-pdf-linker-test',
@@ -30,7 +31,11 @@ export class PdfLinkerTestComponent implements OnInit{
     this.pdfCanvas = this.pdfCanvasRef.nativeElement;
     PDFJS.GlobalWorkerOptions.workerSrc = pdfjsWorker;
     this.loadPDFDocument();
+
+    
+
   }
+
 
   loadPDFDocument() {
     const pdfUrl = '../../assets/pdfs/icse22_toxicity.pdf';
@@ -53,7 +58,7 @@ export class PdfLinkerTestComponent implements OnInit{
     this.pdfDocument.getPage(pageNumber).then((page) => {
       console.log('1',this)
       page.getAnnotations().then(this.siam.bind(this));
-      const viewport = page.getViewport({ scale: 1 });
+      const viewport = page.getViewport({ scale: 3 });
       this.pdfCanvas.width = viewport.width;
       this.pdfCanvas.height = viewport.height;
 
@@ -95,8 +100,4 @@ export class PdfLinkerTestComponent implements OnInit{
       });
     })
   }
-
-
-
-
 }
