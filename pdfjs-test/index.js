@@ -1,7 +1,7 @@
 var apiKey = "b93d9d2475ed072f999710c6949f6a65";
 
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
-const {OneAI} = require("oneai");
+const { OneAI } = require("oneai");
 const fs = require("fs");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 
@@ -265,8 +265,8 @@ function noOfSentences(context) {
 
 // noOfSentences("Hello. I'm kauwa. Whatcha doin?");
 
-async function summary() {
-  let paragraphs = await createJsonObjectFromPdf("./sample4.pdf");
+async function ExtractiveSummary(src) {
+  let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   let apiKey = "b93d9d2475ed072f999710c6949f6a65";
 
@@ -290,7 +290,7 @@ async function summary() {
           apiKey,
           retryCount
         );
-        console.log(`Summary holo: index ${i} ${JSON.stringify(summary)}`);
+        // console.log(`Summary holo: index ${i} ${JSON.stringify(summary)}`);
 
         paragraphs[i].summaryText = summary;
         break; // Exit the retry loop if request succeeds
@@ -337,21 +337,17 @@ async function summary() {
   }
 }
 
-
-
-async function AbstractiveSummary () {
-  let paragraphs = await createJsonObjectFromPdf();
+async function AbstractiveSummary(src) {
+  let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   let absApiKey = "453265e9-a392-4e2b-aacc-ecc527a3f41f";
-
-  
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
     let contextString = element.text;
     let retryCount = 0;
 
-    if(element.noOfSentences > 50) {
+    if (element.noOfSentences > 50) {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
     } else {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
@@ -359,8 +355,15 @@ async function AbstractiveSummary () {
 
     while (retryCount < 3) {
       try {
-        let summary = await requestAbsSummaryWithRetry(contextString, absApiKey, retryCount, noOfSentenceInSummary);
-        console.log(`Abstractive Summary holo: index ${i} ${JSON.stringify(summary)}`);
+        let summary = await requestAbsSummaryWithRetry(
+          contextString,
+          absApiKey,
+          retryCount,
+          noOfSentenceInSummary
+        );
+        // console.log(
+        //   `Abstractive Summary holo: index ${i} ${JSON.stringify(summary)}`
+        // );
 
         paragraphs[i].summaryText = summary;
         break; // Exit the retry loop if request succeeds
@@ -372,48 +375,49 @@ async function AbstractiveSummary () {
     }
   }
 
-   fs.writeFileSync("./preprocessedAbs.json", JSON.stringify(paragraphs));
+  fs.writeFileSync("./preprocessedAbs.json", JSON.stringify(paragraphs));
 
-  async function requestAbsSummaryWithRetry(contextString, absApiKey, retryCount, noOfSentenceInSummary) {
-
+  async function requestAbsSummaryWithRetry(
+    contextString,
+    absApiKey,
+    retryCount,
+    noOfSentenceInSummary
+  ) {
     const oneai = new OneAI(absApiKey, {
-      multilingual: true
-  });
+      multilingual: true,
+    });
 
-  const pipeline = new oneai.Pipeline(
-    oneai.skills.summarize({ min_length: noOfSentenceInSummary }),
-  );
-  
-  // let Abssummary = pipeline
-  //     .run(contextString)
-  //     .then((output) => {//console.log("output holo: "+JSON.stringify(output))
-  //     return output;})
-  //     .catch((error) => console.error(error));
+    const pipeline = new oneai.Pipeline(
+      oneai.skills.summarize({ min_length: noOfSentenceInSummary })
+    );
 
-  //     console.log("Testing Summ: "+JSON.stringify(Abssummary))
-   
-  async function absTesting () {
-    
-    let demo = await pipeline
-    .run(contextString)
-    
-    console.log("Testing  :"+ JSON.stringify(demo.summary.text))
+    // let Abssummary = pipeline
+    //     .run(contextString)
+    //     .then((output) => {//console.log("output holo: "+JSON.stringify(output))
+    //     return output;})
+    //     .catch((error) => console.error(error));
 
-    return demo.summary.text;
-     }
+    //     console.log("Testing Summ: "+JSON.stringify(Abssummary))
 
-     return await absTesting();
-    
+    async function absTesting() {
+      let demo = await pipeline.run(contextString);
 
-  //  return {pipeline};
+      /* 
+      console.log("Testing  :" + JSON.stringify(demo.summary.text));
+       */
+      return demo.summary.text;
+    }
 
+    return await absTesting();
+
+    //  return {pipeline};
   }
 }
 
- ExtractiveSummary();
+const src = "./sample4.pdf";
 
-AbstractiveSummary();
+ExtractiveSummary(src);
+
+AbstractiveSummary(src);
 
 // createJsonObjectFromPdf();
-
-
