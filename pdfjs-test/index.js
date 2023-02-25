@@ -166,7 +166,24 @@ async function wrapper() {
   });
   writeChunksArrayToFile("./out.json", chunkBeforeImage);
 }
-wrapper();
+// wrapper();
+
+async function test() {
+  const { textChunkArray: pdfChunks } = await getPdfTextContent(
+    "./sample4.pdf"
+  );
+  // console.log("dhukse", pdfChunks);
+
+  function getPageHeight(pdfChunks) {
+    let max = 0;
+    pdfChunks.map((pageChunks) => {
+      console.log(pageChunks.length, pageChunks[0].height);
+    });
+  }
+
+  getPageHeight(pdfChunks);
+}
+test();
 
 function isAlphanumeric(str) {
   return /^[a-zA-Z0-9 =_\/+\-:.,;'"“”<>#@?!%&()*{}\[\]$]+$/.test(str);
