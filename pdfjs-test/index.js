@@ -415,12 +415,13 @@ async function createChunkForHighlighting() {
 
   let summaryArray = [];
   paragraphs.forEach((element) => {
-    // let summary = element.summaryText.split(".");
-    // summary = summary.split("?");
-    // summary = summary.split("!");
-    summaryArray.push(element.summaryText);
+    let summary = element.summaryText
+      .split(/[.?!]/g)
+      .map((sumSentence) => sumSentence.trim())
+      .filter((sumSentence) => sumSentence.length > 0);
+    summaryArray.push(summary);
   });
-  // fs.writeFileSync("./sentences.json", JSON.stringify(summaryArray));
+  fs.writeFileSync("./sentences.json", JSON.stringify(summaryArray));
 
   // console.log(summaryArray);
   let chunkIndexes = [];
@@ -454,6 +455,4 @@ async function createChunkForHighlighting() {
   for (let i = 0; i < maxLimit; i++) {}
   // console.log(mainChunkArray);
 }
-
 createChunkForHighlighting();
-// createJsonObjectFromPdf();
