@@ -21,3 +21,14 @@ span{
 .dropdown-menu{
     background-color: #ffffff9d;
 }
+
+.profile{
+    padding-left: 0.6rem;
+    /* border: 1px solid #ffffff9d; */
+    border-radius: 5px;
+    display: inline-flex;
+}
+
+.navbar-text:hover{
+    color: white;
+}
