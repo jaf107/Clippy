@@ -180,7 +180,7 @@ async function createJsonObjectFromPdf(src) {
   let titleHeight = heights[titleHeightIndex];
   let generalTextHeight = heights[generalTextHeightIndex];
 
-  let wiggleHeight = heights[generalTextHeightIndex] - 0.3;
+  let wiggleHeight = heights[generalTextHeightIndex] - 1;
   // console.log(wiggleHeight);
 
   arr.forEach((element) => {
@@ -204,12 +204,49 @@ async function createJsonObjectFromPdf(src) {
         j++;
       }
 
-      paragraphs.push(new Paragraph("References", referanceText));
+      let referanceParagraph = new Paragraph("References", referanceText);
+      paragraphs.push(referanceParagraph);
       break;
     }
     // if (arr[i].height == titleHeight && arr[i].str.includes("Abstract")) {
     if (arr[i].str.includes("Abstract")) {
       isAbstract = true;
+      let abstractTextTitle = arr[i].str;
+      let abstractTextHeight = arr[i].height;
+      // console.log(abstractTextHeight);
+      // console.log(titleHeight);
+      // console.log(wiggleHeight);
+      let titleIterator = i;
+
+      while (arr[titleIterator].height == abstractTextHeight) {
+        // if (titleString === "") {
+        //   abstractTextTitle += arr[titleIterator].str;
+        // } else {
+        //   abstractTextTitle += " ";
+        //   abstractTextTitle += arr[titleIterator].str;
+        // }
+        abstractTextTitle += arr[titleIterator].str;
+        // console.log(arr[titleIterator].str);
+        titleIterator++;
+      }
+      // console.log(i + " " + arr[i].height + "  " + arr[i].str);
+      i = titleIterator - 1;
+      // console.log(i);
+      let abstractText = "";
+
+      if (i < maxLimit) i++;
+      // i++;
+      // console.log(i + " " + arr[i].height + "  " + arr[i].str);
+      while (i < maxLimit && arr[i].height != titleHeight) {
+        console.log(arr[i].str);
+        abstractText += arr[i].str;
+        i++;
+      }
+      i--;
+      // console.log(abstractText);
+      let abstractParagraph = new Paragraph("Abstract", abstractText);
+      // console.log(abstractParagraph);
+      paragraphs.push(abstractParagraph);
     }
     if (arr[i].height == titleHeight && isAbstract) {
       let titleString = arr[i].str;
@@ -424,7 +461,6 @@ async function AbstractiveSummary(src) {
   }
 }
 
-const src = "./sample4.pdf";
 // ExtractiveSummary(src);
 // AbstractiveSummary(src);
 
@@ -502,12 +538,17 @@ async function objectForIndex(index) {
         chunkNo: index,
         chunk: textChunkArray[i][index],
       };
-      console.log(object);
+      // console.log(object);
       return object;
     }
   }
 }
 
+// objectForIndex(1130);
+// createChunkForHighlighting();
+const src = "./sample4.pdf";
+
+createJsonObjectFromPdf(src);
 function breakTextChunkIntoSentence(textChunk) {
   let sentences = textChunk
     .split(/[.?!]/g)
