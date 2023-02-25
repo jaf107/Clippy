@@ -214,33 +214,70 @@ export class AppComponent implements OnInit {
       (t) => t.nodeName === 'SPAN'
     );
 
-    if (textChunkSpans.length > 0) {
-      let [targetChunk] = textChunkSpans.filter((chunk) =>
-        chunk.innerHTML.includes('Figure 1. ')
+    // textChunkSpans.map((span, index, arr) => {
+    //   console.log(span.innerHTML, index);
+    // });
+
+    let sens = [];
+    for (let i = 0; i < textChunkSpans.length; i++) {
+      sens.push(
+        textChunkSpans[i].innerHTML
+          .split(/[.?!]/g)
+          .filter((item) => item.length > 0)
       );
+    }
+    console.log(sens);
 
-      this.replaceTextChunk(targetChunk);
+    for (let i = 0; i < sens.length; i++) {
+      let start = i,
+        end = 0;
+      let lenth = sens[i].length;
+      // for (let j=0; j<lenth ;j++) {
+
+      // }
+      if (lenth === 2) {
+        let leftSen = sens[i][0],
+          rihtSens = sens[i][1];
+        let sentence = rihtSens;
+        start = i;
+        for (let j = i + 1; j < sens.length; j++) {
+          sentence += `${sens[j][0]}`;
+          if (sens[j].length > 1) {
+            end = j;
+            break;
+          }
+        }
+        console.log(sentence, `chnnk start ${start} end ${end}`);
+      }
     }
 
-    let anchor = document.querySelector('.clickable-text');
-    let modal = document.querySelector('.modal');
+    // if (textChunkSpans.length > 0) {
+    //   let [targetChunk] = textChunkSpans.filter((chunk) =>
+    //     chunk.innerHTML.includes('Figure 1. ')
+    //   );
 
-    if (modal)
-      modal.addEventListener('click', (event) => {
-        event.preventDefault();
-        modal.classList.add('hidden');
-      });
+    //   this.replaceTextChunk(targetChunk);
+    // }
 
-    if (anchor) {
-      anchor.addEventListener('mouseenter', (event) => {
-        event.preventDefault();
-        modal.classList.remove('hidden');
-      });
-      anchor.addEventListener('mouseleave', (event) => {
-        event.preventDefault();
-        modal.classList.add('hidden');
-      });
-    }
+    // let anchor = document.querySelector('.clickable-text');
+    // let modal = document.querySelector('.modal');
+
+    // if (modal)
+    //   modal.addEventListener('click', (event) => {
+    //     event.preventDefault();
+    //     modal.classList.add('hidden');
+    //   });
+
+    // if (anchor) {
+    //   anchor.addEventListener('mouseenter', (event) => {
+    //     event.preventDefault();
+    //     modal.classList.remove('hidden');
+    //   });
+    //   anchor.addEventListener('mouseleave', (event) => {
+    //     event.preventDefault();
+    //     modal.classList.add('hidden');
+    //   });
+    // }
   }
 
   replaceTextChunk(spanElement: Element) {
