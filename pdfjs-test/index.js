@@ -429,10 +429,9 @@ const src = "./sample4.pdf";
 
 async function createChunkForHighlighting() {
   let paragraphs = require("./preprocessed.json");
-  let { textChunkArray } = await getPdfTextContent(src);
+  let { textChunkArray: mainChunkArray } = await getPdfTextContent(src);
   // fs.writeFileSync("./chunkArray.json", JSON.stringify(mainChunkArray));
 
-  let mainChunkArray = textChunkArray;
   let summaryArray = [];
   paragraphs.forEach((element) => {
     let summary = element.summaryText
