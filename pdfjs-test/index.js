@@ -132,9 +132,9 @@ function writeToFile(filePath, content, pageNo) {
 }
 
 async function createJsonObjectFromPdf(src) {
-  let { textChunkArray } = await getPdfTextContent(src);
-  let arr = textChunkArray.flat();
-  // console.log(arr);
+  let { textChunkArray: arr } = await getPdfTextContent(src);
+  arr = arr.flat();
+
   heights = [];
   arr.forEach((element) => {
     heights.push(element.height);
@@ -466,51 +466,59 @@ async function AbstractiveSummary(src) {
 
 async function createChunkForHighlighting() {
   let paragraphs = require("./preprocessed.json");
-  let { textChunkArray } = await getPdfTextContent(src);
-  // fs.writeFileSync("./chunkArray.json", JSON.stringify(mainChunkArray));
+  let { textChunkArray: originalArr } = await getPdfTextContent(src);
 
-  let mainChunkArray = textChunkArray;
   let summaryArray = [];
   paragraphs.forEach((element) => {
-    // let summary = element.summaryText.split(".");
-    // summary = summary.split("?");
-    // summary = summary.split("!");
-    summaryArray.push(element.summaryText);
+    let summarySentencesArr = breakTextChunkIntoSentence(element.summaryText);
+    summaryArray.push(summarySentencesArr);
   });
-  // fs.writeFileSync("./sentences.json", JSON.stringify(summaryArray));
+  fs.truncateSync("./sentences.json", 0);
+  fs.writeFileSync("./sentences.json", JSON.stringify(summaryArray));
 
-  // console.log(summaryArray);
-  let chunkIndexes = [];
+  let chunkSentencesArr = [];
 
-  mainChunkArray.forEach((element, index) => {
-    let chunkString = element.str.trim().split(".");
-    // console.log(element.str.trim());
-    fs.appendFileSync(
-      "./chunkStrings.json",
-      JSON.stringify(chunkString) + "\n"
-    );
-    summaryArray.forEach((sentences) => {
-      chunkString.forEach((chunkstrs) => {
-        if (chunkstrs != "") {
-          if (sentences.includes(chunkstrs)) {
-            chunkIndexes.push({
-              index: index,
-              str: chunkstrs,
-            });
-            // console.log(element);
-          }
-        }
-      });
+  originalArr.map((page) => {
+    let pageChunks = page.map((chunk) => {
+      let chunkSentences = breakTextChunkIntoSentence(chunk.str).filter(
+        (item) => item.length > 0
+      );
+      return chunkSentences;
     });
+    chunkSentencesArr.push(pageChunks.filter((item) => item.length > 0));
   });
+  fs.writeFileSync("./test.json", JSON.stringify(chunkSentencesArr));
+
+  // originalArr.forEach((element, index) => {
+  //   let chunkString = element.str.trim().split(".");
+  //   // console.log(element.str.trim());
+  //   fs.appendFileSync(
+  //     "./chunkStrings.json",
+  //     JSON.stringify(chunkString) + "\n"
+  //   );
+  //   summaryArray.forEach((sentences) => {
+  //     chunkString.forEach((chunkstrs) => {
+  //       if (chunkstrs != "") {
+  //         if (sentences.includes(chunkstrs)) {
+  //           chunkIndexes.push({
+  //             index: index,
+  //             str: chunkstrs,
+  //           });
+  //           // console.log(element);
+  //         }
+  //       }
+  //     });
+  //   });
+  // });
 
   // console.log(chunkIndexes);
-  fs.writeFileSync("./matchedChunks.json", JSON.stringify(chunkIndexes));
+  // fs.writeFileSync("./matchedChunks.json", JSON.stringify(chunkIndexes));
 
-  let maxLimit = mainChunkArray.length;
+  let maxLimit = originalArr.length;
   for (let i = 0; i < maxLimit; i++) {}
   // console.log(mainChunkArray);
 }
+
 async function objectForIndex(index) {
   const { textChunkArray } = await getPdfTextContent(src);
   // const oneDim = Array.flat(ogArray);
@@ -536,3 +544,13 @@ async function objectForIndex(index) {
 const src = "./sample4.pdf";
 
 createJsonObjectFromPdf(src);
+function breakTextChunkIntoSentence(textChunk) {
+  let sentences = textChunk
+    .split(/[.?!]/g)
+    .map((sumSentence) => sumSentence.trim())
+    .filter((sumSentence) => sumSentence.length > 0);
+  return sentences;
+}
+
+// objectForIndex(1130);
+createChunkForHighlighting();
