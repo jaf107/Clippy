@@ -1,7 +1,9 @@
+import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { pdfs } from 'src/app/interfaces/file';
+import { TokenStorageService } from 'src/app/token-storage.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 
 
@@ -10,9 +12,13 @@ import { PdfShareService } from '../shared/pdf-share.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent{
 
-  constructor(private toastr: ToastrService, public pdfShareService: PdfShareService, private route: Router) { }  
+  constructor(
+    private toastr: ToastrService, 
+    public pdfShareService: PdfShareService, 
+    private route: Router
+  ) { }  
 
   private file: File | null;
   private url: any;
