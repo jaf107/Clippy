@@ -10,6 +10,12 @@ const paperSchema = new mongoose.Schema({
   public_id: {
     type: String,
   },
+  knowlegde_graph : {
+    edge_list : []
+  },
+  abstract : {
+    type : String
+  },
   url: {
     type: String,
   },
