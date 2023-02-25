@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';    
-import { ToastrModule } from 'ngx-toastr';  
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LandingPageComponent } from './modules/landing-page/landing-page.component';
@@ -31,12 +32,14 @@ import { SummarizerComponent } from './modules/summarizer/summarizer.component';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BrowserAnimationsModule,
+    FormsModule,
     ToastrModule.forRoot(),
     AppRoutingModule,
-    NgxExtendedPdfViewerModule
+    NgxExtendedPdfViewerModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
