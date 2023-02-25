@@ -11,11 +11,22 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   pdfPath: any;
 
+  public summarizerOn: boolean;
+
   ngOnInit(){
     
     this.pdfPath = this.pdfShareService.getFile();
     console.log(this.pdfPath);
+
     // this.pdfPath = "./assets/SCORE_intro.pdf";
+
+    this.summarizerOn = false;
+
+    this.pdfShareService.getSummarizerStatus().subscribe((value)=>{
+      this.summarizerOn = value;
+      console.log("Summary is on " + this.summarizerOn);
+    })
+
   }
 
   ngAfterViewInit(){
@@ -31,7 +42,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     // but most devices support much higher resolutions.
     // Increasing this setting allows your users to use higher zoom factors,
     // trading image quality for performance.
-
     
     }
 

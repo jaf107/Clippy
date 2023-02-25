@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 <div class="container-fluid">
-   <div class="left">
+   <div class="left" [ngStyle]="{'width': summarizerOn == true ? '70%':'96%'}">
       <ngx-extended-pdf-viewer *ngIf="pdfPath"    
       [(src)]="pdfPath" [textLayer]="true"
       (textLayerRendered)=highlightWords($event); 
@@ -14,6 +14,10 @@
       (pdfLoadingFailed)="failed()" 
       (pdfLoadingStarts)="starts()">
       </ngx-extended-pdf-viewer>
+   </div>
+   <div class="middle" [ngStyle]="{'width':summarizerOn == true ?'26%':'0%'}">
+      <h1>SEE</h1>
+      <app-summarizer></app-summarizer>
    </div>
    <div class="right">
       <app-sidebar></app-sidebar>

@@ -14,6 +14,7 @@ import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-gra
 import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { SummarizerComponent } from './modules/summarizer/summarizer.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
     HomeComponent,
     KnowledgeGraphComponent,
     PdfViewerComponent,
-    SidebarComponent
+    SidebarComponent,
+    SummarizerComponent
   ],
   imports: [
     BrowserModule,

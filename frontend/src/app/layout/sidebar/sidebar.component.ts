@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PdfShareService } from 'src/app/modules/shared/pdf-share.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -7,13 +8,22 @@ import { Component } from '@angular/core';
 })
 export class SidebarComponent {
   public isActive: boolean = true;
+  public optionsActive: boolean = false;
 
-  constructor() { }
+  constructor(public pdfShareService: PdfShareService) { }
 
   ngOnInit(): void {
   }
 
   toggleSidebar() {
     this.isActive = !this.isActive;
+  }
+
+  showOptions(){
+    this.optionsActive = !this.optionsActive;
+  }
+
+  toggleSummarizer(type: string){
+    this.pdfShareService.setSummarizerOn(type);
   }
 }
