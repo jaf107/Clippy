@@ -35,7 +35,7 @@ class Paragraph {
 async function getPdfTextContent(src) {
   const doc = await pdfjs.getDocument(src).promise;
   const totalPageCount = doc.numPages;
-
+  doc.getDestination;
   // clear the text file //
   fs.truncateSync("./output.txt", 0);
   fs.truncateSync("./object.txt", 0);
@@ -46,13 +46,32 @@ async function getPdfTextContent(src) {
   for (let i = 1; i <= totalPageCount; i++) {
     const page = await doc.getPage(i);
     const textContent = await page.getTextContent();
-    textChunkArray = textChunkArray.concat(getTextChunkObject(textContent));
+    textChunkArray.push(getTextChunkObject(textContent));
     writeToFile("./output.txt", textContent, i);
     writeObjectToFile("./object.txt", textContent, i);
     writeUniqueHeights(heights, textContent);
   }
+  const uniqueHeight = new Set(heights);
+  heights = Array.from(uniqueHeight);
+  sortedHeights = heights.sort(function (a, b) {
+    return b - a;
+  });
 
-  return textChunkArray;
+  // console.log(sortedHeights);
+  sortedHeights.forEach((element) => {
+    fs.appendFileSync(
+      "./heights.txt",
+      JSON.stringify(element) + "\n",
+      (err) => {
+        if (err) {
+          throw err;
+        }
+      }
+    );
+  });
+
+  // fs.appendFileSync("./heights.txt", JSON.stringify(height));
+  return { textChunkArray, uniqueHeight };
 }
 
 function writeUniqueHeights(heights, content) {
@@ -410,9 +429,10 @@ const src = "./sample4.pdf";
 
 async function createChunkForHighlighting() {
   let paragraphs = require("./preprocessed.json");
-  let mainChunkArray = await getPdfTextContent(src);
+  let { textChunkArray } = await getPdfTextContent(src);
   // fs.writeFileSync("./chunkArray.json", JSON.stringify(mainChunkArray));
 
+  let mainChunkArray = textChunkArray;
   let summaryArray = [];
   paragraphs.forEach((element) => {
     let summary = element.summaryText
@@ -455,4 +475,25 @@ async function createChunkForHighlighting() {
   for (let i = 0; i < maxLimit; i++) {}
   // console.log(mainChunkArray);
 }
+async function objectForIndex(index) {
+  const { textChunkArray } = await getPdfTextContent(src);
+  // const oneDim = Array.flat(ogArray);
+  // console.log(oneDim);
+  for (let i = 0; i < textChunkArray.length; i++) {
+    let pageLen = textChunkArray[i].length;
+    if (index > pageLen) {
+      index -= pageLen;
+    } else {
+      let object = {
+        pageNo: i,
+        chunkNo: index,
+        chunk: textChunkArray[i][index],
+      };
+      console.log(object);
+      return object;
+    }
+  }
+}
+
+// objectForIndex(1130);
 createChunkForHighlighting();
