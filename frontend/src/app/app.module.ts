@@ -17,7 +17,7 @@ import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-gra
 import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { SummarizerComponent } from './modules/summarizer/summarizer.component';
-import { TooltipModule } from 'ng2-tooltip-directive';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 @NgModule({
   declarations: [
@@ -47,3 +47,5 @@ import { TooltipModule } from 'ng2-tooltip-directive';
 })
 
 export class AppModule {}
+platformBrowserDynamic().bootstrapModule(AppModule);
+
