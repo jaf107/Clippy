@@ -1,9 +1,8 @@
-const pdfjs = require("pdfjs-dist/build/pdf");
+const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const fs = require("fs");
 
 async function getPdfTextContent(src) {
   const doc = await pdfjs.getDocument(src).promise;
-  // const fonts = await doc.getOperatorList();
   const totalPageCount = doc.numPages;
 
   // console.log(doc);
@@ -24,6 +23,7 @@ function writeObjectToFile(filePath, content, pageNo) {
   let data = `page No: ${pageNo} \n===============\n`;
   let pos = 0;
   const items = content.items.map((item) => {
+    let style = content.styles[item.fontName];
     data += `item no ${pos}
     ------------------------
     item.str=${item.str}
@@ -31,11 +31,14 @@ function writeObjectToFile(filePath, content, pageNo) {
     item.width=${item.width}
     item.height=${item.height}
     item.transforme=${item.transform}
-    item.fontName=${item.fontName}
     item.hasEOL=${item.hasEOL}
+    item.fontName=${style.fontFamily}
+    content.styles object for this chuk
+    ${JSON.stringify(style)}
     --------------------------------\n`;
     pos++;
   });
+
   data += `\n`;
   fs.appendFileSync(filePath, data);
 }
