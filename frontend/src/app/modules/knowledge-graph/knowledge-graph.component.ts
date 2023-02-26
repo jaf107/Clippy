@@ -5,6 +5,12 @@ import * as navigator from 'cytoscape';
 import { FeaturesService } from '../shared/features.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 
+
+interface edges{
+  "source":string,
+  "target":string
+}
+
 @Component({
   selector: 'app-knowledge-graph',
   templateUrl: './knowledge-graph.component.html',
@@ -16,6 +22,8 @@ export class KnowledgeGraphComponent implements OnInit {
 
   cy: any;
 
+  public graphEdges : edges[] = [];
+
   constructor(
     public pdfShareService: PdfShareService,
     private featureService: FeaturesService
@@ -23,14 +31,18 @@ export class KnowledgeGraphComponent implements OnInit {
 
     public graphOn: boolean;
 
+    public graphData: any;
+
   ngOnInit() {
 
     this.pdfShareService.getKnowledgeGraphStatus().subscribe((value)=>{
       this.graphOn = value;
       if(this.graphOn){
         console.log("Hello from knowledge graph component");
-        this.featureService.getCitationGraph('87e367d76e5c63c834bf77b4f6ea8bce6cdb5553').subscribe(
+        this.featureService.getCitationGraph('649def34f8be52c8b66281af98ae884c09aef38b').subscribe(
           (data) =>{
+            this.graphData = JSON.parse(data);
+            this.addDatatoGraph();
             console.log(JSON.parse(data));
           },
           (err) => {
@@ -136,5 +148,15 @@ export class KnowledgeGraphComponent implements OnInit {
     // // Add panzoom and navigator extensions
     panzoom(this.cy);
     navigator(this.cy);
+  }
+
+  addDatatoGraph(){
+    this.graphData.forEach(edge => {
+      if(edge.from.title != undefined){
+        let singleEdge = {'source':edge.from.title, 'target':edge.to.title};
+        this.graphEdges.push(singleEdge);
+        console.log(singleEdge);
+      }
+    });
   }
 }

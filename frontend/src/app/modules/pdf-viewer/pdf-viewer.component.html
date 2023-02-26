@@ -15,7 +15,7 @@
       (pdfLoadingStarts)="starts()">
       </ngx-extended-pdf-viewer>
    </div>
-   <div class="left" *ngIf="graphOn">
+   <div class="left" [ngStyle]="{'visibility': graphOn == true ? 'visible':'hidden'}">
       <div class="graphCanvas">
          <app-knowledge-graph></app-knowledge-graph>
       </div>
