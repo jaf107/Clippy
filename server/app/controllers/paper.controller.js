@@ -26,10 +26,7 @@ class CitationEdge {
 }
 
 exports.uploadPaper = async (req, res) => {
-  var paper = {
-    user_id: req.userId,
-  };
-  await Paper.create(paper);
+  console.log(req.file.path);
   res.status(200).send("Paper Added");
 };
 
