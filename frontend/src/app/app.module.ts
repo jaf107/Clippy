@@ -5,6 +5,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+
 import { AppComponent } from './app.component';
 import { LandingPageComponent } from './modules/landing-page/landing-page.component';
 import { SignInComponent } from './modules/auth/sign-in/sign-in.component';
@@ -14,7 +16,6 @@ import { HomeComponent } from './modules/home/home.component';
 import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-graph.component';
 import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { SummarizerComponent } from './modules/summarizer/summarizer.component';
 import { TooltipModule } from 'ng2-tooltip-directive';
 
@@ -38,10 +39,11 @@ import { TooltipModule } from 'ng2-tooltip-directive';
     FormsModule,
     ToastrModule.forRoot(),
     AppRoutingModule,
-    NgxExtendedPdfViewerModule,
-    TooltipModule
+    TooltipModule,
+    PdfViewerModule
   ],
   providers: [],
   bootstrap: [AppComponent],
 })
+
 export class AppModule {}
