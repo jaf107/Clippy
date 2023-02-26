@@ -570,12 +570,55 @@ async function createChunkForHighlighting() {
   // console.log(highlightsSegments);
   fs.writeFileSync("./segments.json", JSON.stringify(highlightsSegments));
 
+//Match with summary text
+
+function matchSummaryandHighlight () {
+  let allSegmentCheck = highlightsSegments;
+
+  let summaryCheck = summaryArray;
+
+//   allSegmentCheck = [{
+//     sentence: "",
+//     segment: [
+//       {
+//         str: chunk[0],
+//         pageNo: pageIndex + 1,
+//         chunkIndex: chunkIndex,
+//       }
+//     ],
+//   }
+// ]
+
+// summaryCheck = [
+//   {
+//     "summaryText": " "
+//   }
+// ]
+
+
+  //console.log("highlight is "+highlightsSegments);
+  let filteredSegments = allSegmentCheck.filter(segment => {
+    return summaryCheck.some(summary => summary.includes(segment?.sentence)) && segment?.sentence.trim().split(' ').length > 1;
+  });
+  
+  
+  console.log("filteredSentences are "+JSON.stringify(filteredSegments));
+  fs.truncateSync("./highlight.json", 0);
+  fs.writeFileSync("./highlight.json", JSON.stringify(filteredSegments));
+
+
+}
+
+matchSummaryandHighlight();
+
+
   // console.log(chunkIndexes);
 
   let maxLimit = originalArr.length;
   for (let i = 0; i < maxLimit; i++) {}
   // console.log(mainChunkArray);
 }
+
 
 async function objectForIndex(index) {
   const { textChunkArray } = await getPdfTextContent(src);
