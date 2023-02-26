@@ -20,6 +20,7 @@ export class PdfShareService {
   }
 
     summarizerOnCheck: Subject<boolean> = new Subject<boolean>();
+    summarizerTypeCheck: Subject<string> = new Subject<string>();
 
     constructor(){
       this.summarizerOnCheck.next(false);
@@ -27,11 +28,19 @@ export class PdfShareService {
 
     setSummarizerOn(type: string, onOff : boolean) {
         this.summarizerOnCheck.next(onOff);
-        this.summarizerType = type;
+        this.summarizerTypeCheck.next(type);
+    }
+
+    setSummarizerOff(onOff : boolean){
+      this.summarizerOnCheck.next(onOff);
     }
 
     getSummarizerStatus(): Observable<boolean> {
       return this.summarizerOnCheck.asObservable();
+    }
+
+    getSummarizerType(): Observable<string> {
+      return this.summarizerTypeCheck.asObservable();
     }
 
 }

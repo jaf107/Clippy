@@ -12,7 +12,18 @@ export class SidebarComponent {
 
   constructor(public pdfShareService: PdfShareService) { }
 
+  public extractiveOn: boolean = false;
+  public abstractiveOn: boolean = false;
+
   ngOnInit(): void {
+
+    this.pdfShareService.getSummarizerStatus().subscribe((value)=>{
+      if(value == false){
+        this.extractiveOn = false;
+        this.abstractiveOn = false;
+      }
+    })
+
   }
 
   toggleSidebar() {
@@ -24,6 +35,33 @@ export class SidebarComponent {
   }
 
   toggleSummarizer(type: string){
-    this.pdfShareService.setSummarizerOn(type, true);
+
+    if(type == 'Extractive'){
+      if(this.extractiveOn == false){
+        this.extractiveOn = true;
+        this.abstractiveOn = false;
+      }
+      else{
+        this.extractiveOn = false;
+        this.abstractiveOn = false;
+      }
+
+      this.pdfShareService.setSummarizerOn(type, this.extractiveOn);
+    }
+    else{
+      if(this.abstractiveOn == false){
+        this.extractiveOn = false;
+        this.abstractiveOn = true;
+      }
+      else{
+        this.extractiveOn = false;
+        this.abstractiveOn = false;
+      }
+
+      this.pdfShareService.setSummarizerOn(type, this.abstractiveOn);
+      
+    }
+
+    
   }
 }

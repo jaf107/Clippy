@@ -39,7 +39,7 @@ export class SummarizerComponent implements OnInit{
   }
 
   closeSummary(){
-    this.pdfShareService.setSummarizerOn("extractive", false);
+    this.pdfShareService.setSummarizerOff(false);
   }
 
 
