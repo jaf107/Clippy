@@ -466,9 +466,11 @@ async function AbstractiveSummary(src) {
 
 async function createChunkForHighlighting() {
   let paragraphs = require("./preprocessed.json");
-  let { textChunkArray: originalArr } = await getPdfTextContent(
-    "./sample4.pdf"
-  );
+  let { textChunkArray: originalArr, uniqueHeight: heightArr } =
+    await getPdfTextContent("./sample4.pdf");
+
+  // console.log(heightArr);
+  let maxFreqHeight = getMaxFreq(originalArr, heightArr);
 
   let summaryArray = [];
   paragraphs.forEach((element) => {
@@ -638,6 +640,24 @@ async function objectForIndex(index) {
       return object;
     }
   }
+}
+
+function getMaxFreq(arr, heights) {
+  let freq = Array.from(heights).map((item) => {
+    return { height: item, count: 0 };
+  });
+  arr.map((page) => {
+    page.map((chunk) => {
+      for (let i = 0; i < freq.length; i++) {
+        if (freq[i].height == chunk.height) freq[i].count++;
+      }
+    });
+  });
+  let max = freq[0];
+  for (let i = 1; i < freq.length; i++) {
+    if (max.count < freq[i].count && freq[i].height > 0) max = freq[i];
+  }
+  console.log(max);
 }
 
 // objectForIndex(1130);
