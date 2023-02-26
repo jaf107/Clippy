@@ -495,30 +495,12 @@ async function createChunkForHighlighting() {
 
   let highlightsSegments = [];
   for (let pageIndex = 0; pageIndex < chunkSentencesArr.length; pageIndex++) {
-    // for(let i=0; ) PDFDocumentProxy
+    let pageChunks = chunkSentencesArr[pageIndex];
+    for (let chunkIndex = 0; chunkIndex < pageChunks.length; chunkIndex++) {
+      let chunk = pageChunks[chunkIndex];
+      console.log(chunk);
+    }
   }
-
-  // originalArr.forEach((element, index) => {
-  //   let chunkString = element.str.trim().split(".");
-  //   // console.log(element.str.trim());
-  //   fs.appendFileSync(
-  //     "./chunkStrings.json",
-  //     JSON.stringify(chunkString) + "\n"
-  //   );
-  //   summaryArray.forEach((sentences) => {
-  //     chunkString.forEach((chunkstrs) => {
-  //       if (chunkstrs != "") {
-  //         if (sentences.includes(chunkstrs)) {
-  //           chunkIndexes.push({
-  //             index: index,
-  //             str: chunkstrs,
-  //           });
-  //           // console.log(element);
-  //         }
-  //       }
-  //     });
-  //   });
-  // });
 
   // console.log(chunkIndexes);
   // fs.writeFileSync("./matchedChunks.json", JSON.stringify(chunkIndexes));
