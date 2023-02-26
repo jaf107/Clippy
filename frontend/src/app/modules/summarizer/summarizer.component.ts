@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as extractiveSummary from '../../../assets/preprocessed.json';
+import { PdfShareService } from '../shared/pdf-share.service';
 
 
 interface chunk {
@@ -16,14 +17,30 @@ interface chunk {
 })
 export class SummarizerComponent implements OnInit{
 
+  constructor(
+    private pdfShareService : PdfShareService
+  ){}
+
   public summary : any = (extractiveSummary as any).default;
+
+  public currentChunkSummary : string = "Click any of the title to view its content summary";
+  public currentChunkTitle : string = "Select a Title";
 
   ngOnInit(){
     // this.summary = extractiveSummary;
     console.log(extractiveSummary);
     
-    // for(let i=0; i<this.summary.length; i++){
-    //   console.log(this.summary);
-    // }
   }
+
+
+  showChunkSummary(chunk : any){
+    this.currentChunkSummary = chunk.summaryText;
+    this.currentChunkTitle = chunk.title;
+  }
+
+  closeSummary(){
+    this.pdfShareService.setSummarizerOn("extractive", false);
+  }
+
+
 }

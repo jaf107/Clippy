@@ -25,8 +25,8 @@ export class PdfShareService {
       this.summarizerOnCheck.next(false);
     }
 
-    setSummarizerOn(type: string) {
-        this.summarizerOnCheck.next(true);
+    setSummarizerOn(type: string, onOff : boolean) {
+        this.summarizerOnCheck.next(onOff);
         this.summarizerType = type;
     }
 

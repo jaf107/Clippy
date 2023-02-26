@@ -8,19 +8,22 @@
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Titles
+                  {{currentChunkTitle}}
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                  <li *ngFor="let chunk of summary"><a class="dropdown-item" href="#">{{chunk.title}}</a></li>
+                  <li *ngFor="let chunk of summary"><a class="dropdown-item" (click)="showChunkSummary(chunk)">{{chunk.title}}</a></li>
                 </ul>
               </li>
+              <button type="button" class="close" aria-label="Close" (click)="closeSummary()">
+                <span aria-hidden="true" class="close-icon">&times;</span>
+              </button>
             </ul>
           </div>
         </div>
       </nav>
       <div class="content">
-        <div class="single" *ngFor="let chunk of summary">
-          <h1>{{chunk.summaryText}}</h1>
+        <div class="single">
+          <p>{{currentChunkSummary}}</p>
         </div>
       </div>
 </div>

@@ -24,6 +24,6 @@ export class SidebarComponent {
   }
 
   toggleSummarizer(type: string){
-    this.pdfShareService.setSummarizerOn(type);
+    this.pdfShareService.setSummarizerOn(type, true);
   }
 }
