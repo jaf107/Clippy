@@ -15,6 +15,9 @@ export class NavbarComponent implements OnInit{
 
   ngOnInit(){
     this.userName = this.tokenStorage.getUser().username;
+    if(this.userName == null){
+      this.userName = 'Guest';
+    }
     console.log(this.userName);
   }
 
