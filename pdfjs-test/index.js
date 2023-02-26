@@ -483,9 +483,7 @@ async function createChunkForHighlighting() {
   let chunkSentencesArr = [];
   originalArr.map((page) => {
     let pageChunks = page.map((chunk) => {
-      let chunkSentences = breakTextChunkIntoSentence(chunk.str).filter(
-        (item) => item.length > 0
-      );
+      let chunkSentences = breakTextChunkIntoSentence(chunk.str);
       return chunkSentences;
     });
     chunkSentencesArr.push(pageChunks.filter((item) => item.length > 0));
@@ -494,16 +492,85 @@ async function createChunkForHighlighting() {
   fs.writeFileSync("./test.json", JSON.stringify(chunkSentencesArr));
 
   let highlightsSegments = [];
+  let stillCountingSentence = false;
+  let temp = {
+    sentence: "",
+    segment: [],
+  };
   for (let pageIndex = 0; pageIndex < chunkSentencesArr.length; pageIndex++) {
     let pageChunks = chunkSentencesArr[pageIndex];
     for (let chunkIndex = 0; chunkIndex < pageChunks.length; chunkIndex++) {
       let chunk = pageChunks[chunkIndex];
-      console.log(chunk);
+
+      if (chunk.length > 1) {
+        // Start
+        if (stillCountingSentence) {
+          temp.sentence += chunk[0];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+
+          highlightsSegments.push(temp);
+          // reset temp
+          temp = {
+            sentence: "",
+            segment: [],
+          };
+
+          stillCountingSentence = false;
+        }
+
+        // Middle
+        for (let i = 1; i < chunk.length - 1; i++) {
+          temp.sentence += chunk[i];
+          temp.segment.push({
+            str: chunk[i],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+
+          highlightsSegments.push(temp);
+          // reset temp
+          temp = {
+            sentence: "",
+            segment: [],
+          };
+        }
+
+        // End
+        stillCountingSentence = true;
+        temp.sentence += chunk[chunk.length - 1];
+        temp.segment.push({
+          str: chunk[chunk.length - 1],
+          pageNo: pageIndex + 1,
+          chunkIndex: chunkIndex,
+        });
+      } else {
+        if (stillCountingSentence) {
+          temp.sentence += chunk[chunk.length - 1];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+        } else {
+          stillCountingSentence = true;
+          temp.sentence += chunk[chunk.length - 1];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+        }
+      }
     }
   }
+  // console.log(highlightsSegments);
+  fs.writeFileSync("./segments.json", JSON.stringify(highlightsSegments));
 
   // console.log(chunkIndexes);
-  // fs.writeFileSync("./matchedChunks.json", JSON.stringify(chunkIndexes));
 
   let maxLimit = originalArr.length;
   for (let i = 0; i < maxLimit; i++) {}
@@ -536,9 +603,7 @@ async function objectForIndex(index) {
 
 // createJsonObjectFromPdf(src);
 function breakTextChunkIntoSentence(textChunk) {
-  let sentences = textChunk
-    .split(/[.?!]/g)
-    .filter((sumSentence) => sumSentence.length > 0);
+  let sentences = textChunk.split(/[.?!]/g);
   return sentences;
 }
 
