@@ -1,19 +1,13 @@
 <app-navbar></app-navbar>
 <div class="container-fluid">
-   <div class="left" [ngStyle]="{'width': summarizerOn == true ? '70%':'96%'}" *ngIf="!graphOn">
-      <ngx-extended-pdf-viewer *ngIf="pdfPath"    
-      [(src)]="pdfPath" [textLayer]="true"
-      (textLayerRendered)=highlightWords($event); 
-      [page]="1" [useBrowserLocale]="true" 
-      [showHandToolButton]="true"
-      [showEditor]="true" 
-      [handTool]="false" 
-      theme="dark" 
-      backgroundColor='#404040' 
-      (pdfLoaded)="loaded()"
-      (pdfLoadingFailed)="failed()" 
-      (pdfLoadingStarts)="starts()">
-      </ngx-extended-pdf-viewer>
+   <div class="left" [ngStyle]="{'width': summarizerOn == true ? '70%':'96%'}">
+      
+      <pdf-viewer [src]="pdfPath"
+              [render-text]="true"
+              [original-size]="false"
+              style="width: 800px; height: 800px"
+      ></pdf-viewer>
+
    </div>
    <div class="left" [ngStyle]="{'visibility': graphOn == true ? 'visible':'hidden'}">
       <div class="graphCanvas">
