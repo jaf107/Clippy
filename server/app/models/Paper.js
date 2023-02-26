@@ -5,6 +5,9 @@ const paperSchema = new mongoose.Schema({
   paper_id: {
     type: String,
   },
+  title: {
+    type: String,
+  },
   user_id: {
     type: String,
     ref: "User",

@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
       paper_id: {
         type: String,
       },
-      url: {
-        type: String,
+      openedAt: {
+        type: Date,
       },
     },
   ],

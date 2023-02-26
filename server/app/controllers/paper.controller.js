@@ -26,58 +26,79 @@ class CitationEdge {
 }
 
 exports.uploadPaper = async (req, res) => {
-  const result = await cloudinary.v2.uploader
-    .upload(req.params.id, {
-      folder: "papers",
-    })
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => console.log(err));
   var paper = {
     user_id: req.userId,
-    public_id: result.public_id,
-    url: result.secure_url,
   };
   await Paper.create(paper);
   res.status(200).send("Paper Added");
 };
 
-exports.uploadPaperById = async (req, res) => {
-  const ppr = await Paper.find({ paper_id: req.body.paper_id });
-  if (ppr.length > 0) {
-    res.status(200).send(ppr);
-  } else {
-    const paper_data = await axios
-      .get(
-        SEMANTIC_SCHOLAR_API +
-          req.body.paper_id +
-          "?fields=isOpenAccess,openAccessPdf"
-      )
-      .catch((err) => res.status(404).send("Paper Not Found"));
+exports.searchPaperByTitle = async (req, res) => {
+  const paper_data = await axios
+    .get(
+      SEMANTIC_SCHOLAR_API +
+        `search?query=${req.body.title}&fields=isOpenAccess,openAccessPdf`
+    )
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => res.status(404).send("Paper Not Found"));
+};
 
-    if (paper_data.data) {
+exports.searchPaperById = async (req, res) => {
+  const paper_data = await axios
+    .get(
+      SEMANTIC_SCHOLAR_API +
+        req.body.paper_id +
+        "?fields=isOpenAccess,openAccessPdf,title,abstract"
+    )
+    .catch((err) => res.status(404).send("Paper Not Found"));
+  if (paper_data.data) {
+    const ppr = await Paper.findOne({ paper_id: paper_data.data.paperId });
+    if (ppr) {
+      res.status(200).send(ppr);
+    } else {
       if (!paper_data.data.isOpenAccess || !paper_data.data.openAccessPdf)
         res.status(404).send("Paper Not Accessible");
       else {
-        const result = await cloudinary.v2.uploader
-          .upload(paper_data.data.openAccessPdf.url, {
-            folder: "papers",
+        var paper = {
+          title: paper_data.data.title,
+          paper_id: req.body.paper_id,
+          public_id: result.public_id,
+          knowledge_graph: "",
+          abstract: paper_data.data.abstract,
+          url: paper_data.data.openAccessPdf.url,
+        };
+        await axios
+          .get(paper.url, { responseType: "arraybuffer" })
+          .then((response) => {
+            res
+              .status(200)
+              .send(
+                "data:application/pdf;base64," +
+                  Buffer.from(response.data, "binary").toString("base64")
+              );
           })
-          .catch((err) => res.status(500).send(err));
-
-        if (result) {
-          var paper = {
-            // user_id: req.userId,
-            paper_id: req.body.paper_id,
-            public_id: result.public_id,
-            knowledge_graph: "",
-            abstract: "",
-            url: result.secure_url,
-          };
-          await Paper.create(paper);
-          res.status(200).send(paper);
-        }
+          .catch((err) => {
+            res.status(err.response.status).send(err.message);
+          });
+        await Paper.create(paper);
+        // if (req.userId) {
+        //   const user = await User.findById(req.userId);
+        //   const history = {
+        //     paper_id: req.body.paper_id,
+        //     title: paper_data.data.title,
+        //     openedAt: Date.now,
+        //   };
+        //   if (
+        //     user.history.findIndex(
+        //       (obj) => obj.paper_id === req.body.paper_id
+        //     ) !== -1
+        //   );
+        //   {
+        //   }
+        //   user.history.push();
+        // }
       }
     }
   }
@@ -86,7 +107,7 @@ exports.uploadPaperById = async (req, res) => {
 exports.getCitation = async (req, res) => {
   const rootPaperId = req.params.id;
   var paperInDB = await Paper.findOne({ paper_id: rootPaperId });
-  if (paperInDB.knowledge_graph) {
+  if (paperInDB && paperInDB.knowledge_graph != "") {
     res.status(200).send(JSON.parse(paperInDB.knowledge_graph));
   } else {
     var citationResponse = await axios
@@ -131,7 +152,6 @@ exports.getCitation = async (req, res) => {
       { upsert: true }
     ).catch((err) => res.status(200).send(err));
     if (result) {
-      console.log(result);
       res.status(200).send(JSON.stringify(edgeList));
     }
   }
