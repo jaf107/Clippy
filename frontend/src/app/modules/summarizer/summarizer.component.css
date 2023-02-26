@@ -1,0 +1,24 @@
+.content{
+    width: 100%;
+    padding: 1.5rem;
+    text-align: justify;
+    margin: auto;
+    background-color: white;
+    overflow-wrap: wrap;
+    word-wrap: break-word;
+    overflow-y: auto;
+    height: 40rem;
+}
+
+.close{
+    position: absolute;
+    top: 0.1%;
+    right: 2%;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.close-icon{
+    font-size: 2rem;
+}

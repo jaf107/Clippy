@@ -4,6 +4,7 @@ span{
 }
 
 .navbar{
+    z-index: 500;
     background-color: #404040;
     box-shadow: 0 4px 2px -2px #333333;
 }
@@ -19,4 +20,15 @@ span{
 
 .dropdown-menu{
     background-color: #ffffff9d;
+}
+
+.profile{
+    padding-left: 0.6rem;
+    /* border: 1px solid #ffffff9d; */
+    border-radius: 5px;
+    display: inline-flex;
+}
+
+.navbar-text:hover{
+    color: white;
 }

@@ -1,9 +1,46 @@
 import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PdfShareService {
 
-  constructor() { }
+  public file: any;
+
+  public summarizerType: string = '';
+
+  sendFile(uploadedFile: any){
+    this.file = uploadedFile;
+  }
+
+  getFile():any{
+    console.log(this.file);
+    return this.file;
+  }
+
+    summarizerOnCheck: Subject<boolean> = new Subject<boolean>();
+    summarizerTypeCheck: Subject<string> = new Subject<string>();
+
+    constructor(){
+      this.summarizerOnCheck.next(false);
+    }
+
+    setSummarizerOn(type: string, onOff : boolean) {
+        this.summarizerOnCheck.next(onOff);
+        this.summarizerTypeCheck.next(type);
+    }
+
+    setSummarizerOff(onOff : boolean){
+      this.summarizerOnCheck.next(onOff);
+    }
+
+    getSummarizerStatus(): Observable<boolean> {
+      return this.summarizerOnCheck.asObservable();
+    }
+
+    getSummarizerType(): Observable<string> {
+      return this.summarizerTypeCheck.asObservable();
+    }
+
 }
