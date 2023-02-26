@@ -8,5 +8,6 @@ const router = new express.Router();
 // router.route("").get([authJwt.verifyToken], controller.userBoard);
 router.route("/uploadById").get(controller.uploadPaperById);
 // router.route("/upload").post(controller.uploadPaperByUrl);
+router.route("/:id/citations").get(controller.getCitation);
 
 module.exports = router;

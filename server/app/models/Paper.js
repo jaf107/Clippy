@@ -13,9 +13,11 @@ const paperSchema = new mongoose.Schema({
   public_id: {
     type: String,
   },
-  knowlegde_graph: {
-    edge_list: [],
-  },
+  knowlegde_graph: [
+    {
+      type: Object,
+    },
+  ],
   abstract: {
     type: String,
   },
