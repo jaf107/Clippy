@@ -14,9 +14,9 @@ import { HomeComponent } from './modules/home/home.component';
 import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-graph.component';
 import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { SummarizerComponent } from './modules/summarizer/summarizer.component';
-import { TooltipModule } from 'ng2-tooltip-directive';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 @NgModule({
   declarations: [
@@ -38,10 +38,11 @@ import { TooltipModule } from 'ng2-tooltip-directive';
     FormsModule,
     ToastrModule.forRoot(),
     AppRoutingModule,
-    NgxExtendedPdfViewerModule,
-    TooltipModule
+    PdfViewerModule
   ],
   providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+platformBrowserDynamic().bootstrapModule(AppModule);
+
