@@ -9,5 +9,5 @@ const router = new express.Router();
 router.route("/uploadById").get(controller.uploadPaperById);
 // router.route("/upload").post(controller.uploadPaperByUrl);
 router.route("/:id/citations").get(controller.getCitation);
-
+router.route("/getReference").post(controller.getReferenceList);
 module.exports = router;

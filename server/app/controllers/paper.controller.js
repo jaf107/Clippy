@@ -4,6 +4,8 @@ const Paper = db.paper;
 const cloudinary = require("cloudinary");
 const axios = require("axios");
 const SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1/paper/";
+const pdfjsLib = require('pdfjs-dist/legacy/build/pdf');
+const fetch = require('node-fetch');
 
 class CitationNode {
   constructor(paperId, title, level) {
@@ -133,3 +135,26 @@ exports.getCitation = async (req, res) => {
     // }
   }
 };
+
+exports.getReferenceList = async (req, res) => {
+  console.log('called')
+  let pdfUrl = req.body.url;
+  //https://res.cloudinary.com/dpf3hdncd/image/upload/v1677416689/papers/xushnozuswrczvz9tsvh.pdf
+  const pdfData = await fetch(pdfUrl).then(res => res.arrayBuffer());
+  console.log('pdfdata: ',pdfData)
+  const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+  const anotationslist = [];
+  console.log('pdf: ',pdf)
+  // Iterate through all pages
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    
+    // Get annotations from page
+    const annotations = await page.getAnnotations();
+
+    // Print annotations to console
+    console.log(`Page ${i} annotations: `, annotations);
+    anotationslist.push(...annotations)
+  }
+  res.send(anotationslist)
+}
