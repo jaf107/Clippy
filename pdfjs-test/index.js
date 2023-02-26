@@ -472,9 +472,9 @@ async function createChunkForHighlighting() {
 
   let summaryArray = [];
   paragraphs.forEach((element) => {
-    if (element.title.toLowerCase().localeCompare("references")) {
-      let summarySentencesArr = breakTextChunkIntoSentence(element.summaryText);
-      summaryArray.push(summarySentencesArr);
+    if (element.title.toLowerCase().localeCompare("references") !== 0) {
+      // let summarySentencesArr = breakTextChunkIntoSentence(element.summaryText);
+      summaryArray.push(element.summaryText);
     }
   });
   fs.truncateSync("./sentences.json", 0);
@@ -494,9 +494,8 @@ async function createChunkForHighlighting() {
   fs.writeFileSync("./test.json", JSON.stringify(chunkSentencesArr));
 
   let highlightsSegments = [];
-  for (let i = 0; i < summaryArray.length; i++) {
-    let summary = summaryArray[i];
-    for (let j = 0; j < summary.length; j++) {}
+  for (let pageIndex = 0; pageIndex < chunkSentencesArr.length; pageIndex++) {
+    // for(let i=0; ) PDFDocumentProxy
   }
 
   // originalArr.forEach((element, index) => {
