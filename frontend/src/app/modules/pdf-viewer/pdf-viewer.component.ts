@@ -1,12 +1,64 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, OnInit} from '@angular/core';
 import { NgxExtendedPdfViewerService, pdfDefaultOptions, TextLayerRenderedEvent } from 'ngx-extended-pdf-viewer';
+import { PdfShareService } from '../shared/pdf-share.service';
 
 @Component({
   selector: 'app-pdf-viewer',
   templateUrl: './pdf-viewer.component.html',
   styleUrls: ['./pdf-viewer.component.css']
 })
-export class PdfViewerComponent {
+export class PdfViewerComponent implements AfterViewInit, OnInit {
+
+  pdfPath: any;
+
+  public summarizerOn: boolean;
+
+  ngOnInit(){
+    
+    this.pdfPath = this.pdfShareService.getFile();
+    console.log(this.pdfPath);
+
+    // this.pdfPath = "./assets/SCORE_intro.pdf";
+
+    this.summarizerOn = false;
+
+    this.pdfShareService.getSummarizerStatus().subscribe((value)=>{
+      this.summarizerOn = value;
+      console.log("Summary is on " + this.summarizerOn);
+    })
+
+  }
+
+  ngAfterViewInit(){
+    console.log("View is initialized " + this.pdfPath);
+  }
+
+  constructor(private pdfService: NgxExtendedPdfViewerService, public pdfShareService: PdfShareService) {
+    /* More likely than not you don't need to tweak the pdfDefaultOptions.
+       They are a collecton of less frequently used options.
+       To illustrate how they're used, here are two example settings: */
+    pdfDefaultOptions.doubleTapZoomFactor = '150%'; // The default value is '200%'
+    pdfDefaultOptions.maxCanvasPixels = 4096 * 4096 * 5; // The default value is 4096 * 4096 pixels,
+    // but most devices support much higher resolutions.
+    // Increasing this setting allows your users to use higher zoom factors,
+    // trading image quality for performance.
+    
+    }
+
+    loaded(){
+      console.log("Loaded " + this.pdfPath);
+    }
+
+    failed(){
+      console.log("Failed " + this.pdfPath);
+    }
+
+    starts(){
+      console.log("Started " + this.pdfPath);
+    }
+
+
+
   private alreadyRendered: Array<HTMLSpanElement> = [];
 
   private _showBoxes = false;
@@ -92,16 +144,4 @@ export class PdfViewerComponent {
     }
   }
 
-  constructor(private pdfService: NgxExtendedPdfViewerService) {
-    /* More likely than not you don't need to tweak the pdfDefaultOptions.
-       They are a collecton of less frequently used options.
-       To illustrate how they're used, here are two example settings: */
-    pdfDefaultOptions.doubleTapZoomFactor = '150%'; // The default value is '200%'
-    pdfDefaultOptions.maxCanvasPixels = 4096 * 4096 * 5; // The default value is 4096 * 4096 pixels,
-    // but most devices support much higher resolutions.
-    // Increasing this setting allows your users to use higher zoom factors,
-    // trading image quality for performance.
-
-    
-    }
 }
