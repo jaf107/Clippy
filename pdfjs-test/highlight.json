@@ -1,917 +1,917 @@
 [
-    {
-        "sentence": " Reading and trying to understand otherpeople’s code in such repositories is a difficult and unpleas-ant process for many software developers, especially whenthe code is not sufficiently commented",
-        "segment": [
-            {
-                "str": " Reading and trying to understand other",
-                "pageNo": 1,
-                "chunkIndex": 34
-            },
-            {
-                "str": "people’s code in such repositories is a difficult and unpleas-",
-                "pageNo": 1,
-                "chunkIndex": 35
-            },
-            {
-                "str": "ant process for many software developers, especially when",
-                "pageNo": 1,
-                "chunkIndex": 36
-            },
-            {
-                "str": "the code is not sufficiently commented",
-                "pageNo": 1,
-                "chunkIndex": 37
-            }
-        ]
-    },
-    {
-        "sentence": " For example, if theJava method in Fig",
-        "segment": [
-            {
-                "str": " For example, if the",
-                "pageNo": 1,
-                "chunkIndex": 37
-            },
-            {
-                "str": "Java method in Fig",
-                "pageNo": 1,
-                "chunkIndex": 38
-            }
-        ]
-    },
-    {
-        "sentence": " 1 does not have the comment in the be-ginning, it will take the programmer quite some efforts tograsp the meaning of the code",
-        "segment": [
-            {
-                "str": " 1 does not have the comment in the be-",
-                "pageNo": 1,
-                "chunkIndex": 38
-            },
-            {
-                "str": "ginning, it will take the programmer quite some efforts to",
-                "pageNo": 1,
-                "chunkIndex": 39
-            },
-            {
-                "str": "grasp the meaning of the code",
-                "pageNo": 1,
-                "chunkIndex": 40
-            }
-        ]
-    },
-    {
-        "sentence": " However, with a meaning-ful sentence such as “calculates dot product of two points”as a descriptive comment, programmer’s productivity can betremendously improved",
-        "segment": [
-            {
-                "str": " However, with a meaning-",
-                "pageNo": 1,
-                "chunkIndex": 40
-            },
-            {
-                "str": "ful sentence such as “calculates dot product of two points”",
-                "pageNo": 1,
-                "chunkIndex": 41
-            },
-            {
-                "str": "as a descriptive comment, programmer’s productivity can be",
-                "pageNo": 1,
-                "chunkIndex": 42
-            },
-            {
-                "str": "tremendously improved",
-                "pageNo": 1,
-                "chunkIndex": 43
-            }
-        ]
-    },
-    {
-        "sentence": " Table 1 shows thenumber of methods in ten actively developed Java reposito-ries from Github, and those of which annotated with a de-scriptive comment",
-        "segment": [
-            {
-                "str": " Table 1 shows the",
-                "pageNo": 1,
-                "chunkIndex": 97
-            },
-            {
-                "str": "number of methods in ten actively developed Java reposito-",
-                "pageNo": 1,
-                "chunkIndex": 98
-            },
-            {
-                "str": "ries from Github, and those of which annotated with a de-",
-                "pageNo": 1,
-                "chunkIndex": 99
-            },
-            {
-                "str": "scriptive comment",
-                "pageNo": 1,
-                "chunkIndex": 100
-            }
-        ]
-    },
-    {
-        "sentence": " On average, only 15",
-        "segment": [
-            {
-                "str": " On average, only 15",
-                "pageNo": 1,
-                "chunkIndex": 100
-            }
-        ]
-    },
-    {
-        "sentence": "4% of the methodsare commented",
-        "segment": [
-            {
-                "str": "4% of the methods",
-                "pageNo": 1,
-                "chunkIndex": 100
-            },
-            {
-                "str": "are commented",
-                "pageNo": 1,
-                "chunkIndex": 101
-            }
-        ]
-    },
-    {
-        "sentence": "To automatically generate descriptive comments fromsource code, one needs a way of accurately representing thesemantics of code blocks",
-        "segment": [
-            {
-                "str": "",
-                "pageNo": 1,
-                "chunkIndex": 101
-            },
-            {
-                "str": "To automatically generate descriptive comments from",
-                "pageNo": 1,
-                "chunkIndex": 102
-            },
-            {
-                "str": "source code, one needs a way of accurately representing the",
-                "pageNo": 1,
-                "chunkIndex": 103
-            },
-            {
-                "str": "semantics of code blocks",
-                "pageNo": 1,
-                "chunkIndex": 104
-            }
-        ]
-    },
-    {
-        "sentence": " One potential solution is to treateach code block as a document and represent it by a topicdistribution using models such as LDA (Blei, Ng, and Jor-dan 2003)",
-        "segment": [
-            {
-                "str": " One potential solution is to treat",
-                "pageNo": 1,
-                "chunkIndex": 104
-            },
-            {
-                "str": "each code block as a document and represent it by a topic",
-                "pageNo": 1,
-                "chunkIndex": 105
-            },
-            {
-                "str": "distribution using models such as LDA (Blei, Ng, and Jor-",
-                "pageNo": 1,
-                "chunkIndex": 106
-            },
-            {
-                "str": "dan 2003)",
-                "pageNo": 1,
-                "chunkIndex": 107
-            }
-        ]
-    },
-    {
-        "sentence": " For example,the comment generated by McBurney’s model for Fig",
-        "segment": [
-            {
-                "str": " For example,",
-                "pageNo": 1,
-                "chunkIndex": 129
-            },
-            {
-                "str": "the comment generated by McBurney’s model for Fig",
-                "pageNo": 1,
-                "chunkIndex": 130
-            }
-        ]
-    },
-    {
-        "sentence": " Recursive NN has previously been applied toparse trees of natural language sentences, such as the ex-ample of two sentences in Fig",
-        "segment": [
-            {
-                "str": " Recursive NN has previously been applied to",
-                "pageNo": 1,
-                "chunkIndex": 140
-            },
-            {
-                "str": "parse trees of natural language sentences, such as the ex-",
-                "pageNo": 1,
-                "chunkIndex": 141
-            },
-            {
-                "str": "ample of two sentences in Fig",
-                "pageNo": 1,
-                "chunkIndex": 142
-            }
-        ]
-    },
-    {
-        "sentence": " We then use a Recurrent Neu-ral Network to learn to generate meaningful comments",
-        "segment": [
-            {
-                "str": " We then use a Recurrent Neu-",
-                "pageNo": 2,
-                "chunkIndex": 138
-            },
-            {
-                "str": "ral Network to learn to generate meaningful comments",
-                "pageNo": 2,
-                "chunkIndex": 139
-            }
-        ]
-    },
-    {
-        "sentence": " Code-RNN is an arbitrary tree formwhile other recursive neural nets used in NLP are typicallybinary trees",
-        "segment": [
-            {
-                "str": " Code-RNN is an arbitrary tree form",
-                "pageNo": 2,
-                "chunkIndex": 197
-            },
-            {
-                "str": "while other recursive neural nets used in NLP are typically",
-                "pageNo": 2,
-                "chunkIndex": 198
-            },
-            {
-                "str": "binary trees",
-                "pageNo": 2,
-                "chunkIndex": 199
-            }
-        ]
-    },
-    {
-        "sentence": " 3 shows an example of Code-RNN for asmall piece of Java code",
-        "segment": [
-            {
-                "str": " 3 shows an example of Code-RNN for a",
-                "pageNo": 2,
-                "chunkIndex": 199
-            },
-            {
-                "str": "small piece of Java code",
-                "pageNo": 2,
-                "chunkIndex": 200
-            }
-        ]
-    },
-    {
-        "sentence": "In Code-RNN, every parse tree of a program is encodedinto a neural network, where the structure of the networkis exactly the parse tree itself and each syntactic node inthe parse tree is represented by a vector representation",
-        "segment": [
-            {
-                "str": "",
-                "pageNo": 2,
-                "chunkIndex": 200
-            },
-            {
-                "str": "In Code-RNN, every parse tree of a program is encoded",
-                "pageNo": 2,
-                "chunkIndex": 201
-            },
-            {
-                "str": "into a neural network, where the structure of the network",
-                "pageNo": 2,
-                "chunkIndex": 202
-            },
-            {
-                "str": "is exactly the parse tree itself and each syntactic node in",
-                "pageNo": 2,
-                "chunkIndex": 203
-            },
-            {
-                "str": "the parse tree is represented by a vector representation",
-                "pageNo": 2,
-                "chunkIndex": 204
-            }
-        ]
-    },
-    {
-        "sentence": " More on the semantics of identifier will be dis-cussed later in this section",
-        "segment": [
-            {
-                "str": " More on the semantics of identifier will be dis-",
-                "pageNo": 2,
-                "chunkIndex": 210
-            },
-            {
-                "str": "cussed later in this section",
-                "pageNo": 2,
-                "chunkIndex": 211
-            }
-        ]
-    },
-    {
-        "sentence": " However, one challenge toutilize the code block representation vector in Recurrent NNis that we can not feed the code block representation vectorto the Recurrent NN cell directly",
-        "segment": [
-            {
-                "str": " However, one challenge to",
-                "pageNo": 3,
-                "chunkIndex": 182
-            },
-            {
-                "str": "utilize the code block representation vector in Recurrent NN",
-                "pageNo": 3,
-                "chunkIndex": 183
-            },
-            {
-                "str": "is that we can not feed the code block representation vector",
-                "pageNo": 3,
-                "chunkIndex": 184
-            },
-            {
-                "str": "to the Recurrent NN cell directly",
-                "pageNo": 3,
-                "chunkIndex": 185
-            }
-        ]
-    },
-    {
-        "sentence": " Thenwe feed code block vector into the RNN (Recurrent NeuralNetwork) model at every step",
-        "segment": [
-            {
-                "str": " Then",
-                "pageNo": 3,
-                "chunkIndex": 241
-            },
-            {
-                "str": "we feed code block vector into the RNN (Recurrent Neural",
-                "pageNo": 3,
-                "chunkIndex": 242
-            },
-            {
-                "str": "Network) model at every step",
-                "pageNo": 3,
-                "chunkIndex": 243
-            }
-        ]
-    },
-    {
-        "sentence": " 4, we in-put the START token as the initial input of model and feedthe code block vector into the hidden layer",
-        "segment": [
-            {
-                "str": " 4, we in-",
-                "pageNo": 3,
-                "chunkIndex": 243
-            },
-            {
-                "str": "put the START token as the initial input of model and feed",
-                "pageNo": 3,
-                "chunkIndex": 244
-            },
-            {
-                "str": "the code block vector into the hidden layer",
-                "pageNo": 3,
-                "chunkIndex": 245
-            }
-        ]
-    },
-    {
-        "sentence": " In the second part, weshow the effectiveness of our comment generation modelby comparing with several state-of-the-art approaches inboth quantitative and qualitative assessments",
-        "segment": [
-            {
-                "str": " In the second part, we",
-                "pageNo": 4,
-                "chunkIndex": 255
-            },
-            {
-                "str": "show the effectiveness of our comment generation model",
-                "pageNo": 4,
-                "chunkIndex": 256
-            },
-            {
-                "str": "by comparing with several state-of-the-art approaches in",
-                "pageNo": 4,
-                "chunkIndex": 257
-            },
-            {
-                "str": "both quantitative and qualitative assessments",
-                "pageNo": 4,
-                "chunkIndex": 258
-            }
-        ]
-    },
-    {
-        "sentence": " The sourcecode of our approach as well as all data set is available athttps://adapt",
-        "segment": [
-            {
-                "str": " The source",
-                "pageNo": 4,
-                "chunkIndex": 258
-            },
-            {
-                "str": "code of our approach as well as all data set is available at",
-                "pageNo": 4,
-                "chunkIndex": 259
-            },
-            {
-                "str": "https://adapt",
-                "pageNo": 4,
-                "chunkIndex": 260
-            }
-        ]
-    },
-    {
-        "sentence": "Our data set comes from the Google Code Jam contest(2008∼2016), which there are multiple problems, each as-sociated with a number of correct solutions contributed byprogrammers",
-        "segment": [
-            {
-                "str": "",
-                "pageNo": 4,
-                "chunkIndex": 269
-            },
-            {
-                "str": "Our data set comes from the Google Code Jam contest",
-                "pageNo": 4,
-                "chunkIndex": 270
-            },
-            {
-                "str": "(2008",
-                "pageNo": 4,
-                "chunkIndex": 271
-            },
-            {
-                "str": "∼",
-                "pageNo": 4,
-                "chunkIndex": 272
-            },
-            {
-                "str": "2016), which there are multiple problems, each as-",
-                "pageNo": 4,
-                "chunkIndex": 273
-            },
-            {
-                "str": "sociated with a number of correct solutions contributed by",
-                "pageNo": 4,
-                "chunkIndex": 274
-            },
-            {
-                "str": "programmers",
-                "pageNo": 4,
-                "chunkIndex": 275
-            }
-        ]
-    },
-    {
-        "sentence": " The set ofsolutions for the same problem are considered to functionidentically and belong to the same class in this work",
-        "segment": [
-            {
-                "str": " The set of",
-                "pageNo": 4,
-                "chunkIndex": 279
-            },
-            {
-                "str": "solutions for the same problem are considered to function",
-                "pageNo": 4,
-                "chunkIndex": 280
-            },
-            {
-                "str": "identically and belong to the same class in this work",
-                "pageNo": 4,
-                "chunkIndex": 281
-            }
-        ]
-    },
-    {
-        "sentence": " Weuse the solutions (10,724 methods) of 6 problems as trainingset and the solutions (30 methods) of the other 6 problemsas the test set",
-        "segment": [
-            {
-                "str": " We",
-                "pageNo": 4,
-                "chunkIndex": 281
-            },
-            {
-                "str": "use the solutions (10,724 methods) of 6 problems as training",
-                "pageNo": 4,
-                "chunkIndex": 282
-            },
-            {
-                "str": "set and the solutions (30 methods) of the other 6 problems",
-                "pageNo": 4,
-                "chunkIndex": 283
-            },
-            {
-                "str": "as the test set",
-                "pageNo": 4,
-                "chunkIndex": 284
-            }
-        ]
-    },
-    {
-        "sentence": "generate sentences",
-        "segment": [
-            {
-                "str": "",
-                "pageNo": 5,
-                "chunkIndex": 197
-            },
-            {
-                "str": "generate sentences",
-                "pageNo": 5,
-                "chunkIndex": 198
-            }
-        ]
-    },
-    {
-        "sentence": " For one project, we separate the commentedmethods into three parts: training set, validation set and testset",
-        "segment": [
-            {
-                "str": " For one project, we separate the commented",
-                "pageNo": 5,
-                "chunkIndex": 336
-            },
-            {
-                "str": "methods into three parts: training set, validation set and test",
-                "pageNo": 5,
-                "chunkIndex": 337
-            },
-            {
-                "str": "set",
-                "pageNo": 5,
-                "chunkIndex": 338
-            }
-        ]
-    },
-    {
-        "sentence": " Existing work in source code min-ing include code search, clone detection, software evolution,models of software development processes, bug localization,software bug prediction, code summarization and so on",
-        "segment": [
-            {
-                "str": " Existing work in source code min-",
-                "pageNo": 6,
-                "chunkIndex": 319
-            },
-            {
-                "str": "ing include code search, clone detection, software evolution,",
-                "pageNo": 6,
-                "chunkIndex": 320
-            },
-            {
-                "str": "models of software development processes, bug localization,",
-                "pageNo": 6,
-                "chunkIndex": 321
-            },
-            {
-                "str": "software bug prediction, code summarization and so on",
-                "pageNo": 6,
-                "chunkIndex": 322
-            }
-        ]
-    },
-    {
-        "sentence": " Ourwork can be categorized as code summarization and com-ment generation",
-        "segment": [
-            {
-                "str": " Our",
-                "pageNo": 6,
-                "chunkIndex": 322
-            },
-            {
-                "str": "work can be categorized as code summarization and com-",
-                "pageNo": 6,
-                "chunkIndex": 323
-            },
-            {
-                "str": "ment generation",
-                "pageNo": 6,
-                "chunkIndex": 324
-            }
-        ]
-    },
-    {
-        "sentence": "Sridhara et al",
-        "segment": [
-            {
-                "str": "",
-                "pageNo": 6,
-                "chunkIndex": 324
-            },
-            {
-                "str": "Sridhara et al",
-                "pageNo": 6,
-                "chunkIndex": 325
-            }
-        ]
-    },
-    {
-        "sentence": " (Sridhara et al",
-        "segment": [
-            {
-                "str": " (Sridhara et al",
-                "pageNo": 6,
-                "chunkIndex": 325
-            }
-        ]
-    },
-    {
-        "sentence": " (Moreno et al",
-        "segment": [
-            {
-                "str": " (Moreno et al",
-                "pageNo": 7,
-                "chunkIndex": 2
-            }
-        ]
-    },
-    {
-        "sentence": " 2013) also proposed atemplate based method but it is used on summarizing Javaclasses",
-        "segment": [
-            {
-                "str": " 2013) also proposed a",
-                "pageNo": 7,
-                "chunkIndex": 2
-            },
-            {
-                "str": "template based method but it is used on summarizing Java",
-                "pageNo": 7,
-                "chunkIndex": 3
-            },
-            {
-                "str": "classes",
-                "pageNo": 7,
-                "chunkIndex": 4
-            }
-        ]
-    },
-    {
-        "sentence": " (Rodeghero et al",
-        "segment": [
-            {
-                "str": " (Rodeghero et al",
-                "pageNo": 7,
-                "chunkIndex": 14
-            }
-        ]
-    },
-    {
-        "sentence": " 2014) presented an eye-tracking studyof programmers during source code summarization, a toolfor selecting keywords based on the findings of the eye-tracking study",
-        "segment": [
-            {
-                "str": " 2014) presented an eye-tracking study",
-                "pageNo": 7,
-                "chunkIndex": 14
-            },
-            {
-                "str": "of programmers during source code summarization, a tool",
-                "pageNo": 7,
-                "chunkIndex": 15
-            },
-            {
-                "str": "for selecting keywords based on the findings of the eye-",
-                "pageNo": 7,
-                "chunkIndex": 16
-            },
-            {
-                "str": "tracking study",
-                "pageNo": 7,
-                "chunkIndex": 17
-            }
-        ]
-    },
-    {
-        "sentence": "These models are invariably based on templates and care-ful selection of fragments of the input source code",
-        "segment": [
-            {
-                "str": "",
-                "pageNo": 7,
-                "chunkIndex": 17
-            },
-            {
-                "str": "These models are invariably based on templates and care-",
-                "pageNo": 7,
-                "chunkIndex": 18
-            },
-            {
-                "str": "ful selection of fragments of the input source code",
-                "pageNo": 7,
-                "chunkIndex": 19
-            }
-        ]
-    },
-    {
-        "sentence": " Like source code summarization, Allamanis etal",
-        "segment": [
-            {
-                "str": " Like source code summarization, Allamanis et",
-                "pageNo": 7,
-                "chunkIndex": 25
-            },
-            {
-                "str": "al",
-                "pageNo": 7,
-                "chunkIndex": 26
-            }
-        ]
-    },
-    {
-        "sentence": " (Allamanis et al",
-        "segment": [
-            {
-                "str": " (Allamanis et al",
-                "pageNo": 7,
-                "chunkIndex": 26
-            }
-        ]
-    },
-    {
-        "sentence": " 2015) proposed a continuous embed-ding model to suggest accurate method and class names",
-        "segment": [
-            {
-                "str": " 2015) proposed a continuous embed-",
-                "pageNo": 7,
-                "chunkIndex": 26
-            },
-            {
-                "str": "ding model to suggest accurate method and class names",
-                "pageNo": 7,
-                "chunkIndex": 27
-            }
-        ]
-    },
-    {
-        "sentence": "Iyer et al",
-        "segment": [
-            {
-                "str": "",
-                "pageNo": 7,
-                "chunkIndex": 27
-            },
-            {
-                "str": "Iyer et al",
-                "pageNo": 7,
-                "chunkIndex": 28
-            }
-        ]
-    },
-    {
-        "sentence": " Iyer et al",
-        "segment": [
-            {
-                "str": " Iyer et al",
-                "pageNo": 7,
-                "chunkIndex": 31
-            }
-        ]
-    },
-    {
-        "sentence": "’s workhas strong performance on two tasks, code summarizationand code retrieval",
-        "segment": [
-            {
-                "str": "’s work",
-                "pageNo": 7,
-                "chunkIndex": 31
-            },
-            {
-                "str": "has strong performance on two tasks, code summarization",
-                "pageNo": 7,
-                "chunkIndex": 32
-            },
-            {
-                "str": "and code retrieval",
-                "pageNo": 7,
-                "chunkIndex": 33
-            }
-        ]
-    },
-    {
-        "sentence": " This work is very similar to our work, inthat we both use the Recurrent NN to generate sentencesfor source code",
-        "segment": [
-            {
-                "str": " This work is very similar to our work, in",
-                "pageNo": 7,
-                "chunkIndex": 33
-            },
-            {
-                "str": "that we both use the Recurrent NN to generate sentences",
-                "pageNo": 7,
-                "chunkIndex": 34
-            },
-            {
-                "str": "for source code",
-                "pageNo": 7,
-                "chunkIndex": 35
-            }
-        ]
-    },
-    {
-        "sentence": " (Kuhn, Ducasse, andG ́ırba 2007) utilized the information of identifier names andcomments to mine topic of source code repositories",
-        "segment": [
-            {
-                "str": " (Kuhn, Ducasse, and",
-                "pageNo": 7,
-                "chunkIndex": 36
-            },
-            {
-                "str": "G ́",
-                "pageNo": 7,
-                "chunkIndex": 37
-            },
-            {
-                "str": "ırba 2007) utilized the information of identifier names and",
-                "pageNo": 7,
-                "chunkIndex": 38
-            },
-            {
-                "str": "comments to mine topic of source code repositories",
-                "pageNo": 7,
-                "chunkIndex": 39
-            }
-        ]
-    },
-    {
-        "sentence": " Rollins and Wing (Rollins andWing 1991) proposed an approach to find code with the sig-natures present in code",
-        "segment": [
-            {
-                "str": " Rollins and Wing (Rollins and",
-                "pageNo": 7,
-                "chunkIndex": 50
-            },
-            {
-                "str": "Wing 1991) proposed an approach to find code with the sig-",
-                "pageNo": 7,
-                "chunkIndex": 51
-            },
-            {
-                "str": "natures present in code",
-                "pageNo": 7,
-                "chunkIndex": 52
-            }
-        ]
-    },
-    {
-        "sentence": " (Garcia-Contreras, Morales, and Hermenegildo 2016) fo-cused on querying for semantic characteristics of code andproposed a new approach which combines semantic charac-teristics and keyword matching",
-        "segment": [
-            {
-                "str": " (Garcia-Contreras, Morales, and Hermenegildo 2016) fo-",
-                "pageNo": 7,
-                "chunkIndex": 54
-            },
-            {
-                "str": "cused on querying for semantic characteristics of code and",
-                "pageNo": 7,
-                "chunkIndex": 55
-            },
-            {
-                "str": "proposed a new approach which combines semantic charac-",
-                "pageNo": 7,
-                "chunkIndex": 56
-            },
-            {
-                "str": "teristics and keyword matching",
-                "pageNo": 7,
-                "chunkIndex": 57
-            }
-        ]
-    },
-    {
-        "sentence": " The method proposed in this papercan also benefit natural language search for code fragments",
-        "segment": [
-            {
-                "str": " The method proposed in this paper",
-                "pageNo": 7,
-                "chunkIndex": 108
-            },
-            {
-                "str": "can also benefit natural language search for code fragments",
-                "pageNo": 7,
-                "chunkIndex": 109
-            }
-        ]
-    },
-    {
-        "sentence": " This new Recursive Neural Network is theparse tree of the source code and we go through all the treefrom leaf nodes to root node to get the final representationvector",
-        "segment": [
-            {
-                "str": " This new Recursive Neural Network is the",
-                "pageNo": 7,
-                "chunkIndex": 121
-            },
-            {
-                "str": "parse tree of the source code and we go through all the tree",
-                "pageNo": 7,
-                "chunkIndex": 122
-            },
-            {
-                "str": "from leaf nodes to root node to get the final representation",
-                "pageNo": 7,
-                "chunkIndex": 123
-            },
-            {
-                "str": "vector",
-                "pageNo": 7,
-                "chunkIndex": 124
-            }
-        ]
-    }
+  {
+    "sentence": " Reading and trying to understand otherpeople’s code in such repositories is a difficult and unpleas-ant process for many software developers, especially whenthe code is not sufficiently commented",
+    "segment": [
+      {
+        "str": " Reading and trying to understand other",
+        "pageNo": 1,
+        "chunkIndex": 34
+      },
+      {
+        "str": "people’s code in such repositories is a difficult and unpleas-",
+        "pageNo": 1,
+        "chunkIndex": 35
+      },
+      {
+        "str": "ant process for many software developers, especially when",
+        "pageNo": 1,
+        "chunkIndex": 36
+      },
+      {
+        "str": "the code is not sufficiently commented",
+        "pageNo": 1,
+        "chunkIndex": 37
+      }
+    ]
+  },
+  {
+    "sentence": " For example, if theJava method in Fig",
+    "segment": [
+      {
+        "str": " For example, if the",
+        "pageNo": 1,
+        "chunkIndex": 37
+      },
+      {
+        "str": "Java method in Fig",
+        "pageNo": 1,
+        "chunkIndex": 38
+      }
+    ]
+  },
+  {
+    "sentence": " 1 does not have the comment in the be-ginning, it will take the programmer quite some efforts tograsp the meaning of the code",
+    "segment": [
+      {
+        "str": " 1 does not have the comment in the be-",
+        "pageNo": 1,
+        "chunkIndex": 38
+      },
+      {
+        "str": "ginning, it will take the programmer quite some efforts to",
+        "pageNo": 1,
+        "chunkIndex": 39
+      },
+      {
+        "str": "grasp the meaning of the code",
+        "pageNo": 1,
+        "chunkIndex": 40
+      }
+    ]
+  },
+  {
+    "sentence": " However, with a meaning-ful sentence such as “calculates dot product of two points”as a descriptive comment, programmer’s productivity can betremendously improved",
+    "segment": [
+      {
+        "str": " However, with a meaning-",
+        "pageNo": 1,
+        "chunkIndex": 40
+      },
+      {
+        "str": "ful sentence such as “calculates dot product of two points”",
+        "pageNo": 1,
+        "chunkIndex": 41
+      },
+      {
+        "str": "as a descriptive comment, programmer’s productivity can be",
+        "pageNo": 1,
+        "chunkIndex": 42
+      },
+      {
+        "str": "tremendously improved",
+        "pageNo": 1,
+        "chunkIndex": 43
+      }
+    ]
+  },
+  {
+    "sentence": " Table 1 shows thenumber of methods in ten actively developed Java reposito-ries from Github, and those of which annotated with a de-scriptive comment",
+    "segment": [
+      {
+        "str": " Table 1 shows the",
+        "pageNo": 1,
+        "chunkIndex": 97
+      },
+      {
+        "str": "number of methods in ten actively developed Java reposito-",
+        "pageNo": 1,
+        "chunkIndex": 98
+      },
+      {
+        "str": "ries from Github, and those of which annotated with a de-",
+        "pageNo": 1,
+        "chunkIndex": 99
+      },
+      {
+        "str": "scriptive comment",
+        "pageNo": 1,
+        "chunkIndex": 100
+      }
+    ]
+  },
+  {
+    "sentence": " On average, only 15",
+    "segment": [
+      {
+        "str": " On average, only 15",
+        "pageNo": 1,
+        "chunkIndex": 100
+      }
+    ]
+  },
+  {
+    "sentence": "4% of the methodsare commented",
+    "segment": [
+      {
+        "str": "4% of the methods",
+        "pageNo": 1,
+        "chunkIndex": 100
+      },
+      {
+        "str": "are commented",
+        "pageNo": 1,
+        "chunkIndex": 101
+      }
+    ]
+  },
+  {
+    "sentence": "To automatically generate descriptive comments fromsource code, one needs a way of accurately representing thesemantics of code blocks",
+    "segment": [
+      {
+        "str": "",
+        "pageNo": 1,
+        "chunkIndex": 101
+      },
+      {
+        "str": "To automatically generate descriptive comments from",
+        "pageNo": 1,
+        "chunkIndex": 102
+      },
+      {
+        "str": "source code, one needs a way of accurately representing the",
+        "pageNo": 1,
+        "chunkIndex": 103
+      },
+      {
+        "str": "semantics of code blocks",
+        "pageNo": 1,
+        "chunkIndex": 104
+      }
+    ]
+  },
+  {
+    "sentence": " One potential solution is to treateach code block as a document and represent it by a topicdistribution using models such as LDA (Blei, Ng, and Jor-dan 2003)",
+    "segment": [
+      {
+        "str": " One potential solution is to treat",
+        "pageNo": 1,
+        "chunkIndex": 104
+      },
+      {
+        "str": "each code block as a document and represent it by a topic",
+        "pageNo": 1,
+        "chunkIndex": 105
+      },
+      {
+        "str": "distribution using models such as LDA (Blei, Ng, and Jor-",
+        "pageNo": 1,
+        "chunkIndex": 106
+      },
+      {
+        "str": "dan 2003)",
+        "pageNo": 1,
+        "chunkIndex": 107
+      }
+    ]
+  },
+  {
+    "sentence": " For example,the comment generated by McBurney’s model for Fig",
+    "segment": [
+      {
+        "str": " For example,",
+        "pageNo": 1,
+        "chunkIndex": 129
+      },
+      {
+        "str": "the comment generated by McBurney’s model for Fig",
+        "pageNo": 1,
+        "chunkIndex": 130
+      }
+    ]
+  },
+  {
+    "sentence": " Recursive NN has previously been applied toparse trees of natural language sentences, such as the ex-ample of two sentences in Fig",
+    "segment": [
+      {
+        "str": " Recursive NN has previously been applied to",
+        "pageNo": 1,
+        "chunkIndex": 140
+      },
+      {
+        "str": "parse trees of natural language sentences, such as the ex-",
+        "pageNo": 1,
+        "chunkIndex": 141
+      },
+      {
+        "str": "ample of two sentences in Fig",
+        "pageNo": 1,
+        "chunkIndex": 142
+      }
+    ]
+  },
+  {
+    "sentence": " We then use a Recurrent Neu-ral Network to learn to generate meaningful comments",
+    "segment": [
+      {
+        "str": " We then use a Recurrent Neu-",
+        "pageNo": 2,
+        "chunkIndex": 138
+      },
+      {
+        "str": "ral Network to learn to generate meaningful comments",
+        "pageNo": 2,
+        "chunkIndex": 139
+      }
+    ]
+  },
+  {
+    "sentence": " Code-RNN is an arbitrary tree formwhile other recursive neural nets used in NLP are typicallybinary trees",
+    "segment": [
+      {
+        "str": " Code-RNN is an arbitrary tree form",
+        "pageNo": 2,
+        "chunkIndex": 197
+      },
+      {
+        "str": "while other recursive neural nets used in NLP are typically",
+        "pageNo": 2,
+        "chunkIndex": 198
+      },
+      {
+        "str": "binary trees",
+        "pageNo": 2,
+        "chunkIndex": 199
+      }
+    ]
+  },
+  {
+    "sentence": " 3 shows an example of Code-RNN for asmall piece of Java code",
+    "segment": [
+      {
+        "str": " 3 shows an example of Code-RNN for a",
+        "pageNo": 2,
+        "chunkIndex": 199
+      },
+      {
+        "str": "small piece of Java code",
+        "pageNo": 2,
+        "chunkIndex": 200
+      }
+    ]
+  },
+  {
+    "sentence": "In Code-RNN, every parse tree of a program is encodedinto a neural network, where the structure of the networkis exactly the parse tree itself and each syntactic node inthe parse tree is represented by a vector representation",
+    "segment": [
+      {
+        "str": "",
+        "pageNo": 2,
+        "chunkIndex": 200
+      },
+      {
+        "str": "In Code-RNN, every parse tree of a program is encoded",
+        "pageNo": 2,
+        "chunkIndex": 201
+      },
+      {
+        "str": "into a neural network, where the structure of the network",
+        "pageNo": 2,
+        "chunkIndex": 202
+      },
+      {
+        "str": "is exactly the parse tree itself and each syntactic node in",
+        "pageNo": 2,
+        "chunkIndex": 203
+      },
+      {
+        "str": "the parse tree is represented by a vector representation",
+        "pageNo": 2,
+        "chunkIndex": 204
+      }
+    ]
+  },
+  {
+    "sentence": " More on the semantics of identifier will be dis-cussed later in this section",
+    "segment": [
+      {
+        "str": " More on the semantics of identifier will be dis-",
+        "pageNo": 2,
+        "chunkIndex": 210
+      },
+      {
+        "str": "cussed later in this section",
+        "pageNo": 2,
+        "chunkIndex": 211
+      }
+    ]
+  },
+  {
+    "sentence": " However, one challenge toutilize the code block representation vector in Recurrent NNis that we can not feed the code block representation vectorto the Recurrent NN cell directly",
+    "segment": [
+      {
+        "str": " However, one challenge to",
+        "pageNo": 3,
+        "chunkIndex": 182
+      },
+      {
+        "str": "utilize the code block representation vector in Recurrent NN",
+        "pageNo": 3,
+        "chunkIndex": 183
+      },
+      {
+        "str": "is that we can not feed the code block representation vector",
+        "pageNo": 3,
+        "chunkIndex": 184
+      },
+      {
+        "str": "to the Recurrent NN cell directly",
+        "pageNo": 3,
+        "chunkIndex": 185
+      }
+    ]
+  },
+  {
+    "sentence": " Thenwe feed code block vector into the RNN (Recurrent NeuralNetwork) model at every step",
+    "segment": [
+      {
+        "str": " Then",
+        "pageNo": 3,
+        "chunkIndex": 241
+      },
+      {
+        "str": "we feed code block vector into the RNN (Recurrent Neural",
+        "pageNo": 3,
+        "chunkIndex": 242
+      },
+      {
+        "str": "Network) model at every step",
+        "pageNo": 3,
+        "chunkIndex": 243
+      }
+    ]
+  },
+  {
+    "sentence": " 4, we in-put the START token as the initial input of model and feedthe code block vector into the hidden layer",
+    "segment": [
+      {
+        "str": " 4, we in-",
+        "pageNo": 3,
+        "chunkIndex": 243
+      },
+      {
+        "str": "put the START token as the initial input of model and feed",
+        "pageNo": 3,
+        "chunkIndex": 244
+      },
+      {
+        "str": "the code block vector into the hidden layer",
+        "pageNo": 3,
+        "chunkIndex": 245
+      }
+    ]
+  },
+  {
+    "sentence": " In the second part, weshow the effectiveness of our comment generation modelby comparing with several state-of-the-art approaches inboth quantitative and qualitative assessments",
+    "segment": [
+      {
+        "str": " In the second part, we",
+        "pageNo": 4,
+        "chunkIndex": 255
+      },
+      {
+        "str": "show the effectiveness of our comment generation model",
+        "pageNo": 4,
+        "chunkIndex": 256
+      },
+      {
+        "str": "by comparing with several state-of-the-art approaches in",
+        "pageNo": 4,
+        "chunkIndex": 257
+      },
+      {
+        "str": "both quantitative and qualitative assessments",
+        "pageNo": 4,
+        "chunkIndex": 258
+      }
+    ]
+  },
+  {
+    "sentence": " The sourcecode of our approach as well as all data set is available athttps://adapt",
+    "segment": [
+      {
+        "str": " The source",
+        "pageNo": 4,
+        "chunkIndex": 258
+      },
+      {
+        "str": "code of our approach as well as all data set is available at",
+        "pageNo": 4,
+        "chunkIndex": 259
+      },
+      {
+        "str": "https://adapt",
+        "pageNo": 4,
+        "chunkIndex": 260
+      }
+    ]
+  },
+  {
+    "sentence": "Our data set comes from the Google Code Jam contest(2008∼2016), which there are multiple problems, each as-sociated with a number of correct solutions contributed byprogrammers",
+    "segment": [
+      {
+        "str": "",
+        "pageNo": 4,
+        "chunkIndex": 269
+      },
+      {
+        "str": "Our data set comes from the Google Code Jam contest",
+        "pageNo": 4,
+        "chunkIndex": 270
+      },
+      {
+        "str": "(2008",
+        "pageNo": 4,
+        "chunkIndex": 271
+      },
+      {
+        "str": "∼",
+        "pageNo": 4,
+        "chunkIndex": 272
+      },
+      {
+        "str": "2016), which there are multiple problems, each as-",
+        "pageNo": 4,
+        "chunkIndex": 273
+      },
+      {
+        "str": "sociated with a number of correct solutions contributed by",
+        "pageNo": 4,
+        "chunkIndex": 274
+      },
+      {
+        "str": "programmers",
+        "pageNo": 4,
+        "chunkIndex": 275
+      }
+    ]
+  },
+  {
+    "sentence": " The set ofsolutions for the same problem are considered to functionidentically and belong to the same class in this work",
+    "segment": [
+      {
+        "str": " The set of",
+        "pageNo": 4,
+        "chunkIndex": 279
+      },
+      {
+        "str": "solutions for the same problem are considered to function",
+        "pageNo": 4,
+        "chunkIndex": 280
+      },
+      {
+        "str": "identically and belong to the same class in this work",
+        "pageNo": 4,
+        "chunkIndex": 281
+      }
+    ]
+  },
+  {
+    "sentence": " Weuse the solutions (10,724 methods) of 6 problems as trainingset and the solutions (30 methods) of the other 6 problemsas the test set",
+    "segment": [
+      {
+        "str": " We",
+        "pageNo": 4,
+        "chunkIndex": 281
+      },
+      {
+        "str": "use the solutions (10,724 methods) of 6 problems as training",
+        "pageNo": 4,
+        "chunkIndex": 282
+      },
+      {
+        "str": "set and the solutions (30 methods) of the other 6 problems",
+        "pageNo": 4,
+        "chunkIndex": 283
+      },
+      {
+        "str": "as the test set",
+        "pageNo": 4,
+        "chunkIndex": 284
+      }
+    ]
+  },
+  {
+    "sentence": "generate sentences",
+    "segment": [
+      {
+        "str": "",
+        "pageNo": 5,
+        "chunkIndex": 197
+      },
+      {
+        "str": "generate sentences",
+        "pageNo": 5,
+        "chunkIndex": 198
+      }
+    ]
+  },
+  {
+    "sentence": " For one project, we separate the commentedmethods into three parts: training set, validation set and testset",
+    "segment": [
+      {
+        "str": " For one project, we separate the commented",
+        "pageNo": 5,
+        "chunkIndex": 336
+      },
+      {
+        "str": "methods into three parts: training set, validation set and test",
+        "pageNo": 5,
+        "chunkIndex": 337
+      },
+      {
+        "str": "set",
+        "pageNo": 5,
+        "chunkIndex": 338
+      }
+    ]
+  },
+  {
+    "sentence": " Existing work in source code min-ing include code search, clone detection, software evolution,models of software development processes, bug localization,software bug prediction, code summarization and so on",
+    "segment": [
+      {
+        "str": " Existing work in source code min-",
+        "pageNo": 6,
+        "chunkIndex": 319
+      },
+      {
+        "str": "ing include code search, clone detection, software evolution,",
+        "pageNo": 6,
+        "chunkIndex": 320
+      },
+      {
+        "str": "models of software development processes, bug localization,",
+        "pageNo": 6,
+        "chunkIndex": 321
+      },
+      {
+        "str": "software bug prediction, code summarization and so on",
+        "pageNo": 6,
+        "chunkIndex": 322
+      }
+    ]
+  },
+  {
+    "sentence": " Ourwork can be categorized as code summarization and com-ment generation",
+    "segment": [
+      {
+        "str": " Our",
+        "pageNo": 6,
+        "chunkIndex": 322
+      },
+      {
+        "str": "work can be categorized as code summarization and com-",
+        "pageNo": 6,
+        "chunkIndex": 323
+      },
+      {
+        "str": "ment generation",
+        "pageNo": 6,
+        "chunkIndex": 324
+      }
+    ]
+  },
+  {
+    "sentence": "Sridhara et al",
+    "segment": [
+      {
+        "str": "",
+        "pageNo": 6,
+        "chunkIndex": 324
+      },
+      {
+        "str": "Sridhara et al",
+        "pageNo": 6,
+        "chunkIndex": 325
+      }
+    ]
+  },
+  {
+    "sentence": " (Sridhara et al",
+    "segment": [
+      {
+        "str": " (Sridhara et al",
+        "pageNo": 6,
+        "chunkIndex": 325
+      }
+    ]
+  },
+  {
+    "sentence": " (Moreno et al",
+    "segment": [
+      {
+        "str": " (Moreno et al",
+        "pageNo": 7,
+        "chunkIndex": 2
+      }
+    ]
+  },
+  {
+    "sentence": " 2013) also proposed atemplate based method but it is used on summarizing Javaclasses",
+    "segment": [
+      {
+        "str": " 2013) also proposed a",
+        "pageNo": 7,
+        "chunkIndex": 2
+      },
+      {
+        "str": "template based method but it is used on summarizing Java",
+        "pageNo": 7,
+        "chunkIndex": 3
+      },
+      {
+        "str": "classes",
+        "pageNo": 7,
+        "chunkIndex": 4
+      }
+    ]
+  },
+  {
+    "sentence": " (Rodeghero et al",
+    "segment": [
+      {
+        "str": " (Rodeghero et al",
+        "pageNo": 7,
+        "chunkIndex": 14
+      }
+    ]
+  },
+  {
+    "sentence": " 2014) presented an eye-tracking studyof programmers during source code summarization, a toolfor selecting keywords based on the findings of the eye-tracking study",
+    "segment": [
+      {
+        "str": " 2014) presented an eye-tracking study",
+        "pageNo": 7,
+        "chunkIndex": 14
+      },
+      {
+        "str": "of programmers during source code summarization, a tool",
+        "pageNo": 7,
+        "chunkIndex": 15
+      },
+      {
+        "str": "for selecting keywords based on the findings of the eye-",
+        "pageNo": 7,
+        "chunkIndex": 16
+      },
+      {
+        "str": "tracking study",
+        "pageNo": 7,
+        "chunkIndex": 17
+      }
+    ]
+  },
+  {
+    "sentence": "These models are invariably based on templates and care-ful selection of fragments of the input source code",
+    "segment": [
+      {
+        "str": "",
+        "pageNo": 7,
+        "chunkIndex": 17
+      },
+      {
+        "str": "These models are invariably based on templates and care-",
+        "pageNo": 7,
+        "chunkIndex": 18
+      },
+      {
+        "str": "ful selection of fragments of the input source code",
+        "pageNo": 7,
+        "chunkIndex": 19
+      }
+    ]
+  },
+  {
+    "sentence": " Like source code summarization, Allamanis etal",
+    "segment": [
+      {
+        "str": " Like source code summarization, Allamanis et",
+        "pageNo": 7,
+        "chunkIndex": 25
+      },
+      {
+        "str": "al",
+        "pageNo": 7,
+        "chunkIndex": 26
+      }
+    ]
+  },
+  {
+    "sentence": " (Allamanis et al",
+    "segment": [
+      {
+        "str": " (Allamanis et al",
+        "pageNo": 7,
+        "chunkIndex": 26
+      }
+    ]
+  },
+  {
+    "sentence": " 2015) proposed a continuous embed-ding model to suggest accurate method and class names",
+    "segment": [
+      {
+        "str": " 2015) proposed a continuous embed-",
+        "pageNo": 7,
+        "chunkIndex": 26
+      },
+      {
+        "str": "ding model to suggest accurate method and class names",
+        "pageNo": 7,
+        "chunkIndex": 27
+      }
+    ]
+  },
+  {
+    "sentence": "Iyer et al",
+    "segment": [
+      {
+        "str": "",
+        "pageNo": 7,
+        "chunkIndex": 27
+      },
+      {
+        "str": "Iyer et al",
+        "pageNo": 7,
+        "chunkIndex": 28
+      }
+    ]
+  },
+  {
+    "sentence": " Iyer et al",
+    "segment": [
+      {
+        "str": " Iyer et al",
+        "pageNo": 7,
+        "chunkIndex": 31
+      }
+    ]
+  },
+  {
+    "sentence": "’s workhas strong performance on two tasks, code summarizationand code retrieval",
+    "segment": [
+      {
+        "str": "’s work",
+        "pageNo": 7,
+        "chunkIndex": 31
+      },
+      {
+        "str": "has strong performance on two tasks, code summarization",
+        "pageNo": 7,
+        "chunkIndex": 32
+      },
+      {
+        "str": "and code retrieval",
+        "pageNo": 7,
+        "chunkIndex": 33
+      }
+    ]
+  },
+  {
+    "sentence": " This work is very similar to our work, inthat we both use the Recurrent NN to generate sentencesfor source code",
+    "segment": [
+      {
+        "str": " This work is very similar to our work, in",
+        "pageNo": 7,
+        "chunkIndex": 33
+      },
+      {
+        "str": "that we both use the Recurrent NN to generate sentences",
+        "pageNo": 7,
+        "chunkIndex": 34
+      },
+      {
+        "str": "for source code",
+        "pageNo": 7,
+        "chunkIndex": 35
+      }
+    ]
+  },
+  {
+    "sentence": " (Kuhn, Ducasse, andG ́ırba 2007) utilized the information of identifier names andcomments to mine topic of source code repositories",
+    "segment": [
+      {
+        "str": " (Kuhn, Ducasse, and",
+        "pageNo": 7,
+        "chunkIndex": 36
+      },
+      {
+        "str": "G ́",
+        "pageNo": 7,
+        "chunkIndex": 37
+      },
+      {
+        "str": "ırba 2007) utilized the information of identifier names and",
+        "pageNo": 7,
+        "chunkIndex": 38
+      },
+      {
+        "str": "comments to mine topic of source code repositories",
+        "pageNo": 7,
+        "chunkIndex": 39
+      }
+    ]
+  },
+  {
+    "sentence": " Rollins and Wing (Rollins andWing 1991) proposed an approach to find code with the sig-natures present in code",
+    "segment": [
+      {
+        "str": " Rollins and Wing (Rollins and",
+        "pageNo": 7,
+        "chunkIndex": 50
+      },
+      {
+        "str": "Wing 1991) proposed an approach to find code with the sig-",
+        "pageNo": 7,
+        "chunkIndex": 51
+      },
+      {
+        "str": "natures present in code",
+        "pageNo": 7,
+        "chunkIndex": 52
+      }
+    ]
+  },
+  {
+    "sentence": " (Garcia-Contreras, Morales, and Hermenegildo 2016) fo-cused on querying for semantic characteristics of code andproposed a new approach which combines semantic charac-teristics and keyword matching",
+    "segment": [
+      {
+        "str": " (Garcia-Contreras, Morales, and Hermenegildo 2016) fo-",
+        "pageNo": 7,
+        "chunkIndex": 54
+      },
+      {
+        "str": "cused on querying for semantic characteristics of code and",
+        "pageNo": 7,
+        "chunkIndex": 55
+      },
+      {
+        "str": "proposed a new approach which combines semantic charac-",
+        "pageNo": 7,
+        "chunkIndex": 56
+      },
+      {
+        "str": "teristics and keyword matching",
+        "pageNo": 7,
+        "chunkIndex": 57
+      }
+    ]
+  },
+  {
+    "sentence": " The method proposed in this papercan also benefit natural language search for code fragments",
+    "segment": [
+      {
+        "str": " The method proposed in this paper",
+        "pageNo": 7,
+        "chunkIndex": 108
+      },
+      {
+        "str": "can also benefit natural language search for code fragments",
+        "pageNo": 7,
+        "chunkIndex": 109
+      }
+    ]
+  },
+  {
+    "sentence": " This new Recursive Neural Network is theparse tree of the source code and we go through all the treefrom leaf nodes to root node to get the final representationvector",
+    "segment": [
+      {
+        "str": " This new Recursive Neural Network is the",
+        "pageNo": 7,
+        "chunkIndex": 121
+      },
+      {
+        "str": "parse tree of the source code and we go through all the tree",
+        "pageNo": 7,
+        "chunkIndex": 122
+      },
+      {
+        "str": "from leaf nodes to root node to get the final representation",
+        "pageNo": 7,
+        "chunkIndex": 123
+      },
+      {
+        "str": "vector",
+        "pageNo": 7,
+        "chunkIndex": 124
+      }
+    ]
+  }
 ]

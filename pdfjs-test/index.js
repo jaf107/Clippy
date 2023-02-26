@@ -469,9 +469,6 @@ async function createChunkForHighlighting() {
   let { textChunkArray: originalArr, uniqueHeight: heightArr } =
     await getPdfTextContent("./sample4.pdf");
 
-  // console.log(heightArr);
-  let maxFreqHeight = getMaxFreq(originalArr, heightArr);
-
   let summaryArray = [];
   paragraphs.forEach((element) => {
     if (element.title.toLowerCase().localeCompare("references") !== 0) {
@@ -569,63 +566,29 @@ async function createChunkForHighlighting() {
       }
     }
   }
-  // console.log(highlightsSegments);
   fs.writeFileSync("./segments.json", JSON.stringify(highlightsSegments));
 
-//Match with summary text
+  //Match with summary text
 
-function matchSummaryandHighlight () {
-  let allSegmentCheck = highlightsSegments;
+  function matchSummaryandHighlight() {
+    let allSegmentCheck = highlightsSegments;
+    let summaryCheck = summaryArray;
 
-  let summaryCheck = summaryArray;
+    let filteredSegments = allSegmentCheck.filter((segment) => {
+      return (
+        summaryCheck.some((summary) => summary.includes(segment?.sentence)) &&
+        segment?.sentence.trim().split(" ").length > 1
+      );
+    });
 
-//   allSegmentCheck = [{
-//     sentence: "",
-//     segment: [
-//       {
-//         str: chunk[0],
-//         pageNo: pageIndex + 1,
-//         chunkIndex: chunkIndex,
-//       }
-//     ],
-//   }
-// ]
-
-// summaryCheck = [
-//   {
-//     "summaryText": " "
-//   }
-// ]
-
-
-  //console.log("highlight is "+highlightsSegments);
-  let filteredSegments = allSegmentCheck.filter(segment => {
-    return summaryCheck.some(summary => summary.includes(segment?.sentence)) && segment?.sentence.trim().split(' ').length > 1;
-  });
-  
-  
-  console.log("filteredSentences are "+JSON.stringify(filteredSegments));
-  fs.truncateSync("./highlight.json", 0);
-  fs.writeFileSync("./highlight.json", JSON.stringify(filteredSegments));
-
-
+    fs.truncateSync("./highlight.json", 0);
+    fs.writeFileSync("./highlight.json", JSON.stringify(filteredSegments));
+  }
+  matchSummaryandHighlight();
 }
-
-matchSummaryandHighlight();
-
-
-  // console.log(chunkIndexes);
-
-  let maxLimit = originalArr.length;
-  for (let i = 0; i < maxLimit; i++) {}
-  // console.log(mainChunkArray);
-}
-
 
 async function objectForIndex(index) {
   const { textChunkArray } = await getPdfTextContent(src);
-  // const oneDim = Array.flat(ogArray);
-  // console.log(oneDim);
   for (let i = 0; i < textChunkArray.length; i++) {
     let pageLen = textChunkArray[i].length;
     if (index > pageLen) {
@@ -636,7 +599,6 @@ async function objectForIndex(index) {
         chunkNo: index,
         chunk: textChunkArray[i][index],
       };
-      // console.log(object);
       return object;
     }
   }
