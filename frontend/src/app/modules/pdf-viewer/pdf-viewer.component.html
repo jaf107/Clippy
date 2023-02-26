@@ -1,18 +1,24 @@
 <app-navbar></app-navbar>
 <div class="container-fluid">
-   <div class="left" [ngStyle]="{'width': summarizerOn == true ? '70%':'96%'}">
-      
-      <pdf-viewer [src]="pdfPath"
-              [render-text]="true"
-              [original-size]="false"
-              style="width: 800px; height: 800px"
-      ></pdf-viewer>
-
-   </div>
-   <div class="middle" *ngIf="summarizerOn" [ngStyle]="{'width': summarizerOn == true ? '27%' : '0%'}">
-      <app-summarizer></app-summarizer>
-   </div>
-   <div class="right">
-      <app-sidebar></app-sidebar>
-   </div>
+  <div class="left" [ngStyle]="{ width: summarizerOn == true ? '70%' : '96%' }">
+    <pdf-viewer
+      [src]="pdfPath"
+      [render-text]="true"
+      (page-rendered)="pageRendered($event)"
+      (pages-initialized)="pageInitialized($event)"
+      (pageChange)="pageChange($event)"
+      [original-size]="false"
+      style="width: 800px; height: 800px"
+    ></pdf-viewer>
+  </div>
+  <div
+    class="middle"
+    *ngIf="summarizerOn"
+    [ngStyle]="{ width: summarizerOn == true ? '27%' : '0%' }"
+  >
+    <app-summarizer></app-summarizer>
+  </div>
+  <div class="right">
+    <app-sidebar></app-sidebar>
+  </div>
 </div>
