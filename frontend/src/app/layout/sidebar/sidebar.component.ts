@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FeaturesService } from 'src/app/modules/shared/features.service';
 import { PdfShareService } from 'src/app/modules/shared/pdf-share.service';
 
 @Component({
@@ -14,6 +15,8 @@ export class SidebarComponent {
 
   public extractiveOn: boolean = false;
   public abstractiveOn: boolean = false;
+  
+  public knowledgeGraphOn: boolean = false;
 
   ngOnInit(): void {
 
@@ -22,6 +25,10 @@ export class SidebarComponent {
         this.extractiveOn = false;
         this.abstractiveOn = false;
       }
+    })
+
+    this.pdfShareService.getKnowledgeGraphStatus().subscribe((value)=>{
+      this.knowledgeGraphOn = value;
     })
 
   }
@@ -61,7 +68,12 @@ export class SidebarComponent {
       this.pdfShareService.setSummarizerOn(type, this.abstractiveOn);
       
     }
-
-    
   }
+
+  showGraph(){
+    // if(!this.knowledgeGraphOn){
+      this.pdfShareService.setKnowledgeGraphOn(true);
+    // }
+  }
+
 }

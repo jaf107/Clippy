@@ -2,6 +2,8 @@ import { Component, EventEmitter, OnInit } from '@angular/core';
 import * as cytoscape from 'cytoscape';
 import * as panzoom from 'cytoscape';
 import * as navigator from 'cytoscape';
+import { FeaturesService } from '../shared/features.service';
+import { PdfShareService } from '../shared/pdf-share.service';
 
 @Component({
   selector: 'app-knowledge-graph',
@@ -14,7 +16,31 @@ export class KnowledgeGraphComponent implements OnInit {
 
   cy: any;
 
+  constructor(
+    public pdfShareService: PdfShareService,
+    private featureService: FeaturesService
+    ){}
+
+    public graphOn: boolean;
+
   ngOnInit() {
+
+    this.pdfShareService.getKnowledgeGraphStatus().subscribe((value)=>{
+      this.graphOn = value;
+      if(this.graphOn){
+        console.log("Hello from knowledge graph component");
+        this.featureService.getCitationGraph('87e367d76e5c63c834bf77b4f6ea8bce6cdb5553').subscribe(
+          (data) =>{
+            console.log(JSON.parse(data));
+          },
+          (err) => {
+            console.log("Error in graph");
+          }
+        );
+      }
+    })
+
+
     // Initialize cytoscape instance
     this.cy = cytoscape({
       container: document.getElementById('cy'),

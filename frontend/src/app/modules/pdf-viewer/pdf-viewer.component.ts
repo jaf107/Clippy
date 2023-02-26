@@ -1,5 +1,6 @@
 import { Component, AfterViewInit, OnInit} from '@angular/core';
 import { NgxExtendedPdfViewerService, pdfDefaultOptions, TextLayerRenderedEvent } from 'ngx-extended-pdf-viewer';
+import { FeaturesService } from '../shared/features.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 
 @Component({
@@ -12,28 +13,13 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   pdfPath: any;
 
   public summarizerOn: boolean;
+  public graphOn: boolean;
 
-  ngOnInit(){
-    
-    this.pdfPath = this.pdfShareService.getFile();
-    console.log(this.pdfPath);
-
-    // this.pdfPath = "./assets/SCORE_intro.pdf";
-
-    this.summarizerOn = false;
-
-    this.pdfShareService.getSummarizerStatus().subscribe((value)=>{
-      this.summarizerOn = value;
-      console.log("Summary is on " + this.summarizerOn);
-    })
-
-  }
-
-  ngAfterViewInit(){
-    console.log("View is initialized " + this.pdfPath);
-  }
-
-  constructor(private pdfService: NgxExtendedPdfViewerService, public pdfShareService: PdfShareService) {
+  constructor(
+    private pdfService: NgxExtendedPdfViewerService, 
+    public pdfShareService: PdfShareService,
+    private featureService: FeaturesService
+    ) {
     /* More likely than not you don't need to tweak the pdfDefaultOptions.
        They are a collecton of less frequently used options.
        To illustrate how they're used, here are two example settings: */
@@ -44,6 +30,34 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     // trading image quality for performance.
     
     }
+
+
+  ngOnInit(){
+    
+    this.pdfPath = this.pdfShareService.getFile();
+    console.log(this.pdfPath);
+
+    if(this.pdfPath == null){
+      this.pdfPath = "./assets/SCORE_intro.pdf";
+    }
+    
+    this.summarizerOn = false;
+    this.graphOn = false;
+
+    this.pdfShareService.getSummarizerStatus().subscribe((value)=>{
+      this.summarizerOn = value;
+      console.log("Summary is on " + this.summarizerOn);
+    })
+
+    this.pdfShareService.getKnowledgeGraphStatus().subscribe((value)=>{
+      this.graphOn = value;
+    })
+
+  }
+
+  ngAfterViewInit(){
+    console.log("View is initialized " + this.pdfPath);
+  }
 
     loaded(){
       console.log("Loaded " + this.pdfPath);

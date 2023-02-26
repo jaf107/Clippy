@@ -19,6 +19,8 @@ export class PdfShareService {
     return this.file;
   }
 
+    knowledgeGraphOnCheck: Subject<boolean> = new Subject<boolean>();
+
     summarizerOnCheck: Subject<boolean> = new Subject<boolean>();
     summarizerTypeCheck: Subject<string> = new Subject<string>();
 
@@ -41,6 +43,15 @@ export class PdfShareService {
 
     getSummarizerType(): Observable<string> {
       return this.summarizerTypeCheck.asObservable();
+    }
+
+    setKnowledgeGraphOn(onOff : boolean){
+      this.knowledgeGraphOnCheck.next(onOff);
+      console.log("knowledge graph turned on");
+    }
+
+    getKnowledgeGraphStatus(): Observable<boolean> {
+      return this.knowledgeGraphOnCheck.asObservable();
     }
 
 }

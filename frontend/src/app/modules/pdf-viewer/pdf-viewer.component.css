@@ -1,6 +1,6 @@
 .left{
     /* width: 96%; */
-    width: 70%;
+    width: 96%;
     display: inline-block;
 }
 
@@ -13,4 +13,12 @@
     display: inline-block;
     width: 0%;
     vertical-align: top;
+}
+
+.graphCanvas{
+    width: 96%;
+    height: 90%;
+    margin-top: 1rem;
+    border: 1px solid white;
+    border-radius: 10px;
 }

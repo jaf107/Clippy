@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 <div class="container-fluid">
-   <div class="left" [ngStyle]="{'width': summarizerOn == true ? '70%':'96%'}">
+   <div class="left" [ngStyle]="{'width': summarizerOn == true ? '70%':'96%'}" *ngIf="!graphOn">
       <ngx-extended-pdf-viewer *ngIf="pdfPath"    
       [(src)]="pdfPath" [textLayer]="true"
       (textLayerRendered)=highlightWords($event); 
@@ -14,6 +14,11 @@
       (pdfLoadingFailed)="failed()" 
       (pdfLoadingStarts)="starts()">
       </ngx-extended-pdf-viewer>
+   </div>
+   <div class="left" *ngIf="graphOn">
+      <div class="graphCanvas">
+         <app-knowledge-graph></app-knowledge-graph>
+      </div>
    </div>
    <div class="middle" *ngIf="summarizerOn" [ngStyle]="{'width': summarizerOn == true ? '27%' : '0%'}">
       <app-summarizer></app-summarizer>
