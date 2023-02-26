@@ -126,8 +126,61 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     }
   }
 
-  public highlightWords(event: TextLayerRenderedEvent): void {
-    event.source.textDivs.forEach((span) => {
+  textLayerRendered(event: any) {
+    console.log(event);
+    let textSpans = event.source.textLayer.textDivs;
+    // console.log(textSpans);
+    textSpans.map((item) => {
+      // console.log(
+      //   item.offsetHeight,
+      //   item.offsetTop,
+      //   item.offsetLeft,
+      //   item.offsetWidth
+      // );
+    });
+
+    textSpans.map((span) => {
+      let spanStr = span.innerText;
+      // console.log(spanStr);
+      if (spanStr.toLowerCase().includes('although')) {
+        console.log('found you ' + spanStr);
+        span.setAttribute("tooltip", "We are now showing abstract");
+        // span.setAttribute("placement", "bottom");
+        // span.setAttribute("style", "background-color:red !important");
+
+        span.innerHTML = "<span style='background-color:red'>$span.innerText</span>";
+        // span.innerHTML = "<span [attr.tooltip] ='We are now showing abstract' [attr.placement] ='bottom'>Abstract</span>";
+
+        // let anchor = document.querySelector('.clickable-text');
+        // let modal = document.querySelector('.modal');
+        // console.log(modal, anchor);
+
+        // if (modal)
+        //   modal.addEventListener('click', (event) => {
+        //     event.preventDefault();
+        //     modal.classList.add('hidden');
+        //   });
+
+        // if (anchor) {
+        //   anchor.addEventListener('mouseenter', (event) => {
+        //     event.preventDefault();
+        //     console.log('entered');
+        //     modal.classList.remove('hidden');
+        //   });
+        //   anchor.addEventListener('mouseleave', (event) => {
+        //     event.preventDefault();
+        //     console.log('exited');
+        //     modal.classList.add('hidden');
+        //   });
+        // }
+        // anchor.addEventListener('', )
+      }
+    });
+  }
+
+  public highlightWords(event: any): void {
+    console.log(event);
+    event.source.textLayer.textDivs.forEach((span) => {
       this.alreadyRendered.push(span);
     });
 

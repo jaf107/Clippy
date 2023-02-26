@@ -16,6 +16,7 @@ import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { SummarizerComponent } from './modules/summarizer/summarizer.component';
+import { TooltipModule } from 'ng2-tooltip-directive';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { SummarizerComponent } from './modules/summarizer/summarizer.component';
     ToastrModule.forRoot(),
     AppRoutingModule,
     NgxExtendedPdfViewerModule,
+    TooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent],
