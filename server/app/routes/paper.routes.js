@@ -6,7 +6,8 @@ const router = new express.Router();
 
 // router.route("/all").get(controller.allAccess);
 // router.route("").get([authJwt.verifyToken], controller.userBoard);
-router.route("/upload/:id").post(controller.uploadPaper);
-router.route("/upload").post(controller.uploadPaperByUrl);
+router.route("/uploadById").post(controller.uploadPaperById);
+// router.route("/upload").post(controller.uploadPaperByUrl);
+router.route("/:id/citations").get(controller.getCitation);
 
 module.exports = router;

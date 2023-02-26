@@ -22,6 +22,16 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please Enter Your Password"],
     minLength: [8, "Password should be greater than 8 characters"],
   },
+  history: [
+    {
+      paper_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
+    },
+  ],
   roles: [
     {
       type: mongoose.Schema.Types.ObjectId,

@@ -2,12 +2,21 @@
 const mongoose = require("mongoose");
 // globals
 const paperSchema = new mongoose.Schema({
+  paper_id: {
+    type: String,
+  },
   user_id: {
     type: String,
     ref: "User",
-    required: true,
+    // required: true,
   },
   public_id: {
+    type: String,
+  },
+  knowledge_graph: {
+    type: String,
+  },
+  abstract: {
     type: String,
   },
   url: {
