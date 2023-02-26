@@ -1,24 +1,32 @@
 <app-navbar></app-navbar>
 <div class="container-fluid">
-   <div class="left" [ngStyle]="{'width': summarizerOn == true ? '70%':'96%'}">
-      <ngx-extended-pdf-viewer *ngIf="pdfPath"    
-      [(src)]="pdfPath" [textLayer]="true"
-      (textLayerRendered)=highlightWords($event); 
-      [page]="1" [useBrowserLocale]="true" 
+  <div class="left" [ngStyle]="{ width: summarizerOn == true ? '70%' : '96%' }">
+    <ngx-extended-pdf-viewer
+      [src]="'../../../assets/sample1.pdf'"
+      [textLayer]="true"
+      (textLayerRendered)="textLayerRendered($event)"
+      [page]="1"
+      [useBrowserLocale]="true"
       [showHandToolButton]="true"
-      [showEditor]="true" 
-      [handTool]="false" 
-      theme="dark" 
-      backgroundColor='#404040' 
+      [showEditor]="true"
+      [handTool]="false"
+      theme="dark"
+      backgroundColor="#404040"
       (pdfLoaded)="loaded()"
-      (pdfLoadingFailed)="failed()" 
-      (pdfLoadingStarts)="starts()">
-      </ngx-extended-pdf-viewer>
-   </div>
-   <div class="middle" *ngIf="summarizerOn" [ngStyle]="{'width': summarizerOn == true ? '27%' : '0%'}">
-      <app-summarizer></app-summarizer>
-   </div>
-   <div class="right">
-      <app-sidebar></app-sidebar>
-   </div>
+      (pdfLoadingFailed)="failed()"
+      (pageRendered)="pageRendered()"
+      (pdfLoadingStarts)="starts()"
+    >
+    </ngx-extended-pdf-viewer>
+  </div>
+  <div
+    class="middle"
+    *ngIf="summarizerOn"
+    [ngStyle]="{ width: summarizerOn == true ? '27%' : '0%' }"
+  >
+    <app-summarizer></app-summarizer>
+  </div>
+  <div class="right">
+    <app-sidebar></app-sidebar>
+  </div>
 </div>
