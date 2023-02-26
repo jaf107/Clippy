@@ -538,7 +538,6 @@ async function objectForIndex(index) {
 function breakTextChunkIntoSentence(textChunk) {
   let sentences = textChunk
     .split(/[.?!]/g)
-    .map((sumSentence) => sumSentence.trim())
     .filter((sumSentence) => sumSentence.length > 0);
   return sentences;
 }
