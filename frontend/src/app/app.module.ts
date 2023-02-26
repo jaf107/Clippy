@@ -18,6 +18,7 @@ import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { SummarizerComponent } from './modules/summarizer/summarizer.component';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { TooltipModule } from 'ng2-tooltip-directive';
 
 @NgModule({
   declarations: [
