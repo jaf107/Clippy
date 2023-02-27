@@ -38,40 +38,7 @@ exports.getPaperDetails = async (req, res) => {
 exports.uploadPaper = async (req, res, next) => {
   if (!req.file) {
     res.status(404).send("File is required");
-  }
-  //else {
-  //   const paper_data = await axios.get(
-  //     SEMANTIC_SCHOLAR_API +
-  //       `search?query=${req.body.title}&fields=title,abstract,isOpenAccess,openAccessPdf`
-  //   );
-
-  //   if (paper_data && paper_data.data) {
-  //     const data = paper_data.data.data[0];
-  //     console.log(data);
-  //     const ppr = await Paper.findOne({ paper_id: data.paperId });
-  //     if (ppr) {
-  //       res.status(200).send(ppr);
-  //     } else {
-  //       fs.rename(
-  //         req.file.path,
-  //         "./uploads/" + data.paperId + ".pdf",
-  //         (err) => {
-  //           if (err) throw err;
-  //           console.log("File renamed successfully");
-  //         }
-  //       );
-  //       const paper = {
-  //         paper_id: data.paperId,
-  //         title: data.title,
-  //         knowledge_graph: "",
-  //         url: "/uploads/" + data.paperId + ".pdf",
-  //         abstract: data.abstract,
-  //       };
-  //       await Paper.create(paper);
-  //       res.status(200).send(paper);
-  //     }
-  //   }
-  else {
+  } else {
     var uuid = Math.random().toString(36).substr(2, 9);
     fs.rename(req.file.path, "./uploads/" + uuid + ".pdf", (err) => {
       if (err) throw err;
@@ -85,6 +52,9 @@ exports.uploadPaper = async (req, res, next) => {
       abstract: "",
     };
     await Paper.create(paper);
+    if (req.userId) {
+      updateHistory(req.userId, paper.paper_id, Date.now);
+    }
     res.status(200).send(paper);
   }
   // }
@@ -113,6 +83,9 @@ exports.searchPaperById = async (req, res) => {
   if (paper_data.data) {
     const ppr = await Paper.findOne({ paper_id: paper_data.data.paperId });
     if (ppr) {
+      if (req.userId) {
+        updateHistory(req.userId, paper.paper_id, Date.now);
+      }
       res.status(200).send(ppr);
     } else {
       if (!paper_data.data.isOpenAccess || !paper_data.data.openAccessPdf)
@@ -126,37 +99,11 @@ exports.searchPaperById = async (req, res) => {
           abstract: paper_data.data.abstract,
           url: paper_data.data.openAccessPdf.url,
         };
-        // await axios
-        //   .get(paper.url, { responseType: "arraybuffer" })
-        //   .then((response) => {
-        //     res
-        //       .status(200)
-        //       .send(
-        //         "data:application/pdf;base64," +
-        //           Buffer.from(response.data, "binary").toString("base64")
-        //       );
-        //   })
-        //   .catch((err) => {
-        //     res.status(err.response.status).send(err.message);
-        //   });
         await Paper.create(paper);
+        if (req.userId) {
+          updateHistory(req.userId, paper.paper_id, Date.now);
+        }
         res.status(200).send(paper);
-        // if (req.userId) {
-        //   const user = await User.findById(req.userId);
-        //   const history = {
-        //     paper_id: req.body.paper_id,
-        //     title: paper_data.data.title,
-        //     openedAt: Date.now,
-        //   };
-        //   if (
-        //     user.history.findIndex(
-        //       (obj) => obj.paper_id === req.body.paper_id
-        //     ) !== -1
-        //   );
-        //   {
-        //   }
-        //   user.history.push();
-        // }
       }
     }
   }
@@ -214,3 +161,24 @@ exports.getCitation = async (req, res) => {
     }
   }
 };
+
+async function updateHistory(userId, paper_id, newTime) {
+  // Find the document that matches the paper_id in the history array
+  let doc = await User.findOne({ _id: userId, "history.paper_id": paper_id });
+  // If the document exists, update the openedAt field for that paper_id
+  if (doc) {
+    await User.updateOne(
+      { _id: userId, "history.paper_id": paper_id },
+      { $set: { "history.$.openedAt": newTime } }
+    );
+    console.log("Updated time for paper_id", paper_id);
+  } else {
+    // If the document doesn't exist, push a new document to the history array with the paper_id and newTime
+    await User.updateOne(
+      { _id: userId },
+      { $push: { history: { paper_id: paper_id, openedAt: newTime } } },
+      { upsert: true }
+    );
+    console.log("Pushed new data for paper_id", paper_id);
+  }
+}
