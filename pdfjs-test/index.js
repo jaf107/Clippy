@@ -313,7 +313,7 @@ function noOfSentences(context) {
 async function ExtractiveSummary(src) {
   let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let apiKey = "b93d9d2475ed072f999710c6949f6a65";
+  let apiKey = "b0bc1052057e9a922b1c247b7b10840a";
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
@@ -461,6 +461,7 @@ async function AbstractiveSummary(src) {
   }
 }
 
+// let src = `./sample4.pdf`;
 // ExtractiveSummary(src);
 // AbstractiveSummary(src);
 
@@ -472,7 +473,6 @@ async function createChunkForHighlighting() {
   let summaryArray = [];
   paragraphs.forEach((element) => {
     if (element.title.toLowerCase().localeCompare("references") !== 0) {
-      // let summarySentencesArr = breakTextChunkIntoSentence(element.summaryText);
       summaryArray.push(element.summaryText);
     }
   });
@@ -485,7 +485,7 @@ async function createChunkForHighlighting() {
       let chunkSentences = breakTextChunkIntoSentence(chunk.str);
       return chunkSentences;
     });
-    chunkSentencesArr.push(pageChunks.filter((item) => item.length > 0));
+    chunkSentencesArr.push(pageChunks);
   });
   fs.truncateSync("./test.json", 0);
   fs.writeFileSync("./test.json", JSON.stringify(chunkSentencesArr));
