@@ -45,6 +45,7 @@ export class AppComponent implements OnInit {
     if (window.screen.width <= 768) {
       this.mobile = true;
     }
+
   }
 
   // Load pdf
@@ -108,6 +109,13 @@ export class AppComponent implements OnInit {
     this.pdf = pdf;
 
     this.loadOutline();
+  }
+
+  getReferences(e:any){
+    console.log('event emitted: ', e.data)
+    // e.data.forEach(element => {
+    //   console.log(element)
+    // });
   }
 
   /**
@@ -293,4 +301,6 @@ export class AppComponent implements OnInit {
   onResize(event) {
     this.mobile = event.target.innerWidth <= 768;
   }
+
+
 }
