@@ -164,7 +164,7 @@ async function wrapper() {
   });
   writeChunksArrayToFile("./out.json", chunkBeforeImage);
 }
-// wrapper();
+wrapper();
 
 async function test() {
   const { textChunkArray: pdfChunks } = await getPdfTextContent(
@@ -208,7 +208,7 @@ async function test() {
 
   getPageHeight(pdfChunks);
 }
-test();
+// test();
 
 function isAlphanumeric(str) {
   return /^[a-zA-Z0-9 =_\/+\-:.,;'"“”<>#@?!%&()*{}\[\]$]+$/.test(str);

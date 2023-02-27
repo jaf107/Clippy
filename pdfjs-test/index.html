@@ -13,19 +13,19 @@
 
     <script>
       // load the PDF file
-      const pdfUrl = "sample12.pdf";
+      const pdfUrl = "sample4.pdf";
       pdfjsLib.getDocument(pdfUrl).promise.then((pdfDoc) => {
         // get the page to be rendered
-        const pageNumber = 12;
+        const pageNumber = 3;
         let scalingFactor = 2;
         pdfDoc.getPage(pageNumber).then((page) => {
           // define the viewport for the specific area to be rendered
           const viewport = page.getViewport({ scale: 1.0 });
           const region = {
-            x: 53.798,
-            y: 713.793,
+            x: 346.5919744,
+            y: 442.9446567000002,
             width: 470,
-            height: 122.25099999999958 * scalingFactor,
+            height: 173.76365670000024 * scalingFactor,
           };
           viewport.width = region.width;
           viewport.height = region.height;
