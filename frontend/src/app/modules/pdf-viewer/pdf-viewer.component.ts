@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { PdfShareService } from '../shared/pdf-share.service';
-import * as HL from '../../../assets/highlight.json'
+import * as HL from '../../../assets/highlight.json';
+
 @Component({
   selector: 'app-pdf-viewer',
   templateUrl: './pdf-viewer.component.html',
@@ -12,7 +13,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   public summarizerOn: boolean;
 
   ngOnInit() {
-    console.log(HL)
+    console.log(HL);
     this.pdfPath = this.pdfShareService.getFile();
     console.log(this.pdfPath);
 
@@ -49,55 +50,28 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    *
    * @param e custom event
    */
-  pageRendered(e: CustomEvent) {
-    console.log('(page-rendered)', e);
+  pageRendered(e: any) {
+    // console.log('(page-rendered)', e);
     // Select page container
-    let pages = Array.from(document.querySelectorAll('.page'));
-    let [page1] = pages.filter((p: any) => p.dataset.pageNumber === '1');
-
-    let textLayer: Element;
-    for (let i = 0; i < page1.children.length; i++) {
-      let child: Element = page1.children[i];
-      if (child.classList.contains('textLayer')) {
-        textLayer = child;
-        break;
-      }
-    }
-
-    let textChunkSpans = Array.from(textLayer.children).filter(
-      (t) => t.nodeName === 'SPAN'
-    );
-
-    if (textChunkSpans.length > 0) {
-      let [targetChunk] = textChunkSpans.filter((chunk) =>
-        chunk.innerHTML.includes('Figure 1. ')
-      );
-
-      this.replaceTextChunk(targetChunk);
-    }
-
-    let anchor = document.querySelector('.clickable-text');
-    let modal = document.querySelector('.modal');
-
-    if (modal)
-      modal.addEventListener('click', (event) => {
-        event.preventDefault();
-        modal.classList.add('hidden');
-      });
-
-    if (anchor) {
-      anchor.addEventListener('mouseenter', (event) => {
-        event.preventDefault();
-        modal.classList.remove('hidden');
-      });
-      anchor.addEventListener('mouseleave', (event) => {
-        event.preventDefault();
-        modal.classList.add('hidden');
-      });
-    }
+    let spans = e.source.textLayer.textDivs;
+    let higlightedSegments = this.filterHighlightsForAPage(e.pageNumber);
+    console.log('page spans: ', spans, e.pageNumber);
+    console.log('page HL segs: ', higlightedSegments, e.pageNumber);
   }
 
-  replaceTextChunk(spanElement: Element) {
+  filterHighlightsForAPage(pageNo) {
+    let segmentsForAPage = [];
+    for (let i = 0; i < Array.from(HL).length; i++) {
+      let sen = HL[i];
+      for (let j = 0; j < sen.segment.length; j++) {
+        let seg = sen.segment[j];
+        if (seg.pageNo === pageNo) segmentsForAPage.push(seg);
+      }
+    }
+    return segmentsForAPage;
+  }
+
+  replaceTextChunk(spanElement: any) {
     if (spanElement.children.length > 0) return;
     let finalHTML = spanElement.innerHTML
       .split(' ')
