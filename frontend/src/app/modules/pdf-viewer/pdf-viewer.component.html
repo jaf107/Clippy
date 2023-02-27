@@ -9,7 +9,7 @@
             </div>
             <div class="col"></div>
             <div class="col">
-               <button (click)="zoomIn()">
+               <button (click)="zoomIn()" title="Zoom in">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
                      class="bi bi-zoom-in" viewBox="0 0 16 16">
                      <path fill-rule="evenodd"
@@ -20,7 +20,7 @@
                         d="M6.5 3a.5.5 0 0 1 .5.5V6h2.5a.5.5 0 0 1 0 1H7v2.5a.5.5 0 0 1-1 0V7H3.5a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 .5-.5z" />
                   </svg>
                </button>
-               <button (click)="zoomOut()">
+               <button (click)="zoomOut()" title="Zoom out">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
                      class="bi bi-zoom-out" viewBox="0 0 16 16">
                      <path fill-rule="evenodd"
@@ -33,14 +33,14 @@
             </div>
             <div class="col-4"></div>
             <div class="col">
-               <button (click)="openFileDialog()">
+               <button (click)="openFileDialog()" title="Upload pdf">
                   <input id="upload" type="file" style="display:none" (change)="uploadPdf($event)" accept="application/pdf">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
                      <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/>
                      <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
                    </svg>
                </button>
-               <button (click)="downloadPdf()">
+               <button (click)="downloadPdf()" title="Download">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                      <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
                      <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
@@ -49,7 +49,7 @@
             </div>
          </div>
       </div>
-      <pdf-viewer [src]="pdfPath" [zoom]="zoom" [page]="page" [show-all]="false"
+      <pdf-viewer [src]="pdfPath" [zoom]="zoom" [page]="page" [show-all]="true"
          (after-load-complete)="loadComplete($event)" [render-text]="true" [original-size]="false"
          style="width: 50rem; height: 90vh; margin: 0 auto; overflow: scroll;"></pdf-viewer>
    </div>

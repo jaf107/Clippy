@@ -71,9 +71,12 @@ export class SidebarComponent {
   }
 
   showGraph(){
-    // if(!this.knowledgeGraphOn){
+    if(!this.knowledgeGraphOn){
       this.pdfShareService.setKnowledgeGraphOn(true);
-    // }
+    }
+    else{
+      this.pdfShareService.setKnowledgeGraphOn(false);
+    }
   }
 
 }

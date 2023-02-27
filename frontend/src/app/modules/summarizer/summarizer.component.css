@@ -22,3 +22,8 @@
 .close-icon{
     font-size: 2rem;
 }
+
+.copy{
+    /* margin-left: auto;  */
+    margin-right: 0;
+}

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as extractiveSummary from '../../../assets/preprocessed.json';
 import { PdfShareService } from '../shared/pdf-share.service';
+import {ClipboardModule} from '@angular/cdk/clipboard';
+import { ToastrService } from 'ngx-toastr';
 
 
 interface chunk {
@@ -18,7 +20,8 @@ interface chunk {
 export class SummarizerComponent implements OnInit{
 
   constructor(
-    private pdfShareService : PdfShareService
+    private pdfShareService : PdfShareService,
+    private toastr: ToastrService, 
   ){}
 
   public summary : any = (extractiveSummary as any).default;
@@ -40,6 +43,11 @@ export class SummarizerComponent implements OnInit{
 
   closeSummary(){
     this.pdfShareService.setSummarizerOff(false);
+  }
+
+  onClipboardCopy(successful: boolean){
+    this.toastr.show('Text copied to Clipboard');
+    console.log(successful);
   }
 
 

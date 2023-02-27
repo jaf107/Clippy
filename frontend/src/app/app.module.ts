@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { ClipboardModule } from '@angular/cdk/clipboard'
 
 import { AppComponent } from './app.component';
 import { LandingPageComponent } from './modules/landing-page/landing-page.component';
@@ -41,7 +42,8 @@ import { TooltipModule } from 'ng2-tooltip-directive';
     ToastrModule.forRoot(),
     AppRoutingModule,
     TooltipModule,
-    PdfViewerModule
+    PdfViewerModule,
+    ClipboardModule
   ],
   providers: [],
   bootstrap: [AppComponent],

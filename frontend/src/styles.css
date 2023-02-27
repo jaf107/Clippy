@@ -16,3 +16,8 @@ body{
     background-color: #ac0000;
     box-shadow: 0 0 12px #a30b0b !important;
   }
+
+  .toast-show{
+    background-color: #363636;
+    box-shadow: 0 0 12px #202020 !important;
+  }
