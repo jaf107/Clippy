@@ -85,7 +85,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       let wrappedText = ``;
 
       for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
-      wrappedText += `<a class="highlighed-text">`;
+      wrappedText += `<a class="highlighed-text" style="background-color:#FF5733 !important">`;
       for (let i = startingIndex; i < startingIndex + segStr.length; i++)
         wrappedText += spanStr[i];
       wrappedText += `</a>`;
