@@ -33,3 +33,25 @@
     border: 1px solid white;
     border-radius: 10px;
 }
+
+.toolbar{
+    color: whtie;
+    background-color: #404040;
+    box-shadow: 0 4px 2px -2px #333333;
+}
+
+button{
+    margin-right: 0.5rem;
+    background-color: transparent;
+    border: none;
+}
+
+button:hover{
+    background-color: #333333;
+}
+
+.page{
+    margin-right: 0.5rem;
+    width: 5rem;
+    border-radius: 5px;
+}

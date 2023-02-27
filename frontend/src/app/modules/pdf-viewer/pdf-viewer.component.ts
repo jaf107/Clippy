@@ -3,6 +3,8 @@ import { FeaturesService } from '../shared/features.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 import { saveAs } from 'file-saver';
 import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -20,7 +22,14 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   page = 1;
   totalPages = 0;
 
+  private file: File | null;
+  private url: any;
+
+  visitedFiles = [];
+
+
   constructor(
+    private toastr: ToastrService,
     public pdfShareService: PdfShareService,
     private http: HttpClient
     ) {
@@ -100,14 +109,38 @@ loadComplete(pdfData: any) {
    this.totalPages = pdfData.numPages;
 }
 
-print() {
-  window.print();
+openFileDialog(){
+  document.getElementById('upload').click();
 }
+
 
 downloadPdf() {
   console.log(this.pdfPath);
   const blob = new Blob([this.pdfPath], { type: 'application/octet-stream' });
   saveAs(blob, 'test.pdf');
+}
+
+uploadPdf(e){
+  this.file = e.target.files[0];
+    this.visitedFiles.push({name:this.file.name, lastVisited: new Date()});
+    console.log(this.visitedFiles);
+
+    if(this.file.type != 'application/pdf'){
+      console.log('Not supported file type!');
+      this.errorsmsg();
+     }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.url = reader.result;
+      this.pdfPath = this.url;
+
+    };
+    reader.readAsArrayBuffer(this.file);
+}
+
+errorsmsg(){  
+  this.toastr.error("The uploaded file is not a pdf",'Unsupported File Type');
 }
 
 }
