@@ -17,7 +17,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.pdfPath = this.pdfShareService.getFile();
     console.log(this.pdfPath);
 
-    // this.pdfPath = "./assets/SCORE_intro.pdf";
+    this.pdfPath = './assets/sample4.pdf';
 
     this.summarizerOn = false;
 
@@ -34,15 +34,15 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   constructor(public pdfShareService: PdfShareService) {}
 
   loaded() {
-    console.log('Loaded ' + this.pdfPath);
+    // console.log('Loaded ' + this.pdfPath);
   }
 
   failed() {
-    console.log('Failed ' + this.pdfPath);
+    // console.log('Failed ' + this.pdfPath);
   }
 
   starts() {
-    console.log('Started ' + this.pdfPath);
+    // console.log('Started ' + this.pdfPath);
   }
 
   /**
@@ -51,24 +51,34 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param e custom event
    */
   pageRendered(e: any) {
-    // console.log('(page-rendered)', e);
+    console.log('(page-rendered)', e);
     // Select page container
     let spans = e.source.textLayer.textDivs;
-    let higlightedSegments = this.filterHighlightsForAPage(e.pageNumber);
-    console.log('page spans: ', spans, e.pageNumber);
-    console.log('page HL segs: ', higlightedSegments, e.pageNumber);
-  }
+    let higlightedSegments = filterHighlightsForAPage(
+      Array.from(HL),
+      e.pageNumber
+    );
+    console.log(e.pageNumber, 'page spans: ');
+    console.dir(spans);
+    // console.log('page HL segs: ', higlightedSegments, e.pageNumber);
 
-  filterHighlightsForAPage(pageNo) {
-    let segmentsForAPage = [];
-    for (let i = 0; i < Array.from(HL).length; i++) {
-      let sen = HL[i];
-      for (let j = 0; j < sen.segment.length; j++) {
-        let seg = sen.segment[j];
-        if (seg.pageNo === pageNo) segmentsForAPage.push(seg);
+    // console.log('befor for');
+    // for (const span in spans) {
+    //   console.log(span);
+    // }
+
+    // Helpers
+    function filterHighlightsForAPage(highlightSegments, pageNo) {
+      let segmentsForAPage = [];
+      for (let i = 0; i < highlightSegments.length; i++) {
+        let sen = HL[i];
+        for (let j = 0; j < sen.segment.length; j++) {
+          let seg = sen.segment[j];
+          if (seg.pageNo === pageNo) segmentsForAPage.push(seg);
+        }
       }
+      return segmentsForAPage;
     }
-    return segmentsForAPage;
   }
 
   replaceTextChunk(spanElement: any) {
@@ -91,7 +101,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param {CustomEvent} e
    */
   pageInitialized(e: CustomEvent) {
-    console.log('(page-initialized)', e);
+    // console.log('(page-initialized)', e);
   }
 
   /**
@@ -100,6 +110,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param e number
    */
   pageChange(e: number) {
-    console.log('(page-change)', e);
+    // console.log('(page-change)', e);
   }
 }
