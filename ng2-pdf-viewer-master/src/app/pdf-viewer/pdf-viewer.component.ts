@@ -434,7 +434,9 @@ export class PdfViewerComponent
     fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => {
-        this.pageRendered.emit(event);
+        setTimeout(()=>{
+          this.pageRendered.emit(event);
+        },500)
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
