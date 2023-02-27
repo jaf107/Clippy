@@ -1,6 +1,6 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { PdfShareService } from '../shared/pdf-share.service';
-
+import * as HL from '../../../assets/highlight.json'
 @Component({
   selector: 'app-pdf-viewer',
   templateUrl: './pdf-viewer.component.html',
@@ -12,6 +12,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   public summarizerOn: boolean;
 
   ngOnInit() {
+    console.log(HL)
     this.pdfPath = this.pdfShareService.getFile();
     console.log(this.pdfPath);
 
