@@ -13,9 +13,6 @@ const paperSchema = new mongoose.Schema({
     ref: "User",
     // required: true,
   },
-  public_id: {
-    type: String,
-  },
   knowledge_graph: {
     type: String,
   },

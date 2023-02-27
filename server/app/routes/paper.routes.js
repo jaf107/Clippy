@@ -18,10 +18,14 @@ router.use(express.static(__dirname + "./uploads/"));
 
 // router.route("/all").get(controller.allAccess);
 // router.route("").get([authJwt.verifyToken], controller.userBoard);
-router.route("/upload").post(upload.single("paper"), controller.uploadPaper);
-router.route("/searchById").post(controller.searchPaperById);
+router
+  .route("/upload")
+  .post(authJwt.checkToken, upload.single("paper"), controller.uploadPaper);
+router
+  .route("/uploadById")
+  .post(authJwt.checkToken, controller.searchPaperById);
 router.route("/:id/citations").get(controller.getCitation);
 router.route("/searchByTitle").get(controller.searchPaperByTitle);
-router.route("/:id").get(controller.getPaperDetails);
+router.route("/:id").get(authJwt.checkToken, controller.getPaperDetails);
 
 module.exports = router;

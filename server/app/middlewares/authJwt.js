@@ -20,6 +20,20 @@ verifyToken = (req, res, next) => {
   });
 };
 
+checkToken = (req, res, next) => {
+  let token = req.session.token;
+  if (!token || token === undefined) {
+    return next();
+  }
+  jwt.verify(token, config.secret, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: "Unauthorized!" });
+    }
+    req.userId = decoded.id;
+    next();
+  });
+};
+
 isAdmin = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
@@ -84,6 +98,7 @@ isModerator = (req, res, next) => {
 
 const authJwt = {
   verifyToken,
+  checkToken,
   isAdmin,
   isModerator,
 };
