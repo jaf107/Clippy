@@ -134,6 +134,7 @@ async function wrapper() {
   for (let i = 1; i < freq.length; i++) {
     if (max.count < freq[i].count && freq[i].height > 0) max = freq[i];
   }
+  console.log(freq);
   console.log(max);
 
   // Filter page chunk for regular text chunks
@@ -167,9 +168,8 @@ async function wrapper() {
 wrapper();
 
 async function test() {
-  const { textChunkArray: pdfChunks } = await getPdfTextContent(
-    "./sample4.pdf"
-  );
+  const { textChunkArray: pdfChunks, uniqueHeight: heights } =
+    await getPdfTextContent("./sample4.pdf");
   // console.log("dhukse", pdfChunks);
 
   function getPageHeight(pdfChunks) {
@@ -188,9 +188,7 @@ async function test() {
         "last chunk y:",
         pageChunks[lastChunkIndex].transform[5],
         "y diffrence:",
-        pageChunks[0].transform[5] - pageChunks[lastChunkIndex].transform[5],
-        "max page chunk distance:",
-        getMaxChunkDistanceInAPage(pageChunks)
+        pageChunks[0].transform[5] - pageChunks[lastChunkIndex].transform[5]
       );
     });
   }
@@ -213,5 +211,3 @@ async function test() {
 function isAlphanumeric(str) {
   return /^[a-zA-Z0-9 =_\/+\-:.,;'"“”<>#@?!%&()*{}\[\]$]+$/.test(str);
 }
-
-console.log(isAlphanumeric("Figuer 1: 100% coverage. arr[1$*]-"));
