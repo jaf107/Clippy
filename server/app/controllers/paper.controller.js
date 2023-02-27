@@ -157,41 +157,6 @@ exports.searchPaperById = async (req, res) => {
       }
     }
   }
-  // const paper_data = await axios
-  //   .get(
-  //     SEMANTIC_SCHOLAR_API +
-  //       req.body.paper_id +
-  //       "?fields=isOpenAccess,openAccessPdf,title,abstract"
-  //   )
-  //   .catch((err) => res.status(404).send("Paper Not Found"));
-
-  // if (paper_data.data) {
-  //   const ppr = await Paper.findOne({ paper_id: paper_data.data.paperId });
-  //   if (ppr) {
-  //     if (req.userId) {
-  //       updateHistory(req.userId, paper.paper_id, Date.now);
-  //     }
-  //     res.status(200).send(ppr);
-  //   } else {
-  //     if (!paper_data.data.isOpenAccess || !paper_data.data.openAccessPdf)
-  //       res.status(404).send("Paper Not Accessible");
-  //     else {
-  //       var paper = {
-  //         title: paper_data.data.title,
-  //         paper_id: req.body.paper_id,
-  //         public_id: result.public_id,
-  //         knowledge_graph: "",
-  //         abstract: paper_data.data.abstract,
-  //         url: paper_data.data.openAccessPdf.url,
-  //       };
-  //       await Paper.create(paper);
-  //       if (req.userId) {
-  //         updateHistory(req.userId, paper.paper_id);
-  //       }
-  //       res.status(200).send(paper);
-  //     }
-  //   }
-  // }
 };
 
 exports.getCitation = async (req, res) => {
