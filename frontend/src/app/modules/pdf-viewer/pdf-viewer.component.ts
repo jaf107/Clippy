@@ -13,11 +13,10 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   public summarizerOn: boolean;
 
   ngOnInit() {
-    console.log(HL);
     this.pdfPath = this.pdfShareService.getFile();
     console.log(this.pdfPath);
 
-    //this.pdfPath = './assets/sample4.pdf';
+    this.pdfPath = './assets/sample4.pdf';
 
     this.summarizerOn = false;
 
@@ -27,8 +26,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     });
   }
 
-  getReferences(e:any){
-    console.log(e.data.length)
+  getReferences(e: any) {
+    // console.log(e.data.length);
   }
   ngAfterViewInit() {
     console.log('View is initialized ' + this.pdfPath);
