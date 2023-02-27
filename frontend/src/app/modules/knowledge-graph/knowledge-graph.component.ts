@@ -7,8 +7,17 @@ import { PdfShareService } from '../shared/pdf-share.service';
 
 
 interface edges{
-  "source":string,
-  "target":string
+  data:{
+  source:string,
+  target:string
+  }
+}
+
+interface nodes{
+  data:{
+    id:string,
+    name:string
+  }
 }
 
 @Component({
@@ -66,13 +75,14 @@ export class KnowledgeGraphComponent implements OnInit {
           { data: { id: 'd' , name: 'Paperrrr' } },
           { data: { id: 'e' , name: 'SCOREEEE' } },
         ],
-        edges: [
-          { data: { source: 'a', target: 'b' } },
-          { data: { source: 'a', target: 'c' } },
-          { data: { source: 'b', target: 'd' } },
-          { data: { source: 'd', target: 'e' } },
-          { data: { source: 'c', target: 'd' } },
-        ],
+        edges: this.graphEdges,
+        // edges: [
+        //   { data: { source: 'a', target: 'b' } },
+        //   { data: { source: 'a', target: 'c' } },
+        //   { data: { source: 'b', target: 'd' } },
+        //   { data: { source: 'd', target: 'e' } },
+        //   { data: { source: 'c', target: 'd' } },
+        // ],
       },
 
       // Graph style
@@ -154,8 +164,8 @@ export class KnowledgeGraphComponent implements OnInit {
     this.graphData.forEach(edge => {
       if(edge.from.title != undefined){
         let singleEdge = {'source':edge.from.title, 'target':edge.to.title};
-        this.graphEdges.push(singleEdge);
-        console.log(singleEdge);
+        this.graphEdges.push({data:singleEdge});
+        console.log(this.graphEdges);
       }
     });
   }
