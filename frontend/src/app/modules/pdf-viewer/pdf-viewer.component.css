@@ -14,15 +14,19 @@
     margin: 0 auto;
 }
 
-.right{
-    display: inline-block;
-    width: 4%;
+.right {
+  display: inline-block;
+  width: 4%;
 }
 
-.middle{
-    display: inline-block;
-    width: 0%;
-    vertical-align: top;
+.middle {
+  display: inline-block;
+  width: 0%;
+  vertical-align: top;
+}
+
+.highlighed-text {
+  background-color: yellow;
 }
 
 .graphCanvas{
