@@ -573,13 +573,29 @@ async function createChunkForHighlighting() {
   function matchSummaryandHighlight() {
     let allSegmentCheck = highlightsSegments;
     let summaryCheck = summaryArray;
+    let filteredSegments = [];
 
-    let filteredSegments = allSegmentCheck.filter((segment) => {
-      return (
-        summaryCheck.some((summary) => summary.includes(segment?.sentence)) &&
-        segment?.sentence.trim().split(" ").length > 1
-      );
-    });
+    for (let i = 0; i < allSegmentCheck.length; i++) {
+      let sens = allSegmentCheck[i];
+      if (
+        summaryCheck.some((summary) => summary.includes(sens?.sentence)) &&
+        sens?.sentence.trim().split(" ").length > 1
+      )
+        filteredSegments.push(sens);
+      else {
+        let demo = { sentence: sens.sentence, segment: [] };
+        for (let j = 0; j < sens.segment.length; j++) {
+          if (
+            summaryCheck.some((summary) =>
+              summary.includes(sens.segment[j].str)
+            ) &&
+            sens.segment[j].str.trim().split(" ").length > 1
+          )
+            demo.segment.push(sens.segment[j]);
+        }
+        if (demo.segment.length > 0) filteredSegments.push(demo);
+      }
+    }
 
     fs.truncateSync("./highlight.json", 0);
     fs.writeFileSync("./highlight.json", JSON.stringify(filteredSegments));
