@@ -15,7 +15,7 @@ import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-gra
 import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { SummarizerComponent } from './modules/summarizer/summarizer.component';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { PdfViewerModule } from './modules/pdf-viewer-custom-library/pdf-viewer.module';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 @NgModule({
