@@ -24,6 +24,9 @@ router
 router
   .route("/uploadById")
   .post(authJwt.checkToken, controller.searchPaperById);
+router
+  .route("/:id/semanticScholar")
+  .get(controller.getPaperDetailsfromSemanticScholar);
 router.route("/:id/citations").get(controller.getCitation);
 router.route("/searchByTitle").get(controller.searchPaperByTitle);
 router.route("/:id").get(authJwt.checkToken, controller.getPaperDetails);

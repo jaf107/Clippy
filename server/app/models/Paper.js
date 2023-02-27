@@ -22,6 +22,20 @@ const paperSchema = new mongoose.Schema({
   url: {
     type: String,
   },
+  url: {
+    type: String,
+  },
+  citationCount: {
+    type: Number,
+  },
+  referenceCount: {
+    type: Number,
+  },
+  url: [
+    {
+      type: Object,
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

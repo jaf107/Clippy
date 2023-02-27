@@ -39,13 +39,24 @@ exports.getPaperDetails = async (req, res) => {
   }
 };
 
+exports.getPaperDetailsfromSemanticScholar = async (req, res) => {
+  const paper_data = await axios
+    .get(
+      SEMANTIC_SCHOLAR_API +
+        req.params.id +
+        "?fields=isOpenAccess,openAccessPdf,title,abstract,citationCount,referenceCount,authors"
+    )
+    .catch((err) => res.status(404).send("Paper Not Found"));
+  if (paper_data) res.status(200).send(paper_data.data);
+};
+
 exports.uploadPaper = async (req, res) => {
   if (!req.body.title || !req.file) {
     res.status(404).send("File and Title are required");
   } else {
     const paper_data = await axios.get(
       SEMANTIC_SCHOLAR_API +
-        `search?query=${req.body.title}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf`
+        `search?query=${req.body.title}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
     );
     if (paper_data && paper_data.data) {
       const data = paper_data.data.data[0];
@@ -63,6 +74,9 @@ exports.uploadPaper = async (req, res) => {
           knowledge_graph: "",
           url: data.isOpenAccess ? data.openAccessPdf.url : "",
           abstract: data.abstract,
+          citationCount: data.citationCount,
+          referenceCount: data.referenceCount,
+          authors: data.authors,
         };
         await Paper.create(paper);
         await fs.unlink(req.file.path, (err) => {
@@ -97,6 +111,9 @@ exports.uploadPaper = async (req, res) => {
           knowledge_graph: "",
           url: SERVER_ADDRESS + "/upload/" + uuid + ".pdf",
           abstract: "",
+          citationCount: 0,
+          referenceCount: 0,
+          authors: [],
         };
         await Paper.create(paper);
         if (req.userId) {
@@ -135,7 +152,7 @@ exports.searchPaperById = async (req, res) => {
       .get(
         SEMANTIC_SCHOLAR_API +
           req.body.paper_id +
-          "?fields=isOpenAccess,openAccessPdf,title,abstract"
+          "?fields=isOpenAccess,openAccessPdf,title,abstract,citationCount,referenceCount,authors"
       )
       .catch((err) => res.status(404).send("Paper Not Found"));
     if (paper_data.data) {
@@ -148,6 +165,9 @@ exports.searchPaperById = async (req, res) => {
           knowledge_graph: "",
           abstract: paper_data.data.abstract,
           url: paper_data.data.openAccessPdf.url,
+          citationCount: paper_data.data.citationCount,
+          referenceCount: paper_data.data.referenceCount,
+          authors: paper_data.data.authors,
         };
         await Paper.create(paper);
         if (req.userId) {
