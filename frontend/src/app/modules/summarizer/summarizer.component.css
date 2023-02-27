@@ -1,13 +1,17 @@
 .content{
     width: 100%;
     padding: 1.5rem;
-    text-align: justify;
+    text-align: center;
     margin: auto;
     background-color: white;
     overflow-wrap: wrap;
     word-wrap: break-word;
     overflow-y: auto;
     height: 40rem;
+}
+
+p{
+    text-align: justify;
 }
 
 .close{
@@ -23,7 +27,11 @@
     font-size: 2rem;
 }
 
+.single{
+    width: 100%;
+}
+
 .copy{
-    /* margin-left: auto;  */
-    margin-right: 0;
+    margin: 1rem auto;
+    text-align: center;
 }

@@ -23,8 +23,8 @@
       </nav>
       <div class="content">
         <div class="single">
-          <button class="btn btn-outline-dark copy" [cdkCopyToClipboard]="currentChunkSummary" (cdkCopyToClipboardCopied)="onClipboardCopy($event)">Copy</button>
           <p>{{currentChunkSummary}}</p>
+          <button class="btn btn-outline-dark copy" [cdkCopyToClipboard]="currentChunkSummary" (cdkCopyToClipboardCopied)="onClipboardCopy($event)">Copy</button>
         </div>
       </div>
 </div>

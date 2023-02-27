@@ -101,7 +101,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     if (this.page < 1) {
       this.page = 1;
     }
-    
   
 }
 

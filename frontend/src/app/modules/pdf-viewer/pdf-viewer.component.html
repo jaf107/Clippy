@@ -49,9 +49,16 @@
             </div>
          </div>
       </div>
-      <pdf-viewer [src]="pdfPath" [zoom]="zoom" [page]="page" [show-all]="true"
-         (after-load-complete)="loadComplete($event)" [render-text]="true" [original-size]="false"
-         style="width: 50rem; height: 90vh; margin: 0 auto; overflow: scroll;"></pdf-viewer>
+      <pdf-viewer 
+      [src]="pdfPath" 
+      [zoom]="zoom" 
+      [page]="page" 
+      [show-all]="true"
+      (after-load-complete)="loadComplete($event)" 
+      [render-text]="true" 
+      [original-size]="false"
+      style="width: 50rem; height: 90vh; margin: 0 auto; overflow: scroll;"
+      ></pdf-viewer>
    </div>
    <div class="leftGraph" [ngStyle]="{'visibility': graphOn == true ? 'visible':'hidden'}">
       <div class="graphCanvas">
