@@ -1,1 +1,46 @@
-[{"str":"Table 4: Data Sets for Source Code Clustering","dir":"ltr","width":184.32546299999996,"height":9.963,"transform":[9.963,0,0,9.963,346.5919744,442.9446567000002],"fontName":"g_d0_f3","hasEOL":true,"style":{"fontFamily":"serif","ascent":0.701,"descent":-0.208,"vertical":false}}]
+[
+    {
+        "str": "Figure 2: The Overall Framework of ADSketch",
+        "dir": "ltr",
+        "width": 187.7653824000001,
+        "height": 8.9664,
+        "transform": [
+            8.9664,
+            0,
+            0,
+            8.9664,
+            80.039,
+            572.261
+        ],
+        "fontName": "g_d0_f4",
+        "hasEOL": false,
+        "style": {
+            "fontFamily": "sans-serif",
+            "ascent": 0.714,
+            "descent": -0.231,
+            "vertical": false
+        }
+    },
+    {
+        "str": "Table 1: Summary of Variables",
+        "dir": "ltr",
+        "width": 123.56595840000006,
+        "height": 8.9664,
+        "transform": [
+            8.9664,
+            0,
+            0,
+            8.9664,
+            376.148,
+            698.725
+        ],
+        "fontName": "g_d0_f4",
+        "hasEOL": true,
+        "style": {
+            "fontFamily": "sans-serif",
+            "ascent": 0.714,
+            "descent": -0.231,
+            "vertical": false
+        }
+    }
+]

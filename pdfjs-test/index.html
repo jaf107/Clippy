@@ -13,7 +13,7 @@
 
     <script>
       // load the PDF file
-      const pdfUrl = "sample4.pdf";
+      const pdfUrl = "sample6.pdf";
       pdfjsLib.getDocument(pdfUrl).promise.then((pdfDoc) => {
         // get the page to be rendered
         const pageNumber = 3;
@@ -21,11 +21,28 @@
         pdfDoc.getPage(pageNumber).then((page) => {
           // define the viewport for the specific area to be rendered
           const viewport = page.getViewport({ scale: 1.0 });
+
+          // sample-6 er pdf 3 no page
+          // const region = {
+          //   x:  35,
+          //   y:750,
+          //   width: 580,
+          //   height: (750 -  572.261) * scalingFactor + 30,
+          // };
+
+
+          //  1st col er x: 35
+          // 2nd col er x: 300
+
+          // 1st col er height: 750
+
+            // Table
           const region = {
-            x: 346.5919744,
-            y: 442.9446567000002,
-            width: 470,
-            height: 173.76365670000024 * scalingFactor,
+            x: 300,
+
+            y:  698.725 +20 ,
+            width: 580,
+            height: (180) * scalingFactor + 30,
           };
           viewport.width = region.width;
           viewport.height = region.height;

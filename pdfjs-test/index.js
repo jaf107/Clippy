@@ -116,7 +116,7 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 
 async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
-    "./sample4.pdf"
+    "./sample6.pdf"
   );
   // arr[2];
   let threshholdDistance = 90;
@@ -138,7 +138,7 @@ async function wrapper() {
   console.log(max);
 
   // Filter page chunk for regular text chunks
-  let regularText = arr[3].filter(
+  let regularText = arr[2].filter(
     (item) =>
       item.height < max.height + 1 &&
       item.height > max.height - 1 &&
@@ -149,20 +149,72 @@ async function wrapper() {
   writeChunksArrayToFile("./chunks.json", arr);
   writeChunksArrayToFile("./chunksWithEOL.json", regularText);
 
+
+  // General Rules For finding figures, tables
+
+  /* 1. Find the keyword (table, figure)
+   2. Then find the distance (x, y) of the particulur chunk with prev and next chunk
+   3. Return max(y) , x,y,height
+   **/
+
   // Filter the starting chunk of the image
+
+  // x:  35,
+  // y:750,
+
   let chunkBeforeImage = regularText.filter((item, index, array) => {
-    if (
-      index + 1 < array.length &&
-      item.transform[5] - array[index + 1].transform[5] >= threshholdDistance
-    ) {
-      console.log(
-        item.str, // start chuk
-        array[index + 1].str, // end chunk
-        item.transform[5] - array[index + 1].transform[5] // height of the image
-      );
-      return true;
-    } else return false;
+    //  index++;
+
+
+    // Table
+    if (item.str.toLowerCase().includes('table')) {
+      if (
+        index + 1 < array.length &&
+        item.transform[5] - array[index + 1].transform[5] >= 20
+      ) {
+        console.log("Index " + index + " er  start chunk: " +
+          item.str + // start chuk
+          "Last chunk:  " +
+          array[index + 1].str, // end chunk
+          item.transform[5] - array[index + 1].transform[5] // height of the image
+        );
+        return true;
+      } else return false;
+    }
+
+    // For figure
+
+    if (item.str.toLowerCase().includes('figure')) {
+      if (index == 0) {
+        console.log("index 0 paise")
+        if (750 - item.transform[5]  >= 10) {
+          console.log("Index " + index + " er  start chunk: " +
+            item.str + // start chuk
+            "Last chunk:  " +
+            array[0].str, // end chunk
+            item.transform[5] - array[0].transform[5] // height of the image
+          );
+          return true;
+        }
+      }
+      else {
+        if (item.transform[5] - array[index - 1].transform[5] >= 20) {
+          console.log("Index " + index + " er  start chunk: " +
+            item.str + // start chuk
+            "Last chunk:  " +
+            array[index - 1].str, // end chunk
+            item.transform[5] - array[index - 1].transform[5] // height of the image
+          );
+          return true;
+        } else return false;
+      }
+
+    }
+
   });
+
+
+
   writeChunksArrayToFile("./out.json", chunkBeforeImage);
 }
 wrapper();
