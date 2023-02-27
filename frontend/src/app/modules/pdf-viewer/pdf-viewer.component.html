@@ -1,17 +1,28 @@
 <app-navbar></app-navbar>
 <div class="container-fluid">
    <div class="left" [ngStyle]="{'width': summarizerOn == true ? '70%':'96%'}" *ngIf="!graphOn">
+      <div class="toolbar">
+         <button (click)="zoomIn()">+</button>
+         <button (click)="zoomOut()">-</button>
+         <input type="number" [(ngModel)]="page" (change)="goToPage()">
+         <span>/ {{totalPages}}</span>
+         <button (click)="downloadPdf()">Save</button>
+       </div>
       <pdf-viewer [src]="pdfPath"
-              [render-text]="true"
-              [original-size]="false"
-              style="width: 50rem; height: 90vh; margin: 0 auto;"
+                  [zoom]="zoom" 
+                  [page]="page" 
+                  [show-all]="false"
+                  (after-load-complete)="loadComplete($event)"
+                  [render-text]="true"
+                  [original-size]="false"
+                  style="width: 50rem; height: 90vh; margin: 0 auto; overflow: scroll;"
       ></pdf-viewer>
    </div>
-   <!-- <div class="left" [ngStyle]="{'visibility': graphOn == true ? 'visible':'hidden'}">
+   <div class="leftGraph" [ngStyle]="{'visibility': graphOn == true ? 'visible':'hidden'}">
       <div class="graphCanvas">
          <app-knowledge-graph></app-knowledge-graph>
       </div>
-   </div> -->
+   </div>
    <div class="middle" *ngIf="summarizerOn" [ngStyle]="{'width': summarizerOn == true ? '27%' : '0%'}">
       <app-summarizer></app-summarizer>
    </div>

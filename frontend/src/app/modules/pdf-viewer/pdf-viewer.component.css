@@ -5,6 +5,16 @@
     margin: 0 auto;
 }
 
+.leftGraph{
+    /* width: 96%; */
+    position: absolute;
+    left: 1rem;
+    bottom: 0.5rem;
+    width: 96%;
+    margin: 0 auto;
+    z-index: 1000;
+}
+
 .right{
     display: inline-block;
     width: 4%;

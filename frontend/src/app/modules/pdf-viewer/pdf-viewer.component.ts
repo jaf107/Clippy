@@ -1,6 +1,8 @@
 import { Component, AfterViewInit, OnInit} from '@angular/core';
 import { FeaturesService } from '../shared/features.service';
 import { PdfShareService } from '../shared/pdf-share.service';
+import { saveAs } from 'file-saver';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -14,9 +16,13 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   public summarizerOn: boolean;
   public graphOn: boolean;
 
+  zoom = 1;
+  page = 1;
+  totalPages = 0;
+
   constructor(
     public pdfShareService: PdfShareService,
-    private featureService: FeaturesService
+    private http: HttpClient
     ) {
     /* More likely than not you don't need to tweak the pdfDefaultOptions.
        They are a collecton of less frequently used options.
@@ -67,5 +73,41 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       console.log("Started " + this.pdfPath);
     }
 
+
+  zoomIn() {
+    this.zoom += 0.1;
+  }
+
+  zoomOut() {
+    this.zoom -= 0.1;
+    if (this.zoom < 0.5) {
+      this.zoom = 0.5;
+    }
+  }
+
+  goToPage() {
+    if (this.page > this.totalPages) {
+      this.page = this.totalPages;
+    }
+    if (this.page < 1) {
+      this.page = 1;
+    }
+    
+  
+}
+
+loadComplete(pdfData: any) {
+   this.totalPages = pdfData.numPages;
+}
+
+print() {
+  window.print();
+}
+
+downloadPdf() {
+  console.log(this.pdfPath);
+  const blob = new Blob([this.pdfPath], { type: 'application/octet-stream' });
+  saveAs(blob, 'test.pdf');
+}
 
 }

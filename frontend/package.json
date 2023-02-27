@@ -23,6 +23,7 @@
     "bootstrap-icons": "^1.10.3",
     "cytoscape": "^3.23.0",
     "cytoscape-dagre": "^2.5.0",
+    "file-saver": "^2.0.5",
     "ng2-pdf-viewer": "^9.1.4",
     "ng2-tooltip-directive": "^2.10.3",
     "ngx-toastr": "^16.0.2",
