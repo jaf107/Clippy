@@ -60,26 +60,39 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       Array.from(HL),
       e.pageNumber
     );
-    console.log(e.pageNumber, 'page spans: ');
-    console.dir(spans);
-    // console.log('page HL segs: ', higlightedSegments, e.pageNumber);
 
-    // console.log('befor for');
-    // for (const span in spans) {
-    //   console.log(span);
-    // }
+    higlightedSegments.map((segment) => {
+      let span = spans[segment.chunkIndex];
+      let textToBeWrapped = addWrappingTag(span.innerHTML, segment.str);
+      span.innerHTML = textToBeWrapped;
+    });
 
     // Helpers
     function filterHighlightsForAPage(highlightSegments, pageNo) {
       let segmentsForAPage = [];
       for (let i = 0; i < highlightSegments.length; i++) {
-        let sen = HL[i];
+        let sen = highlightSegments[i];
         for (let j = 0; j < sen.segment.length; j++) {
           let seg = sen.segment[j];
           if (seg.pageNo === pageNo) segmentsForAPage.push(seg);
         }
       }
       return segmentsForAPage;
+    }
+
+    function addWrappingTag(spanStr, segStr) {
+      let startingIndex = spanStr.indexOf(segStr);
+      let wrappedText = ``;
+
+      for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
+      wrappedText += `<a class="highlighed-text">`;
+      for (let i = startingIndex; i < startingIndex + segStr.length; i++)
+        wrappedText += spanStr[i];
+      wrappedText += `</a>`;
+      for (let i = startingIndex + segStr.length; i < spanStr.length; i++)
+        wrappedText += spanStr[i];
+
+      return wrappedText;
     }
   }
 
