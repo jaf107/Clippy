@@ -96,6 +96,8 @@ export class PdfViewerComponent
   private isInitialized = false;
   private loadingTask: PDFDocumentLoadingTask;
   private destroy$ = new Subject<void>();
+  flag1=false;
+  flag2=false;
 
   @Output('after-load-complete') afterLoadComplete = new EventEmitter<PDFDocumentProxy>();
   @Output('page-rendered') pageRendered = new EventEmitter<CustomEvent>();
@@ -105,6 +107,7 @@ export class PdfViewerComponent
   @Output('on-progress') onProgress = new EventEmitter<PDFProgressData>();
   @Output() pageChange: EventEmitter<number> = new EventEmitter<number>(true);
   @Input() src: string | Uint8Array | PDFSource;
+  @Output('references') references: EventEmitter<any> = new EventEmitter<any>();
 
   @Input('c-maps-url')
   set cMapsUrl(cMapsUrl: string) {
@@ -203,6 +206,8 @@ export class PdfViewerComponent
     this._showBorders = Boolean(value);
   }
 
+ 
+
   static getLinkTarget(type: string) {
     switch (type) {
       case 'blank':
@@ -247,7 +252,8 @@ export class PdfViewerComponent
     }
 
     const offset = this.pdfViewerContainer.nativeElement.offsetParent;
-
+    //this.getReferences();
+   // console.log(this._pdf)
     if (this.isVisible === true && offset == null) {
       this.isVisible = false;
       return;
@@ -278,7 +284,7 @@ export class PdfViewerComponent
     if (isSSR() || !this.isVisible) {
       return;
     }
-
+    //console.log('pdf: ', this._pdf)
     if ('src' in changes) {
       this.loadPDF();
     } else if (this._pdf) {
@@ -306,7 +312,64 @@ export class PdfViewerComponent
     }
   }
 
+  public getReferences() {
+    //console.log('get ref: ',this._pdf)
+    let references = [];
+    this.destinations=[];
+    this.annotations=[];
+    for(let i=1 ; i <= this._pdf.numPages; i++) {
+      this._pdf.getPage(i).then((page)=>{
+        page.getAnnotations().then(this.getRefPositions.bind(this));
+        //this.references.emit('');
+        if(i==this._pdf.numPages) this.flag1=true;
+        else this.flag1=false;
+        //console.log('i, numPages, flag1: ', i, this._pdf.numPages,this.flag1)
+      })
+    }
+    setTimeout(()=>{
+      this.references.emit({data: this.destinations})
+    },2000)
+    
+  }
+  destinations = [];
+  annotations = []
+  async getRefPositions (annotations) {
+    //console.log('2',this)
+    var linkAnnotations = annotations.filter(function (annotation) {
+      return annotation.subtype === "Link";
+    });
+    //console.log('link annotations: ',linkAnnotations.length);
+    this.annotations.push(linkAnnotations)
+    for(let i=0;i<linkAnnotations.length;i++) {
+      if(i>=linkAnnotations.length-1) this.flag2=true;
+      else this.flag2=false;
+      
+      if(linkAnnotations[i].dest != undefined){
+        //console.log(i)
+        var x = await this._pdf.getDestination(linkAnnotations[i].dest)
+        this.destinations.push(x)
+        //console.log('j, flag2 ', i, this.flag2)
+        // if(this.flag1 && this.flag2){
+          
+        //   this.references.emit({data: this.destinations})
+        //   this.flag1 = false;
+        //   this.flag2=false;
+          
+        // }
+        
+      }
+      
+    }
+   // console.log('adestinations: ',this.destinations)
+    //var x = await this._pdf.getDestination(linkAnnotation[26].dest);
+    //console.log(x)
+    //console.log(await this._pdf.getPageIndex(x[0]))
+    //console.log(await this._pdf.getPageLabels())
+   // this.pdfLinkService.goToDestination(await this.pdfDocument.getDestination(linkAnnotation[26].dest))
+  }
+
   public updateSize() {
+    console.log('update size: ', this._pdf)
     from(
       this._pdf.getPage(
         this.pdfViewer.currentPageNumber
@@ -371,7 +434,9 @@ export class PdfViewerComponent
     fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => {
-        this.pageRendered.emit(event);
+        setTimeout(()=>{
+          this.pageRendered.emit(event);
+        },500)
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
@@ -546,6 +611,8 @@ export class PdfViewerComponent
     }
 
     this.updateSize();
+    
+    this.getReferences();
   }
 
   private getScale(viewportWidth: number, viewportHeight: number) {
