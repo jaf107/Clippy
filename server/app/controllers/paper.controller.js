@@ -4,6 +4,7 @@ const Paper = db.paper;
 const cloudinary = require("cloudinary");
 const axios = require("axios");
 const SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1/paper/";
+const fs = require("fs");
 
 class CitationNode {
   constructor(paperId, title, level) {
@@ -25,9 +26,51 @@ class CitationEdge {
   }
 }
 
-exports.uploadPaper = async (req, res) => {
-  console.log(req.file.path);
-  res.status(200).send("Paper Added");
+exports.uploadPaper = async (req, res, next) => {
+  if (!req.body.title || !req.file) {
+    res.status(404).send("File and Title are required");
+  } else {
+    const paper_data = await axios.get(
+      SEMANTIC_SCHOLAR_API +
+        `search?query=${req.body.title}&fields=title,abstract,isOpenAccess,openAccessPdf`
+    );
+
+    if (paper_data && paper_data.data) {
+      const ppr = await Paper.findOne({ paper_id: paper_data.data.paperId });
+      if (ppr) {
+        res.status(200).send(ppr);
+      } else {
+        fs.rename(req.file.path, "/upload/" + uuid + ".pdf", (err) => {
+          if (err) throw err;
+          console.log("File renamed successfully");
+        });
+        const paper = {
+          paper_id: paper_data.data.paperId,
+          title: paper_data.data.title,
+          knowledge_graph: "",
+          url: req.file.path,
+          abstract: paper_data.data.abstract,
+        };
+        await Paper.create(paper);
+        res.status(200).send(paper);
+      }
+    } else {
+      var uuid = Math.random().toString(36).substr(2, 9);
+      fs.rename(req.file.path, "/upload/" + uuid + ".pdf", (err) => {
+        if (err) throw err;
+        console.log("File renamed successfully");
+      });
+      const paper = {
+        paper_id: uuid,
+        title: req.body.title,
+        knowledge_graph: "",
+        url: req.file.path,
+        abstract: "",
+      };
+      await Paper.create(paper);
+      res.status(200).send(paper);
+    }
+  }
 };
 
 exports.searchPaperByTitle = async (req, res) => {

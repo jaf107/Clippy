@@ -18,8 +18,8 @@ router.use(express.static(__dirname + "./uploads/"));
 
 // router.route("/all").get(controller.allAccess);
 // router.route("").get([authJwt.verifyToken], controller.userBoard);
-router.route("/uploadById").post(controller.searchPaperById);
 router.route("/upload").post(upload.single("paper"), controller.uploadPaper);
+router.route("/uploadById").post(controller.searchPaperById);
 router.route("/:id/citations").get(controller.getCitation);
 router.route("/searchByTitle").get(controller.searchPaperByTitle);
 
