@@ -133,6 +133,8 @@ export class PdfViewerComponent
     this._cMapsUrl = cMapsUrl;
   }
 
+  @Input('manualRef') manualRef: any;
+
   @Input('page')
   set page(_page) {
     _page = parseInt(_page, 10) || 1;
@@ -228,82 +230,40 @@ export class PdfViewerComponent
   }
 
   async handlePopOver(event: any) {
-    if (event.type != "mouseover" || event.target.hash == undefined) {
+    if (event.type != "mouseover") {
 			return;
     }
-    
-    //this.pdfPopOverContainer.nativeElement.appendChild
-    // const newElement = this.renderer.createElement('span');
-    // const text = this.renderer.createText('Hello, world!');
-    // this.renderer.appendChild(newElement, text);
-    // this.renderer.appendChild(this.pdfPopOverContainer.nativeElement, newElement);
-    const referenceID = event.target.hash.substring(1);
-		const refParent = event.target.parentElement;
-    let refBoundingRect = refParent.getBoundingClientRect();
-    console.log('ref rect: ', refBoundingRect)
-    console.log(referenceID)
-    //console.log(refParent)
-    const refDestination = await this._pdf.getDestination(referenceID);
-    console.log('ref dest: ',refDestination)
-    if (refDestination == null) {
-			return;
-		}
-    //console.log(event.clientX, event.clientY)
-    this.initPopOverEventBus();
-    //console.log('calling')
-    this.initPopOverPDFService();
-    //console.log(this.getPopOverPDFOptions())
-    const pageNum = 3;
-    //this.pdfLinkService.goToDestination(refDestination)
-    console.log(pageNum)
-    let ref = [];
-    //const page = pdf.getPage(pageNumber);
-    this._pdf.getPage(pageNum).then((page:PDFPageProxy)=>{
-      const pageInfo = page._pageInfo;
-      console.log('page info: ', pageInfo)
-      const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
-      ref.push(obj)
-      ref.push({name: 'XYZ'})
-      ref.push(200)
-      ref.push(300)
-      console.log('reverse: ',obj)
-    })
-    //this.pdfLinkService.goToDestination(ref);
-    this.hover.emit({
-      page: pageNum,
-      refDestination: ref,
-      clientX: event.clientX,
-      clienY: event.clientY
-    });
-    // this.popOverPDFViewer = new PDFJSViewer.PDFViewer(this.getPopOverPDFOptions()); 
-    // this.popOverPDFViewer.currentScale = 1.0;
-    // this.popOverPdfLinkService.goToDestination(refDestination);
-    // this._pdfClone.getPage(pageNum).then((page:PDFPageProxy)=>{
-    //   console.log(page)
-    //   if( true ){
-    //     let viewPort = page.getViewport({ scale: 1.0 });
-		// 		let left = event.clientX;
-		// 		left -= viewPort.width / this.popOverPDFViewer.currentScale / 2;
-
-		// 		this.pdfPopOverContainer.nativeElement.style.top = `${event.clientY + 2}px`;
-		// 		this.pdfPopOverContainer.nativeElement.style.width = `${refDestination[4] * this.popOverPDFViewer.currentScale}px`;
-		// 		this.pdfPopOverContainer.nativeElement.style.height = `${viewPort.height * this.popOverPDFViewer.currentScale}px`;
-		// 		this.pdfPopOverContainer.nativeElement.style.left = `${left}px`;
-		// 		this.pdfPopOverContainer.nativeElement.style.visibility = "visible";
-
-    //   }
-    // })
-    // console.log(this.popOverPDFViewer)
-    // this.popOverPDFViewer._setScale(1.0, false);
-    
-    // this.popOverPdfLinkService.setViewer(this.popOverPDFViewer);
-    
-    // this.popOverPDFViewer._currentPageNumber = this._page;
-    
-    // const type = referenceID.replaceAll(/[0-9]/g, "");
-    // //console.log(typeof type);
-    
+    let refParent:HTMLElement;
+    if(event.target.hash != undefined){
+      //if(event.clientX>=)
+      const referenceID = event.target.hash.substring(1);
+      refParent = event.target.parentElement;
+      let refBoundingRect = refParent.getBoundingClientRect();
+      
+      console.log('ref rect: ', refBoundingRect)
+      const refDestination = await this._pdf.getDestination(referenceID);
+      if (refDestination == null) {
+        return;
+      }
+      this.initPopOverEventBus();
+      this.initPopOverPDFService();
+      const pageNum = this.pdfLinkService._cachedPageNumber(refDestination[0]);
+      console.log(pageNum)
+      this.hover.emit({
+        show: true,
+        page: pageNum,
+        refDestination: refDestination,
+        clientX: event.clientX,
+        clienY: event.clientY
+      });
+      refParent.addEventListener("mouseleave", ()=>{
+        this.hover.emit({
+          show:false
+        })
+      })
+    }
   }
+
 
   static getLinkTarget(type: string) {
     switch (type) {
@@ -757,8 +717,28 @@ export class PdfViewerComponent
 
     this.updateSize();
     if(this.startingPosition){
-      console.log('start pos', this.startingPosition)
-      this.pdfLinkService.goToDestination(this.startingPosition)
+      if(this.annotations.length>0){
+        console.log('start pos', this.startingPosition)
+        this.pdfLinkService.goToDestination(this.startingPosition)
+      }
+      else{
+        //console.log(pageNum)
+        let pageNum = this.startingPosition.page;
+        let ref = [];
+        if(pageNum!=undefined){
+          this._pdf.getPage(pageNum).then((page:PDFPageProxy)=>{
+            const pageInfo = page._pageInfo;
+            console.log('page info: ', pageInfo)
+            const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
+            ref.push(obj)
+            ref.push({name: 'XYZ'})
+            ref.push(this.startingPosition.x)
+            ref.push(this.startingPosition.y)
+            this.pdfLinkService.goToDestination(ref);
+          })
+        }
+        
+      }
     }
     this.getReferences();
   }

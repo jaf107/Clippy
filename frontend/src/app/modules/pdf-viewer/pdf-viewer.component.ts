@@ -13,6 +13,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   public summarizerOn: boolean;
   previewPageNum: number;
   reference: any;
+  showPreview: boolean;
   @ViewChild('viewerRef') viewerRef: HTMLElement;
 
   ngOnInit() {
@@ -134,7 +135,10 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   createPreview(e: any) {
     console.log('event received: ', e);
-    this.previewPageNum = e.page;
-    this.reference = e.refDestination;
+    this.showPreview = e.show;
+    if(e.show){
+      this.previewPageNum = e.page;
+      this.reference = e.refDestination;
+    }
   }
 }
