@@ -2,8 +2,6 @@ import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { pdfs } from 'src/app/interfaces/file';
-import { TokenStorageService } from 'src/app/token-storage.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 
 
