@@ -387,7 +387,7 @@ async function ExtractiveSummary(src) {
 async function AbstractiveSummary(src) {
   let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let absApiKey = "453265e9-a392-4e2b-aacc-ecc527a3f41f";
+  let absApiKey = "278aff3b-5c8d-4fe3-8fda-cb82b42fba4a";
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
@@ -463,7 +463,7 @@ async function AbstractiveSummary(src) {
 
 // let src = `./sample4.pdf`;
 // ExtractiveSummary(src);
-// AbstractiveSummary(src);
+AbstractiveSummary(src);
 
 async function createChunkForHighlighting() {
   let paragraphs = require("./preprocessed.json");
@@ -649,4 +649,4 @@ function breakTextChunkIntoSentence(textChunk) {
 }
 
 // objectForIndex(1130);
-createChunkForHighlighting();
+// createChunkForHighlighting();
