@@ -32,6 +32,7 @@ const uniquePapers = new Set();
 export class KnowledgeGraphComponent implements OnInit {
 
   cy: any;
+  public errorGraph = false;
 
   public graphEdges : edges[] = [];
   public graphNodes : nodes[] = [];
@@ -51,42 +52,48 @@ export class KnowledgeGraphComponent implements OnInit {
       this.graphOn = value;
       if(this.graphOn){
         console.log("Hello from knowledge graph component");
-        this.featureService.getCitationGraph('e877fcfdddaeddd46f7f1afd70eb2e1c7a4bdfae').subscribe(
+        this.featureService.getCitationGraph('dad7810836060b8e6364e070ac3d0054644d17e7').subscribe(
           (data) =>{
             this.graphData = JSON.parse(data);
-            // this.addDataToGraph();
+            this.addDataToGraph();
             console.log(JSON.parse(data));
+
+            this.initializeGraph();
           },
           (err) => {
             console.log("Error in graph");
+            this.errorInGraph();
           }
         );
       }
     })
 
+  }
 
+
+  initializeGraph(){
     // Initialize cytoscape instance
     this.cy = cytoscape({
       container: document.getElementById('cy'),
 
       // Graph data
       elements: {
-        nodes: [
-          { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
-          { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
-          { data: { id: 'c' , name: 'Summarization' } },
-          { data: { id: 'd' , name: 'Paperrrr' } },
-          { data: { id: 'e' , name: 'SCOREEEE' } },
-        ],
-        // nodes: this.graphNodes,
-        // edges: this.graphEdges,
-        edges: [
-          { data: { source: 'a', target: 'b' } },
-          { data: { source: 'a', target: 'c' } },
-          { data: { source: 'b', target: 'd' } },
-          { data: { source: 'd', target: 'e' } },
-          { data: { source: 'c', target: 'd' } },
-        ],
+        // nodes: [
+        //   { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
+        //   { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
+        //   { data: { id: 'c' , name: 'Summarization' } },
+        //   { data: { id: 'd' , name: 'Paperrrr' } },
+        //   { data: { id: 'e' , name: 'SCOREEEE' } },
+        // ],
+        nodes: this.graphNodes,
+        edges: this.graphEdges,
+        // edges: [
+          // { data: { source: 'a', target: 'b' } },
+          // { data: { source: 'a', target: 'c' } },
+          // { data: { source: 'b', target: 'd' } },
+          // { data: { source: 'd', target: 'e' } },
+          // { data: { source: 'c', target: 'd' } },
+        // ],
       },
 
       // Graph style
@@ -138,13 +145,13 @@ export class KnowledgeGraphComponent implements OnInit {
 
       // Graph layout
       layout: {
-        name: 'breadthfirst',
+        name: 'concentric',
         fit: true, // whether to fit the viewport to the graph
         directed: true, // whether the tree is directed downwards (or edges can point in any direction if false)
         padding: 30, // padding on fit
         circle: false, // put depths in concentric circles if true, put depths top down if false
         grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
-        spacingFactor: 0.9, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
+        spacingFactor: 1.5, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
         boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
         avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
         nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
@@ -169,35 +176,31 @@ export class KnowledgeGraphComponent implements OnInit {
       selectionType: 'single',
     });
 
-    console.log("Hi");
+    this.cy.add(this.graphNodes);
     // // Add panzoom and navigator extensions
     panzoom(this.cy);
     navigator(this.cy);
   }
+  
+  errorInGraph(){
+    this.errorGraph = true;
+  }
 
-  // addDataToGraph(){
-  //   this.graphData.forEach(edge => {
-  //     if(edge.from.title != undefined){
-  //       let singleEdge = {'source':edge.from.title, 'target':edge.to.title};
-  //       this.graphEdges.push({'data':singleEdge});
+  addDataToGraph(){
 
-  //       uniquePapers.add(edge.from.title);
-  //       uniquePapers.add(edge.to.title);
-  //     }
-  //   });
+    let root = this.graphData[0].title.toString();
+    this.graphData.forEach(node => {
+      let singleNode = {'id':node.title.toString(), 'name':node.title.toString()};
+      this.graphNodes.push({'data':singleNode});
 
-  //   console.log(this.graphEdges);
-  //   this.addNodestoGraph();
-  // }
+      if(root != node.title.toString()){
+        let singleEdge = {'source':root, 'target':node.title.toString()};
+        this.graphEdges.push({'data':singleEdge});
+      }
+    });
 
-  // addNodestoGraph(){
+    console.log(this.graphNodes);
+    console.log(this.graphEdges);
+  }
 
-  //   uniquePapers.forEach(key => {
-  //     let singleNode = {'id':key.toString(), 'name':key.toString()};
-  //     this.graphNodes.push({'data':singleNode});
-  //   });
-
-  //   console.log(JSON.stringify(this.graphNodes));
-    
-  // }
 }

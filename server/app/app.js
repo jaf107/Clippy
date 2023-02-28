@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 //app.use(fileUpload());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: "http://localhost:4200" }));
 
 // response headers setup; CORS
 app.use(globalResponseHeaders);
