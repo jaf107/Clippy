@@ -116,7 +116,7 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 
 async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
-    "./sample4.pdf"
+    "./sample6.pdf"
   );
   // arr[2];
   let threshholdDistance = 90;
@@ -139,10 +139,10 @@ async function wrapper() {
   console.log(max);
 
   // Filter page chunk for regular text chunks
-  let regularText = arr[4].filter(
+  let regularText = arr[6].filter(
     (item) =>
-      item.height < max.height + 1 &&
-      item.height > max.height - 1 &&
+      item.height < max.height + 0.7 &&
+      item.height > max.height - 0.7 &&
       isAlphanumeric(item.str)
   );
 
@@ -163,16 +163,38 @@ async function wrapper() {
   // x:  35,
   // y:750,
 
+  let temp = {
+   page : 1,
+    height: 0,
+    weight: 0,
+    x: 0,
+    y: 0
+  };
+
+
+
+  let finalOut = [];
+  let k =0;
+
   let chunkBeforeImage = regularText.filter((item, index, array) => {
     //  index++;
-
-
     // Table
     if (item.str.toLowerCase().includes('table')) {
       if (
         index + 1 < array.length &&
-        item.transform[5] - array[index + 1].transform[5] >= 20
+        Math.abs(item.transform[5] - array[index + 1].transform[5]) >= 20
       ) {
+        temp.page = 9;   // Need to update the value
+        temp.height = 250;
+        temp.weight = 580;
+        if(item.transform[4]<300)
+        {
+          temp.x = 25;
+        } else temp.x = 280;
+        temp.y = item.transform[5];
+
+        finalOut.push(temp);
+
         console.log("Index " + index + " er  start chunk: " +
           item.str + // start chuk
           "Last chunk:  " +
@@ -184,32 +206,61 @@ async function wrapper() {
     }
 
     // For figure
+ 
+    if (index == 0 && item.str.toLowerCase().includes('figure')) {
+      console.log("index 0 paise");
+      if (750 - item.transform[5]  >= 30) {
+        // To show the starting part of image
+        item.transform[5] = 750;
 
-    if (item.str.toLowerCase().includes('figure')) {
-      if (index == 0) {
-        console.log("index 0 paise")
-        if (750 - item.transform[5]  >= 10) {
-          console.log("Index " + index + " er  start chunk: " +
-            item.str + // start chuk
-            "Last chunk:  " +
-            array[0].str, // end chunk
-            item.transform[5] - array[0].transform[5] // height of the image
-          );
-          return true;
-        }
+       temp.page = 9;   // Need to update the value
+       temp.height = item.transform[5] - array[0].transform[5];
+       temp.weight = 580;
+        if(item.transform[4]<280)
+        {
+         temp.x = 25;
+        } else temp.x = 280;
+       temp.y = item.transform[5];
+
+       finalOut.push(temp);
+
+        console.log("Index " + index + " er  start chunk: " +
+          item.str + // start chunk
+          "Last chunk:  " +
+          array[0].str, // end chunk
+          item.transform[5] - array[0].transform[5] // height of the image
+        );
+        return true;
       }
-      else {
-        if (item.transform[5] - array[index - 1].transform[5] >= 20) {
+    }
+
+    else if ( index+1 < array.length && array[index+1].str.toLowerCase().includes('figure') && index!=0 ) {
+
+        if ( Math.abs(array[index + 1].transform[5] - item.transform[5] )>= 60) {
+          // If we find the previous chunk in the bottom of 
+          if (item.transform[5]<100) item.transform[5] = 750;
           console.log("Index " + index + " er  start chunk: " +
             item.str + // start chuk
             "Last chunk:  " +
-            array[index - 1].str, // end chunk
-            item.transform[5] - array[index - 1].transform[5] // height of the image
+            array[index + 1].str, // end chunk
+            item.transform[5] - array[index + 1].transform[5] // height of the image
           );
+
+          
+       temp.page = 9;   // Need to update the value
+       temp.height = item.transform[5] - array[0].transform[5];
+       temp.weight = 580;
+        if(item.transform[4]<280)
+        {
+         temp.x = 25;
+        } else temp.x = 280;
+       temp.y = item.transform[5];
+
+       finalOut.push(temp);
+
           return true;
         } else return false;
-      }
-
+      
     }
 
   });
@@ -217,6 +268,7 @@ async function wrapper() {
 
 
   writeChunksArrayToFile("./out.json", chunkBeforeImage);
+  writeChunksArrayToFile("./finalOut.json", finalOut);
 }
 wrapper();
 
