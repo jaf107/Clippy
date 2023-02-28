@@ -116,7 +116,7 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 
 async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
-    "./sample4.pdf"
+    "https://dl.acm.org/doi/pdf/10.1145/3510003.3510111"
   );
   // arr[2];
   let threshholdDistance = 90;
@@ -150,7 +150,6 @@ async function wrapper() {
   writeChunksArrayToFile("./chunks.json", arr);
   writeChunksArrayToFile("./chunksWithEOL.json", regularText);
 
-
   // General Rules For finding figures, tables
 
   /* 1. Find the keyword (table, figure)
@@ -166,17 +165,19 @@ async function wrapper() {
   let chunkBeforeImage = regularText.filter((item, index, array) => {
     //  index++;
 
-
     // Table
-    if (item.str.toLowerCase().includes('table')) {
+    if (item.str.toLowerCase().includes("table")) {
       if (
         index + 1 < array.length &&
         item.transform[5] - array[index + 1].transform[5] >= 20
       ) {
-        console.log("Index " + index + " er  start chunk: " +
-          item.str + // start chuk
-          "Last chunk:  " +
-          array[index + 1].str, // end chunk
+        console.log(
+          "Index " +
+            index +
+            " er  start chunk: " +
+            item.str + // start chuk
+            "Last chunk:  " +
+            array[index + 1].str, // end chunk
           item.transform[5] - array[index + 1].transform[5] // height of the image
         );
         return true;
@@ -185,36 +186,37 @@ async function wrapper() {
 
     // For figure
 
-    if (item.str.toLowerCase().includes('figure')) {
+    if (item.str.toLowerCase().includes("figure")) {
       if (index == 0) {
-        console.log("index 0 paise")
-        if (750 - item.transform[5]  >= 10) {
-          console.log("Index " + index + " er  start chunk: " +
-            item.str + // start chuk
-            "Last chunk:  " +
-            array[0].str, // end chunk
+        console.log("index 0 paise");
+        if (750 - item.transform[5] >= 10) {
+          console.log(
+            "Index " +
+              index +
+              " er  start chunk: " +
+              item.str + // start chuk
+              "Last chunk:  " +
+              array[0].str, // end chunk
             item.transform[5] - array[0].transform[5] // height of the image
           );
           return true;
         }
-      }
-      else {
+      } else {
         if (item.transform[5] - array[index - 1].transform[5] >= 20) {
-          console.log("Index " + index + " er  start chunk: " +
-            item.str + // start chuk
-            "Last chunk:  " +
-            array[index - 1].str, // end chunk
+          console.log(
+            "Index " +
+              index +
+              " er  start chunk: " +
+              item.str + // start chuk
+              "Last chunk:  " +
+              array[index - 1].str, // end chunk
             item.transform[5] - array[index - 1].transform[5] // height of the image
           );
           return true;
         } else return false;
       }
-
     }
-
   });
-
-
 
   writeChunksArrayToFile("./out.json", chunkBeforeImage);
 }
