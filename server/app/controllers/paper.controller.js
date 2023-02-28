@@ -269,6 +269,10 @@ exports.getCitation = async (req, res) => {
       .catch((err) => res.status(404).send(err));
     let rootNodeTitle = citationResponse.data.title;
     let rootCitationData = citationResponse.data.citations;
+    rootCitationData.unshift({
+      paperId: citationResponse.data.paperId,
+      title: citationResponse.data.title,
+    });
 
     // var rootNode = new CitationNode(rootPaperId, rootNodeTitle, 0);
     // let edgeList = [];
