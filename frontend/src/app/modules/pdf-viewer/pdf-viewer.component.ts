@@ -14,8 +14,15 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   previewPageNum: number;
   reference: any;
   showPreview: boolean;
-  @ViewChild('viewerRef') viewerRef: HTMLElement;
+  topCSS: number;
+  leftCSSstr: string;
+  topCSSstr: string;
+  heightStr: string;
+  widthStr: string;
 
+  leftCSS: number;
+  @ViewChild('viewerRef') viewerRef: HTMLElement;
+  
   ngOnInit() {
     this.pdfPath = this.pdfShareService.getFile();
     //console.log(this.pdfPath);
@@ -115,6 +122,16 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     spanElement.innerHTML = finalHTML;
   }
 
+  convertVHToPx(value: number): number {
+    return (window.innerHeight * value) / 100;
+  }
+
+  convertREMToPx(value: number): number {
+    const html = document.querySelector('html');
+    const fontSize = window.getComputedStyle(html).getPropertyValue('font-size');
+    return parseFloat(fontSize) * value;
+  }
+
   /**
    * Page initialized callback.
    *
@@ -139,6 +156,14 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     if(e.show){
       this.previewPageNum = e.page;
       this.reference = e.refDestination;
+      let entireScreenHeight = this.convertVHToPx(90);
+      let entireScreenWidth = this.convertREMToPx(50);
+      console.log(entireScreenHeight, entireScreenWidth);
+      this.topCSS = -1*(entireScreenHeight-e.clienY);
+      console.log(e.clienY)
+      this.leftCSS = e.clientX;
+      this.topCSSstr = this.topCSS + 'px';
+      this.leftCSSstr = this.leftCSS + 'px'
     }
   }
 }

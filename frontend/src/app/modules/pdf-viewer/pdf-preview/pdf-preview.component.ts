@@ -10,10 +10,10 @@ export class PdfPreviewComponent implements OnChanges{
   @Input('pdfPath') pdfPath: any = '../../../../assets/sample.pdf';
   @Input('show') show: Boolean;
   @Input('page') page: number;
-  @Input('offsetX') offsetX: number;
-  @Input('offsetY') offsetY: number;
-  @Input('height') height: number;
-  @Input('width') width: number;
+  @Input('offsetX') offsetX: string; 
+  @Input('offsetY') offsetY: string;
+  @Input('height') height: string;
+  @Input('width') width: string;
   @Input('reference') reference: any;
   heightSTR = '300px';
   widthSTR = '300px';

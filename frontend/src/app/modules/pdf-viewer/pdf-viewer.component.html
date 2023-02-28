@@ -11,14 +11,16 @@
       [original-size]="false"
       (references)="getReferences($event)"
       (hover)="createPreview($event)"
-      style="width: 800px; height: 800px"
+      style="width: 50rem; height: 90vh"
     ></pdf-viewer>
 
     <app-pdf-preview
-      
+      [ngStyle]="{ display: showPreview ? 'block' : 'none' }"
       [pdfPath]="pdfPath"
       [page]="previewPageNum"
       [reference]="reference"
+      [offsetX]="leftCSSstr"
+      [offsetY]="topCSSstr"
     >
     </app-pdf-preview>
   </div>
