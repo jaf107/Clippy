@@ -1,10 +1,70 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <style src="styles.css"></style>
-    <script src="render.js"></script>
+    <title>Render PDF Page Area with PDF.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
   </head>
   <body>
-    <h1>PDF.js 'Hello, world!' example</h1>
-    <canvas id="the-canvas"></canvas>
+    <h1>This is the cropped part of the pdf</h1>
+    <canvas
+      id="pdf-canvas"
+      style="border: 2px solid black; overflow: scroll"
+    ></canvas>
+
+    <script>
+      // load the PDF file
+      const pdfUrl = "sample4.pdf";
+      pdfjsLib.getDocument(pdfUrl).promise.then((pdfDoc) => {
+        // get the page to be rendered
+        const pageNumber = 5;
+        let scalingFactor = 2;
+        pdfDoc.getPage(pageNumber).then((page) => {
+          // define the viewport for the specific area to be rendered
+          const viewport = page.getViewport({ scale: 1.0 });
+
+          // sample-6 er pdf 3 no page
+          // const region = {
+          //   x:  35,
+          //   y:750,
+          //   width: 580,
+          //   height: (750 -  572.261) * scalingFactor + 30,
+          // };
+
+          //  1st col er x: 35
+          // 2nd col er x: 300
+
+          // 1st col er height: 750
+
+          // Table
+          const region = {
+            x: 35,
+            y: 395 + 20,
+            width: 580,
+            height: 180 * scalingFactor + 30,
+          };
+          viewport.width = region.width;
+          viewport.height = region.height;
+          viewport.transform = [
+            scalingFactor,
+            0,
+            0,
+            -scalingFactor,
+            -region.x * scalingFactor,
+            region.y * scalingFactor,
+          ];
+
+          // render the specific area of the page
+          const canvas = document.getElementById("pdf-canvas");
+          canvas.width = region.width;
+          canvas.height = region.height;
+          const ctx = canvas.getContext("2d");
+          // ctx.rotate(Math.PI * 2);
+          const renderTask = page.render({ canvasContext: ctx, viewport });
+          renderTask.promise.then(() => {
+            console.log("Rendering complete");
+          });
+        });
+      });
+    </script>
   </body>
 </html>
