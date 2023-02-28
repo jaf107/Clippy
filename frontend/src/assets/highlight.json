@@ -1,5 +1,35 @@
 [
   {
+    "sentence": "cnDepartment of Computer Science and EngineeringShanghai Jiao Tong University800 Dongchuan Road, Shanghai, China 200240AbstractWe propose a framework to automatically generate descrip-tive comments for source code blocks",
+    "segment": [
+      {
+        "str": "We propose a framework to automatically generate descrip-",
+        "pageNo": 1,
+        "chunkIndex": 12
+      },
+      {
+        "str": "tive comments for source code blocks",
+        "pageNo": 1,
+        "chunkIndex": 13
+      }
+    ]
+  },
+  {
+    "sentence": " 11 IntroductionReal-world software development involves large sourcecode repositories",
+    "segment": [
+      {
+        "str": "Real-world software development involves large source",
+        "pageNo": 1,
+        "chunkIndex": 33
+      },
+      {
+        "str": "code repositories",
+        "pageNo": 1,
+        "chunkIndex": 34
+      }
+    ]
+  },
+  {
     "sentence": " Reading and trying to understand otherpeople’s code in such repositories is a difficult and unpleas-ant process for many software developers, especially whenthe code is not sufficiently commented",
     "segment": [
       {
@@ -81,6 +111,21 @@
         "str": "tremendously improved",
         "pageNo": 1,
         "chunkIndex": 43
+      }
+    ]
+  },
+  {
+    "sentence": "y;}Figure 1: source code exampleA related scenario happens when one wants to search fora piece of code with a specific functionality or meaning",
+    "segment": [
+      {
+        "str": "A related scenario happens when one wants to search for",
+        "pageNo": 1,
+        "chunkIndex": 81
+      },
+      {
+        "str": "a piece of code with a specific functionality or meaning",
+        "pageNo": 1,
+        "chunkIndex": 82
       }
     ]
   },
@@ -235,6 +280,46 @@
     ]
   },
   {
+    "sentence": "2 FrameworkIn this section, we introduce the details of how to repre-sent source code and how to use the representation vectorof source code to generate comments",
+    "segment": [
+      {
+        "str": "In this section, we introduce the details of how to repre-",
+        "pageNo": 2,
+        "chunkIndex": 187
+      },
+      {
+        "str": "sent source code and how to use the representation vector",
+        "pageNo": 2,
+        "chunkIndex": 188
+      },
+      {
+        "str": "of source code to generate comments",
+        "pageNo": 2,
+        "chunkIndex": 189
+      }
+    ]
+  },
+  {
+    "sentence": "1 Code RepresentationWe propose a new kind of recursive neural network calledCode-RNN to encapsulate the critical structural informa-tion of the source code",
+    "segment": [
+      {
+        "str": "We propose a new kind of recursive neural network called",
+        "pageNo": 2,
+        "chunkIndex": 195
+      },
+      {
+        "str": "Code-RNN to encapsulate the critical structural informa-",
+        "pageNo": 2,
+        "chunkIndex": 196
+      },
+      {
+        "str": "tion of the source code",
+        "pageNo": 2,
+        "chunkIndex": 197
+      }
+    ]
+  },
+  {
     "sentence": " Code-RNN is an arbitrary tree formwhile other recursive neural nets used in NLP are typicallybinary trees",
     "segment": [
       {
@@ -300,6 +385,31 @@
     ]
   },
   {
+    "sentence": " 2One unique internal node “CombineName” indicates a com-pound identifier that is the concatenation of several primi-tive words, for example, “allFound” can be split into “all”and “found”",
+    "segment": [
+      {
+        "str": "One unique internal node “CombineName” indicates a com-",
+        "pageNo": 2,
+        "chunkIndex": 207
+      },
+      {
+        "str": "pound identifier that is the concatenation of several primi-",
+        "pageNo": 2,
+        "chunkIndex": 208
+      },
+      {
+        "str": "tive words, for example, “allFound” can be split into “all”",
+        "pageNo": 2,
+        "chunkIndex": 209
+      },
+      {
+        "str": "and “found”",
+        "pageNo": 2,
+        "chunkIndex": 210
+      }
+    ]
+  },
+  {
     "sentence": " More on the semantics of identifier will be dis-cussed later in this section",
     "segment": [
       {
@@ -311,6 +421,31 @@
         "str": "cussed later in this section",
         "pageNo": 2,
         "chunkIndex": 211
+      }
+    ]
+  },
+  {
+    "sentence": "There are two models for the Code-RNN, namely SumModel and Average Model:1",
+    "segment": [
+      {
+        "str": "There are two models for the Code-RNN, namely",
+        "pageNo": 2,
+        "chunkIndex": 212
+      },
+      {
+        "str": "Average Model",
+        "pageNo": 2,
+        "chunkIndex": 219
+      }
+    ]
+  },
+  {
+    "sentence": "found){allFound =false;}if (allFound){return true;}source codeƌŽŽƚ/Ĩ^ƚĂƚĞŵĞŶƚ /Ĩ^ƚĂƚĞŵĞŶƚ/ĨdŽŬĞŶ KƉĞŶWĂƌĞŶdŽŬĞŶ \u0012ůŽƐĞWĂƌĞŶdŽŬĞŶ dŚĞŶ^ƚŵƚ\u0012ŽŶĚŝƚŝŽŶEĂŵĞ\u001cdžƉƌĂůů\u0012ŽŵďŝŶĞEĂŵĞĨŽƵŶĚŝĨ ; ͿZĞƚƵƌŶ^ƚŵƚZĞƚƵƌŶdŽŬĞŶƌĞƚƵƌŶ\u0011ŽŽůĞĂŶ>ŝƚĞƌĂů\u001cdžƉƌƚƌƵĞ\u0011ůŽĐŬ^ƚŵƚ\u0011ůŽĐŬ\u001cŶĚdŽŬĞŶ΃΂\u0011ůŽĐŬ\u0011ĞŐŝŶdŽŬĞŶCode-RNNFigure 3: Code-RNN Examplelonger forms in the context of the identifier in the code",
+    "segment": [
+      {
+        "str": "source code",
+        "pageNo": 3,
+        "chunkIndex": 12
       }
     ]
   },
@@ -380,6 +515,51 @@
     ]
   },
   {
+    "sentence": "5231zt = σ(Wz · [ht−1, xt]) (4)rt = σ(Wr · [ht−1, xt]) (5)ct = σ(Wc · [ht−1, xt]) (6) ̃ht = tanh(W · [rt ∗ ht−1, ct ∗ Vm, xt]) (7)ht = (1 − zt) ∗ ht−1 + zt ∗  ̃ht (8)yt = sof tmax(Wohht + bo) (9)where Vm is the code block representation vector, ht−1 isthe previous state and xt is the input word of this step",
+    "segment": [
+      {
+        "str": ", c",
+        "pageNo": 4,
+        "chunkIndex": 91
+      }
+    ]
+  },
+  {
+    "sentence": "0]3 EvaluationOur evaluation comes in two parts",
+    "segment": [
+      {
+        "str": "Our evaluation comes in two parts",
+        "pageNo": 4,
+        "chunkIndex": 249
+      }
+    ]
+  },
+  {
+    "sentence": " In the first part, we eval-uate Code-RNN model’s ability to classify different sourcecode blocks into k known categories",
+    "segment": [
+      {
+        "str": " In the first part, we eval-",
+        "pageNo": 4,
+        "chunkIndex": 249
+      },
+      {
+        "str": "uate Code-RNN model’s ability to classify different source",
+        "pageNo": 4,
+        "chunkIndex": 250
+      },
+      {
+        "str": "code blocks into",
+        "pageNo": 4,
+        "chunkIndex": 251
+      },
+      {
+        "str": "known categories",
+        "pageNo": 4,
+        "chunkIndex": 255
+      }
+    ]
+  },
+  {
     "sentence": " In the second part, weshow the effectiveness of our comment generation modelby comparing with several state-of-the-art approaches inboth quantitative and qualitative assessments",
     "segment": [
       {
@@ -425,6 +605,31 @@
     ]
   },
   {
+    "sentence": "1 Source Code ClassificationData Set The goal is to classify a given Java method (weonly use the body block without name and parameters) intoa predefined set of classes depending on its functionality",
+    "segment": [
+      {
+        "str": "Data Set",
+        "pageNo": 4,
+        "chunkIndex": 265
+      },
+      {
+        "str": "The goal is to classify a given Java method (we",
+        "pageNo": 4,
+        "chunkIndex": 267
+      },
+      {
+        "str": "only use the body block without name and parameters) into",
+        "pageNo": 4,
+        "chunkIndex": 268
+      },
+      {
+        "str": "a predefined set of classes depending on its functionality",
+        "pageNo": 4,
+        "chunkIndex": 269
+      }
+    ]
+  },
+  {
     "sentence": "Our data set comes from the Google Code Jam contest(2008∼2016), which there are multiple problems, each as-sociated with a number of correct solutions contributed byprogrammers",
     "segment": [
       {
@@ -461,6 +666,16 @@
         "str": "programmers",
         "pageNo": 4,
         "chunkIndex": 275
+      }
+    ]
+  },
+  {
+    "sentence": " 3 Each solution is a Java method",
+    "segment": [
+      {
+        "str": "Each solution is a Java method",
+        "pageNo": 4,
+        "chunkIndex": 279
       }
     ]
   },
@@ -510,6 +725,16 @@
     ]
   },
   {
+    "sentence": "2 Comment Generation ModelData Set We use ten open-source Java code repositoriesfrom GitHub for this experiment (see Table 1)",
+    "segment": [
+      {
+        "str": "Data Set",
+        "pageNo": 5,
+        "chunkIndex": 163
+      }
+    ]
+  },
+  {
     "sentence": "generate sentences",
     "segment": [
       {
@@ -541,6 +766,21 @@
         "str": "set",
         "pageNo": 5,
         "chunkIndex": 338
+      }
+    ]
+  },
+  {
+    "sentence": "4 Related WorkMining of source code repositories becomes increasinglypopular in recent years",
+    "segment": [
+      {
+        "str": "Mining of source code repositories becomes increasingly",
+        "pageNo": 6,
+        "chunkIndex": 318
+      },
+      {
+        "str": "popular in recent years",
+        "pageNo": 6,
+        "chunkIndex": 319
       }
     ]
   },
@@ -615,6 +855,31 @@
     ]
   },
   {
+    "sentence": " 2010) proposed an au-tomatic comment generator that identifies the content for5234the summary and generates natural language text that sum-marizes the methods overall actions based on some tem-plates",
+    "segment": [
+      {
+        "str": " 2010) proposed an au-",
+        "pageNo": 6,
+        "chunkIndex": 325
+      },
+      {
+        "str": "tomatic comment generator that identifies the content for",
+        "pageNo": 6,
+        "chunkIndex": 326
+      },
+      {
+        "str": "the summary and generates natural language text that sum-",
+        "pageNo": 7,
+        "chunkIndex": 0
+      },
+      {
+        "str": "marizes the methods overall actions based on some tem-",
+        "pageNo": 7,
+        "chunkIndex": 1
+      }
+    ]
+  },
+  {
     "sentence": " (Moreno et al",
     "segment": [
       {
@@ -641,6 +906,16 @@
         "str": "classes",
         "pageNo": 7,
         "chunkIndex": 4
+      }
+    ]
+  },
+  {
+    "sentence": " These summarization techniques(Murphy 1996; Sridhara, Pollock, and Vijay-Shanker 2011;Moreno et al",
+    "segment": [
+      {
+        "str": "Moreno et al",
+        "pageNo": 7,
+        "chunkIndex": 10
       }
     ]
   },
@@ -875,6 +1150,46 @@
     ]
   },
   {
+    "sentence": "Cai (Cai 2016) proposed a method for code paral-lelization through sequential code search",
+    "segment": [
+      {
+        "str": "lelization through sequential code search",
+        "pageNo": 7,
+        "chunkIndex": 75
+      }
+    ]
+  },
+  {
+    "sentence": " That methodcan also be used for clone detection",
+    "segment": [
+      {
+        "str": " That method",
+        "pageNo": 7,
+        "chunkIndex": 75
+      }
+    ]
+  },
+  {
+    "sentence": " Williams andHollingsworth (Williams and Hollingsworth 2005) de-scribed a method to use the source code change history ofa software project to drive and help to refine the searchfor bugs",
+    "segment": [
+      {
+        "str": "scribed a method to use the source code change history of",
+        "pageNo": 7,
+        "chunkIndex": 104
+      },
+      {
+        "str": "a software project to drive and help to refine the search",
+        "pageNo": 7,
+        "chunkIndex": 105
+      },
+      {
+        "str": "for bugs",
+        "pageNo": 7,
+        "chunkIndex": 106
+      }
+    ]
+  },
+  {
     "sentence": " The method proposed in this papercan also benefit natural language search for code fragments",
     "segment": [
       {
@@ -886,6 +1201,31 @@
         "str": "can also benefit natural language search for code fragments",
         "pageNo": 7,
         "chunkIndex": 109
+      }
+    ]
+  },
+  {
+    "sentence": "5 ConclusionIn this paper we introduce a new Recursive Neural Net-work called Code-RNN to extract the topic or function ofthe source code",
+    "segment": [
+      {
+        "str": "In this paper we introduce a new Recursive Neural Net-",
+        "pageNo": 7,
+        "chunkIndex": 115
+      },
+      {
+        "str": "work called",
+        "pageNo": 7,
+        "chunkIndex": 116
+      },
+      {
+        "str": "to extract the topic or function of",
+        "pageNo": 7,
+        "chunkIndex": 120
+      },
+      {
+        "str": "the source code",
+        "pageNo": 7,
+        "chunkIndex": 121
       }
     ]
   },
@@ -911,6 +1251,26 @@
         "str": "vector",
         "pageNo": 7,
         "chunkIndex": 124
+      }
+    ]
+  },
+  {
+    "sentence": " HongfeiHu contributed to the identifier semantics part of the work",
+    "segment": [
+      {
+        "str": "Hu contributed to the identifier semantics part of the work",
+        "pageNo": 7,
+        "chunkIndex": 160
+      }
+    ]
+  },
+  {
+    "sentence": ";et al",
+    "segment": [
+      {
+        "str": "et al",
+        "pageNo": 8,
+        "chunkIndex": 204
       }
     ]
   }
