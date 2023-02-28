@@ -139,7 +139,7 @@ async function wrapper() {
   console.log(max);
 
   // Filter page chunk for regular text chunks
-  let regularText = arr[6].filter(
+  let regularText = arr[1].filter(
     (item) =>
       item.height < max.height + 0.7 &&
       item.height > max.height - 0.7 &&
@@ -163,18 +163,15 @@ async function wrapper() {
   // y:750,
 
   let temp = {
-   page : 1,
+    str: "",
+    page: 1,
     height: 0,
     weight: 0,
     x: 0,
-    y: 0
+    y: 0,
   };
 
-
-
   let finalOut = [];
-  let k =0;
-
   let chunkBeforeImage = regularText.filter((item, index, array) => {
     //  index++;
     // Table
@@ -183,21 +180,24 @@ async function wrapper() {
         index + 1 < array.length &&
         Math.abs(item.transform[5] - array[index + 1].transform[5]) >= 20
       ) {
-        temp.page = 9;   // Need to update the value
+        temp.str = extractKeywordFromStr(item.str, "table");
+        temp.page = 9; // Need to update the value
         temp.height = 250;
         temp.weight = 580;
-        if(item.transform[4]<300)
-        {
+        if (item.transform[4] < 300) {
           temp.x = 25;
         } else temp.x = 280;
         temp.y = item.transform[5];
 
         finalOut.push(temp);
 
-        console.log("Index " + index + " er  start chunk: " +
-          item.str + // start chuk
-          "Last chunk:  " +
-          array[index + 1].str, // end chunk
+        console.log(
+          "Index " +
+            index +
+            " er  start chunk: " +
+            item.str + // start chuk
+            "Last chunk:  " +
+            array[index + 1].str, // end chunk
           item.transform[5] - array[index + 1].transform[5] // height of the image
         );
         return true;
@@ -205,61 +205,67 @@ async function wrapper() {
     }
 
     // For figure
- 
-    if (index == 0 && item.str.toLowerCase().includes('figure')) {
+
+    if (index == 0 && item.str.toLowerCase().includes("figure")) {
       console.log("index 0 paise");
-      if (750 - item.transform[5]  >= 30) {
-        // To show the starting part of image
-        item.transform[5] = 750;
-
-       temp.page = 9;   // Need to update the value
-       temp.height = item.transform[5] - array[0].transform[5];
-       temp.weight = 580;
-        if(item.transform[4]<280)
-        {
-         temp.x = 25;
+      if (750 - item.transform[5] >= 30) {
+        // console.log(item.str);
+        temp.str = extractKeywordFromStr(item.str, "figure");
+        temp.page = 9; // Need to update the value
+        temp.height = 750 - item.transform[5];
+        temp.weight = 580;
+        if (item.transform[4] < 280) {
+          temp.x = 25;
         } else temp.x = 280;
-       temp.y = item.transform[5];
+        temp.y = 750;
+        finalOut.push(temp);
 
-       finalOut.push(temp);
-
-        console.log("Index " + index + " er  start chunk: " +
-          item.str + // start chunk
-          "Last chunk:  " +
-          array[0].str, // end chunk
+        console.log(
+          "Index " +
+            index +
+            " er  start chunk: " +
+            item.str + // start chunk
+            "Last chunk:  " +
+            array[0].str, // end chunk
           item.transform[5] - array[0].transform[5] // height of the image
         );
         return true;
       }
-    }
-
-    else if ( index+1 < array.length && array[index+1].str.toLowerCase().includes('figure') && index!=0 ) {
-
-        if ( Math.abs(array[index + 1].transform[5] - item.transform[5] )>= 60) {
-          // If we find the previous chunk in the bottom of 
-          if (item.transform[5]<100) item.transform[5] = 750;
-          console.log("Index " + index + " er  start chunk: " +
+    } else if (
+      index + 1 < array.length &&
+      array[index + 1].str.toLowerCase().includes("figure") &&
+      index != 0
+    ) {
+      if (Math.abs(array[index + 1].transform[5] - item.transform[5]) >= 70) {
+        // If we find the previous chunk in the bottom of
+        if (item.transform[5] < 100) item.transform[5] = 750;
+        console.log(
+          "Index " +
+            index +
+            " er  start chunk: " +
             item.str + // start chuk
             "Last chunk:  " +
             array[index + 1].str, // end chunk
-            item.transform[5] - array[index + 1].transform[5] // height of the image
-          );
+          item.transform[5] - array[index + 1].transform[5] // height of the image
+        );
 
-          
-       temp.page = 9;   // Need to update the value
-       temp.height = item.transform[5] - array[0].transform[5];
-       temp.weight = 580;
-        if(item.transform[4]<280)
-        {
-         temp.x = 25;
+        temp.str = extractKeywordFromStr(array[index + 1].str, "figure");
+        temp.page = 9; // Need to update the value
+        if (item.transform[5] - array[index + 1].transform[5] > 0) {
+          temp.height = item.transform[5] - array[index + 1].transform[5];
+          temp.y = item.transform[5];
+        } else {
+          temp.height = 750 - array[index + 1].transform[5];
+          temp.y = 750;
+        }
+        temp.weight = 580;
+        if (array[index + 1].transform[4] < 280) {
+          temp.x = 25;
         } else temp.x = 280;
-       temp.y = item.transform[5];
+        finalOut.push(temp);
 
-       finalOut.push(temp);
-
-          return true;
-        } else return false;
-      
+        return true;
+      } else return false;
     }
   });
 
@@ -267,6 +273,16 @@ async function wrapper() {
   writeChunksArrayToFile("./finalOut.json", finalOut);
 }
 wrapper();
+
+function extractKeywordFromStr(chunkStr, type) {
+  chunkStr = chunkStr.toLowerCase();
+  let startingIndex = chunkStr.indexOf(type);
+  let textStr = "";
+  for (let i = startingIndex; i < chunkStr.length; i++) textStr += chunkStr[i];
+  let splittedArr = textStr.split(" ");
+  textStr = splittedArr[0] + " " + splittedArr[1];
+  return textStr;
+}
 
 async function test() {
   const { textChunkArray: pdfChunks, uniqueHeight: heights } =
