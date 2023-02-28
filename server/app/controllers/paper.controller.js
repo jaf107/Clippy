@@ -52,7 +52,7 @@ exports.getPaperDetails = async (req, res) => {
   const ppr = await Paper.findOne({ paper_id: req.params.id });
   if (ppr) {
     if (req.userId) {
-      updateHistory(req.userId, req.params.id, Date.now);
+      updateHistory(req.userId, req.params.id, ppr.title);
     }
     res.status(200).send(ppr);
   } else {
@@ -107,7 +107,7 @@ exports.uploadPaper = async (req, res) => {
           console.log("successfully deleted");
         });
         if (req.userId) {
-          updateHistory(req.userId, paper.paper_id);
+          updateHistory(req.userId, paper.paper_id, paper.title);
         }
         res.status(200).send(paper);
       }
@@ -119,7 +119,7 @@ exports.uploadPaper = async (req, res) => {
           console.log("successfully deleted");
         });
         if (req.userId) {
-          updateHistory(req.userId, ppr.paper_id);
+          updateHistory(req.userId, ppr.paper_id, ppr.title);
         }
         res.status(200).send(ppr);
       } else {
@@ -142,7 +142,7 @@ exports.uploadPaper = async (req, res) => {
         };
         await Paper.create(paper);
         if (req.userId) {
-          updateHistory(req.userId, paper.paper_id);
+          updateHistory(req.userId, paper.paper_id, paper.title);
         }
         res.status(200).send(paper);
       }
@@ -169,7 +169,7 @@ exports.searchPaperById = async (req, res) => {
   const ppr = await Paper.findOne({ paper_id: req.body.paper_id });
   if (ppr) {
     if (req.userId) {
-      updateHistory(req.userId, req.body.paper_id, Date.now);
+      updateHistory(req.userId, req.body.paper_id, ppr.title);
     }
     res.status(200).send(ppr);
   } else {
@@ -198,7 +198,7 @@ exports.searchPaperById = async (req, res) => {
         };
         await Paper.create(paper);
         if (req.userId) {
-          updateHistory(req.userId, paper.paper_id);
+          updateHistory(req.userId, paper.paper_id, paper.title);
         }
         res.status(200).send(paper);
       }
@@ -317,7 +317,7 @@ exports.getCitation = async (req, res) => {
   }
 };
 
-async function updateHistory(userId, paper_id) {
+async function updateHistory(userId, paper_id, title) {
   // Find the document that matches the paper_id in the history array
   let doc = await User.findOne({ _id: userId, "history.paper_id": paper_id });
   // If the document exists, update the openedAt field for that paper_id
@@ -333,7 +333,7 @@ async function updateHistory(userId, paper_id) {
       { _id: userId },
       {
         $push: {
-          history: { paper_id: paper_id, openedAt: Date.now() },
+          history: { paper_id: paper_id, openedAt: Date.now(), title: title },
         },
       },
       { upsert: true }
