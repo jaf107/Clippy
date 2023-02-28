@@ -19,7 +19,10 @@ const paperSchema = new mongoose.Schema({
   abstract: {
     type: String,
   },
-  url: {
+  abstractive_summary: {
+    type: String,
+  },
+  extractive_summary: {
     type: String,
   },
   url: {
@@ -31,7 +34,7 @@ const paperSchema = new mongoose.Schema({
   referenceCount: {
     type: Number,
   },
-  url: [
+  authors: [
     {
       type: Object,
     },

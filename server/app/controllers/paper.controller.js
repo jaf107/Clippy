@@ -6,6 +6,10 @@ const axios = require("axios");
 const SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1/paper/";
 const SERVER_ADDRESS = "http://localhost:8080";
 const fs = require("fs");
+var apiKey = "b93d9d2475ed072f999710c6949f6a65";
+const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
+const { OneAI } = require("oneai");
+var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 
 class CitationNode {
   constructor(paperId, title, level) {
@@ -24,6 +28,29 @@ class CitationEdge {
   constructor(from, to) {
     this.from = from;
     this.to = to;
+  }
+}
+
+class Title {
+  constructor(titleText, titleIndex) {
+    (this.titleText = titleText), (this.titleIndex = titleIndex);
+  }
+}
+
+class Paragraph {
+  constructor(title, text) {
+    this.title = title;
+    this.noOfSentences = 0;
+    this.text = text;
+    this.summaryText = "";
+  }
+
+  setNoOfSentences(noOfSentences) {
+    this.noOfSentences = noOfSentences;
+  }
+
+  appendText(newtext) {
+    this.text.appendText(newtext);
   }
 }
 
@@ -74,6 +101,8 @@ exports.uploadPaper = async (req, res) => {
           knowledge_graph: "",
           url: data.isOpenAccess ? data.openAccessPdf.url : "",
           abstract: data.abstract,
+          abstractive_summary: "",
+          extractive_summary: "",
           citationCount: data.citationCount,
           referenceCount: data.referenceCount,
           authors: data.authors,
@@ -111,6 +140,8 @@ exports.uploadPaper = async (req, res) => {
           knowledge_graph: "",
           url: SERVER_ADDRESS + "/upload/" + uuid + ".pdf",
           abstract: "",
+          abstractive_summary: "",
+          extractive_summary: "",
           citationCount: 0,
           referenceCount: 0,
           authors: [],
@@ -165,6 +196,8 @@ exports.searchPaperById = async (req, res) => {
           knowledge_graph: "",
           abstract: paper_data.data.abstract,
           url: paper_data.data.openAccessPdf.url,
+          abstractive_summary: "",
+          extractive_summary: "",
           citationCount: paper_data.data.citationCount,
           referenceCount: paper_data.data.referenceCount,
           authors: paper_data.data.authors,
@@ -176,6 +209,58 @@ exports.searchPaperById = async (req, res) => {
         res.status(200).send(paper);
       }
     }
+  }
+};
+exports.getAbstractSummary = async (req, res) => {
+  var paper = await Paper.findOne({ paper_id: req.params.id });
+  if (paper) {
+    if (paper.abstractive_summary !== "")
+      res.status(200).send(paper.abstractive_summary);
+    else {
+      console.log(paper);
+      let paragraphs = await createJsonObjectFromPdf(paper.url);
+      let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      let absApiKey = "453265e9-a392-4e2b-aacc-ecc527a3f41f";
+
+      for (let i = 0; i < paragraphs.length; i++) {
+        let element = paragraphs[i];
+        let contextString = element.text;
+        let retryCount = 0;
+
+        if (element.noOfSentences > 50) {
+          noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
+        } else {
+          noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+        }
+
+        while (retryCount < 3) {
+          try {
+            let summary = await requestAbsSummaryWithRetry(
+              contextString,
+              absApiKey,
+              retryCount,
+              noOfSentenceInSummary
+            );
+            paragraphs[i].summaryText = summary;
+            break;
+          } catch (error) {
+            console.log(`Error: index ${i} ${error}`);
+            retryCount++;
+            await delay(1000);
+          }
+        }
+      }
+      const result = await Paper.updateOne(
+        { paper_id: req.params.id },
+        { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
+        { upsert: true }
+      ).catch((err) => res.status(200).send(err));
+      if (result) {
+        res.status(200).send(JSON.stringify(paragraphs));
+      }
+    }
+  } else {
+    res.status(404).send("Paper not found");
   }
 };
 
@@ -255,4 +340,189 @@ async function updateHistory(userId, paper_id) {
     );
     console.log("Pushed new data for paper_id", paper_id);
   }
+}
+
+async function requestAbsSummaryWithRetry(
+  contextString,
+  absApiKey,
+  retryCount,
+  noOfSentenceInSummary
+) {
+  const oneai = new OneAI(absApiKey, {
+    multilingual: true,
+  });
+
+  const pipeline = new oneai.Pipeline(
+    oneai.skills.summarize({ min_length: noOfSentenceInSummary })
+  );
+
+  async function absTesting() {
+    let demo = await pipeline.run(contextString);
+    return demo.summary.text;
+  }
+
+  return await absTesting();
+}
+
+async function createJsonObjectFromPdf(src) {
+  let { textChunkArray: arr } = await getPdfTextContent(src);
+  arr = arr.flat();
+
+  heights = [];
+  arr.forEach((element) => {
+    heights.push(element.height);
+  });
+  allHeights = heights;
+
+  const uniqueHeight = new Set(heights);
+
+  heights = Array.from(uniqueHeight);
+  sortedHeights = heights.sort(function (a, b) {
+    return b - a;
+  });
+
+  heightsCounter = new Array(heights.length).fill(0);
+  allHeights.forEach((element) => {
+    for (var i = 0; i < heights.length; i++) {
+      if (heights[i] === element) {
+        heightsCounter[i]++;
+      }
+    }
+  });
+
+  let titleHeightIndex = 0;
+  let generalTextHeightIndex = 0;
+
+  let tempMax = -1;
+  for (var i = 0; i < heights.length; i++) {
+    if (heightsCounter[i] > heightsCounter[generalTextHeightIndex]) {
+      generalTextHeightIndex = i;
+    }
+  }
+  tempMax = -1;
+  for (var i = 0; i < generalTextHeightIndex; i++) {
+    if (heightsCounter[i] > heightsCounter[titleHeightIndex]) {
+      titleHeightIndex = i;
+    }
+  }
+
+  let titleHeight = heights[titleHeightIndex];
+  let generalTextHeight = heights[generalTextHeightIndex];
+
+  let wiggleHeight = heights[generalTextHeightIndex] - 1;
+
+  arr.forEach((element) => {});
+
+  arr = arr.filter((element) => element.height > wiggleHeight);
+  let paragraphs = [];
+  let isAbstract = false;
+  let maxLimit = arr.length;
+
+  for (let i = 0; i < maxLimit; i++) {
+    if (arr[i].height == titleHeight && arr[i].str.includes("References")) {
+      let referanceText = "";
+      let j = i;
+      if (j < maxLimit) j++;
+      while (j < maxLimit) {
+        referanceText += arr[j].str;
+        j++;
+      }
+
+      let referanceParagraph = new Paragraph("References", referanceText);
+      paragraphs.push(referanceParagraph);
+      break;
+    }
+    if (arr[i].str.includes("Abstract")) {
+      isAbstract = true;
+      let abstractTextTitle = arr[i].str;
+      let abstractTextHeight = arr[i].height;
+      let titleIterator = i;
+
+      while (arr[titleIterator].height == abstractTextHeight) {
+        abstractTextTitle += arr[titleIterator].str;
+        titleIterator++;
+      }
+      i = titleIterator - 1;
+      let abstractText = "";
+
+      if (i < maxLimit) i++;
+      while (i < maxLimit && arr[i].height != titleHeight) {
+        console.log(arr[i].str);
+        abstractText += arr[i].str;
+        i++;
+      }
+      i--;
+      let abstractParagraph = new Paragraph("Abstract", abstractText);
+      paragraphs.push(abstractParagraph);
+    }
+    if (arr[i].height == titleHeight && isAbstract) {
+      let titleString = arr[i].str;
+      let titleIterator = i + 1;
+
+      while (arr[titleIterator].height == titleHeight) {
+        if (titleString === "") {
+          titleString += arr[titleIterator].str;
+        } else {
+          titleString += " ";
+          titleString += arr[titleIterator].str;
+        }
+        titleIterator++;
+      }
+      i = titleIterator;
+      i--;
+      if (i + 1 < maxLimit) i++;
+      let genText = "";
+      while (i < maxLimit && arr[i].height != titleHeight) {
+        if (arr[i].height == generalTextHeight) genText += arr[i].str;
+        i++;
+      }
+      i--;
+      let newPara = new Paragraph(titleString, genText);
+      paragraphs.push(newPara);
+      titleString = "";
+      genText = "";
+    }
+  }
+
+  paragraphs.map((element) => {
+    let sentenceNo = noOfSentences(element.text);
+    element.setNoOfSentences(sentenceNo);
+  });
+  return paragraphs;
+}
+
+async function getPdfTextContent(src) {
+  const doc = await pdfjs.getDocument(src).promise;
+  const totalPageCount = doc.numPages;
+  doc.getDestination;
+  let textChunkArray = [];
+  heights = [];
+
+  for (let i = 1; i <= totalPageCount; i++) {
+    const page = await doc.getPage(i);
+    const textContent = await page.getTextContent();
+    textChunkArray.push(getTextChunkObject(textContent));
+    writeUniqueHeights(heights, textContent);
+  }
+  const uniqueHeight = new Set(heights);
+  heights = Array.from(uniqueHeight);
+  sortedHeights = heights.sort(function (a, b) {
+    return b - a;
+  });
+
+  return { textChunkArray, uniqueHeight };
+}
+function writeUniqueHeights(heights, content) {
+  const items = content.items.map((item) => {
+    heights.push(item.height);
+  });
+}
+function getTextChunkObject(content) {
+  let retItems = content.items.map((item) => {
+    return {
+      ...item,
+      style: content.styles[item.fontName],
+    };
+  });
+  return retItems;
 }
