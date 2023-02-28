@@ -31,12 +31,6 @@ class CitationEdge {
   }
 }
 
-class Title {
-  constructor(titleText, titleIndex) {
-    (this.titleText = titleText), (this.titleIndex = titleIndex);
-  }
-}
-
 class Paragraph {
   constructor(title, text) {
     this.title = title;
@@ -275,44 +269,46 @@ exports.getCitation = async (req, res) => {
       .catch((err) => res.status(404).send(err));
     let rootNodeTitle = citationResponse.data.title;
     let rootCitationData = citationResponse.data.citations;
-    var rootNode = new CitationNode(rootPaperId, rootNodeTitle, 0);
-    let edgeList = [];
-    let rootEdge = new CitationEdge("-1", rootNode);
-    edgeList.push(rootEdge);
-    let nodeArray = [];
-    nodeArray.push(rootNode);
-    let runningNode = rootNode;
-    let runningUrl = ``;
-    while (nodeArray.length != 0) {
-      runningNode = nodeArray[0];
-      if (runningNode.level > 1) {
-        break;
-      }
-      paperId = runningNode.paperId;
-      runningUrl = SEMANTIC_SCHOLAR_API + `${paperId}?fields=title,citations`;
-      var runningCitationResponse = await axios
-        .get(runningUrl)
-        .catch((err) => res.status(404).send(err));
-      citationChildren = runningCitationResponse.data.citations;
-      citationChildren
-        .filter((element) => element.paperId != null)
-        .forEach((element) => {
-          let paperId = element.paperId;
-          let paperTitle = element.title;
-          let paperLevel = runningNode.level + 1;
-          let citationNode = new CitationNode(paperId, paperTitle, paperLevel);
-          if (nodeArray.length < 11) nodeArray.push(citationNode);
-          edgeList.push(new CitationEdge(runningNode, citationNode));
-        });
-      nodeArray.shift();
-    }
+
+    // var rootNode = new CitationNode(rootPaperId, rootNodeTitle, 0);
+    // let edgeList = [];
+    // let rootEdge = new CitationEdge("-1", rootNode);
+    // edgeList.push(rootEdge);
+    // let nodeArray = [];
+    // nodeArray.push(rootNode);
+    // let runningNode = rootNode;
+    // let runningUrl = ``;
+    // while (nodeArray.length != 0) {
+    //   runningNode = nodeArray[0];
+    //   if (runningNode.level > 1) {
+    //     break;
+    //   }
+    //   paperId = runningNode.paperId;
+    //   runningUrl = SEMANTIC_SCHOLAR_API + `${paperId}?fields=title,citations`;
+    //   var runningCitationResponse = await axios
+    //     .get(runningUrl)
+    //     .catch((err) => res.status(404).send(err));
+    //   citationChildren = runningCitationResponse.data.citations;
+    //   citationChildren
+    //     .filter((element) => element.paperId != null)
+    //     .forEach((element) => {
+    //       let paperId = element.paperId;
+    //       let paperTitle = element.title;
+    //       let paperLevel = runningNode.level + 1;
+    //       let citationNode = new CitationNode(paperId, paperTitle, paperLevel);
+    //       if (nodeArray.length < 11) nodeArray.push(citationNode);
+    //       edgeList.push(new CitationEdge(runningNode, citationNode));
+    //     });
+    //   nodeArray.shift();
+    // }
+
     const result = await Paper.updateOne(
       { paper_id: rootPaperId },
-      { $set: { knowledge_graph: JSON.stringify(edgeList) } },
+      { $set: { knowledge_graph: JSON.stringify(rootCitationData) } },
       { upsert: true }
     ).catch((err) => res.status(200).send(err));
     if (result) {
-      res.status(200).send(JSON.stringify(edgeList));
+      res.status(200).send(JSON.stringify(rootCitationData));
     }
   }
 };
