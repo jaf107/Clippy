@@ -11,7 +11,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   pdfPath: any;
   pdfSrc = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
   public summarizerOn: boolean;
-
+  previewPageNum: number;
+  reference: any;
   @ViewChild('viewerRef') viewerRef: HTMLElement;
 
   ngOnInit() {
@@ -129,5 +130,11 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    */
   pageChange(e: number) {
     // console.log('(page-change)', e);
+  }
+
+  createPreview(e: any) {
+    console.log('event received: ', e);
+    this.previewPageNum = e.page;
+    this.reference = e.refDestination;
   }
 }

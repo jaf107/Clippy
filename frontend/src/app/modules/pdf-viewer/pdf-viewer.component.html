@@ -10,8 +10,16 @@
       (pageChange)="pageChange($event)"
       [original-size]="false"
       (references)="getReferences($event)"
+      (hover)="createPreview($event)"
       style="width: 800px; height: 800px"
     ></pdf-viewer>
+
+    <app-pdf-preview
+      [pdfPath]="pdfPath"
+      [page]="previewPageNum"
+      [reference]="reference"
+    >
+    </app-pdf-preview>
   </div>
   <div
     class="middle"

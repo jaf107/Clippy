@@ -17,6 +17,7 @@ import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { SummarizerComponent } from './modules/summarizer/summarizer.component';
 import { PdfViewerModule } from './modules/pdf-viewer-custom-library/pdf-viewer.module';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { PdfPreviewComponent } from './modules/pdf-viewer/pdf-preview/pdf-preview.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
     KnowledgeGraphComponent,
     PdfViewerComponent,
     SidebarComponent,
-    SummarizerComponent
+    SummarizerComponent,
+    PdfPreviewComponent
   ],
   imports: [
     BrowserModule,
