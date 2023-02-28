@@ -116,13 +116,14 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 
 async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
-    "./sample6.pdf"
+    "./sample4.pdf"
   );
   // arr[2];
   let threshholdDistance = 90;
   let freq = Array.from(heights).map((item) => {
     return { height: item, count: 0 };
   });
+
   arr.map((page) => {
     page.map((chunk) => {
       for (let i = 0; i < freq.length; i++) {
@@ -138,7 +139,7 @@ async function wrapper() {
   console.log(max);
 
   // Filter page chunk for regular text chunks
-  let regularText = arr[2].filter(
+  let regularText = arr[4].filter(
     (item) =>
       item.height < max.height + 1 &&
       item.height > max.height - 1 &&
