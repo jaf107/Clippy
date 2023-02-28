@@ -244,7 +244,7 @@ export class PdfViewerComponent
     console.log(referenceID)
     //console.log(refParent)
     const refDestination = await this._pdf.getDestination(referenceID);
-    console.log(refDestination)
+    console.log('ref dest: ',refDestination)
     if (refDestination == null) {
 			return;
 		}
@@ -253,12 +253,25 @@ export class PdfViewerComponent
     //console.log('calling')
     this.initPopOverPDFService();
     //console.log(this.getPopOverPDFOptions())
-    const pageNum = this.pdfLinkService._cachedPageNumber(refDestination[0]);
+    const pageNum = 3;
     //this.pdfLinkService.goToDestination(refDestination)
     console.log(pageNum)
+    let ref = [];
+    //const page = pdf.getPage(pageNumber);
+    this._pdf.getPage(pageNum).then((page:PDFPageProxy)=>{
+      const pageInfo = page._pageInfo;
+      console.log('page info: ', pageInfo)
+      const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
+      ref.push(obj)
+      ref.push({name: 'XYZ'})
+      ref.push(200)
+      ref.push(300)
+      console.log('reverse: ',obj)
+    })
+    //this.pdfLinkService.goToDestination(ref);
     this.hover.emit({
       page: pageNum,
-      refDestination: refDestination,
+      refDestination: ref,
       clientX: event.clientX,
       clienY: event.clientY
     });
