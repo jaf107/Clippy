@@ -389,6 +389,7 @@ async function AbstractiveSummary(src) {
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   let absApiKey = "278aff3b-5c8d-4fe3-8fda-cb82b42fba4a";
 
+  console.log("dhukse");
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
     let contextString = element.text;
@@ -461,9 +462,9 @@ async function AbstractiveSummary(src) {
   }
 }
 
-// let src = `./sample4.pdf`;
-// ExtractiveSummary(src);
-AbstractiveSummary(src);
+let src = `./sample13.pdf`;
+ExtractiveSummary(src);
+// AbstractiveSummary(src);
 
 async function createChunkForHighlighting() {
   let paragraphs = require("./preprocessed.json");
