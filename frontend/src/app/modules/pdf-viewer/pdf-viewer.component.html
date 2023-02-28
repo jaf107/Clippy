@@ -2,6 +2,7 @@
 <div class="container-fluid">
   <div class="left" [ngStyle]="{ width: summarizerOn == true ? '70%' : '96%' }">
     <pdf-viewer
+      #viewerRef
       [src]="pdfPath"
       [render-text]="true"
       (page-rendered)="pageRendered($event)"

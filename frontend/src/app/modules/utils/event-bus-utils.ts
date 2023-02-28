@@ -16,7 +16,7 @@ export function createEventBus(pdfJsViewer: any, destroy$: Subject<void>) {
   return globalEventBus;
 }
 
-function attachDOMEventsToEventBus(
+export function attachDOMEventsToEventBus(
   eventBus: EventBus,
   destroy$: Subject<void>
 ): void {

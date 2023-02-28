@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChild } from '@angular/core';
 import { PdfShareService } from '../shared/pdf-share.service';
 import * as HL from '../../../assets/highlight.json';
 
@@ -12,25 +12,28 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   pdfSrc = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
   public summarizerOn: boolean;
 
+  @ViewChild('viewerRef') viewerRef: HTMLElement;
+
   ngOnInit() {
     this.pdfPath = this.pdfShareService.getFile();
-    console.log(this.pdfPath);
+    //console.log(this.pdfPath);
 
-    this.pdfPath = './assets/sample4.pdf';
+    this.pdfPath = '../../../assets/icse22_toxicity.pdf';
 
     this.summarizerOn = false;
 
     this.pdfShareService.getSummarizerStatus().subscribe((value) => {
       this.summarizerOn = value;
-      console.log('Summary is on ' + this.summarizerOn);
+      //console.log('Summary is on ' + this.summarizerOn);
     });
   }
 
   getReferences(e: any) {
-    // console.log(e.data.length);
+    //console.log(e.data.length);
   }
   ngAfterViewInit() {
-    console.log('View is initialized ' + this.pdfPath);
+    //console.log('View is initialized ' + this.pdfPath);
+
   }
 
   constructor(public pdfShareService: PdfShareService) {}
@@ -53,7 +56,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param e custom event
    */
   pageRendered(e: any) {
-    console.log('(page-rendered)', e);
+    //console.log('(page-rendered)', e);
     // Select page container
     let spans = e.source.textLayer.textDivs;
     let higlightedSegments = filterHighlightsForAPage(
@@ -85,7 +88,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       let wrappedText = ``;
 
       for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
-      wrappedText += `<a class="highlighed-text">`;
+      wrappedText += `<a class="highlighed-text" style="background-color:#FF5733 !important">`;
       for (let i = startingIndex; i < startingIndex + segStr.length; i++)
         wrappedText += spanStr[i];
       wrappedText += `</a>`;
