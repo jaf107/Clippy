@@ -10,4 +10,4 @@ pdfParser.on("pdfParser_dataReady", (pdfData) => {
   fs.writeFileSync("./sample.json", JSON.stringify(pdfData));
 });
 
-pdfParser.loadPDF("./sample4.pdf");
+pdfParser.loadPDF("../sample13.pdf");

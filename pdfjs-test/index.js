@@ -150,7 +150,6 @@ async function wrapper() {
   writeChunksArrayToFile("./chunks.json", arr);
   writeChunksArrayToFile("./chunksWithEOL.json", regularText);
 
-
   // General Rules For finding figures, tables
 
   /* 1. Find the keyword (table, figure)
@@ -179,7 +178,7 @@ async function wrapper() {
   let chunkBeforeImage = regularText.filter((item, index, array) => {
     //  index++;
     // Table
-    if (item.str.toLowerCase().includes('table')) {
+    if (item.str.toLowerCase().includes("table")) {
       if (
         index + 1 < array.length &&
         Math.abs(item.transform[5] - array[index + 1].transform[5]) >= 20
@@ -262,10 +261,7 @@ async function wrapper() {
         } else return false;
       
     }
-
   });
-
-
 
   writeChunksArrayToFile("./out.json", chunkBeforeImage);
   writeChunksArrayToFile("./finalOut.json", finalOut);
