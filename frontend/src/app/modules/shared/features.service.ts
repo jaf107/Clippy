@@ -18,6 +18,7 @@ export class FeaturesService {
 
   getCitationGraph(_id : string): Observable<any> {
     return this.http.get(API_URL + _id + '/citations', { responseType: 'text' });
+    // '?fields=citations'
   }
 
 }

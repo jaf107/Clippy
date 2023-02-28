@@ -20,6 +20,8 @@ interface nodes{
   }
 }
 
+const uniquePapers = new Set();
+
 @Component({
   selector: 'app-knowledge-graph',
   templateUrl: './knowledge-graph.component.html',
@@ -32,6 +34,7 @@ export class KnowledgeGraphComponent implements OnInit {
   cy: any;
 
   public graphEdges : edges[] = [];
+  public graphNodes : nodes[] = [];
 
   constructor(
     public pdfShareService: PdfShareService,
@@ -51,8 +54,8 @@ export class KnowledgeGraphComponent implements OnInit {
         this.featureService.getCitationGraph('649def34f8be52c8b66281af98ae884c09aef38b').subscribe(
           (data) =>{
             this.graphData = JSON.parse(data);
-            this.addDatatoGraph();
-            console.log(JSON.parse(data));
+            this.addDataToGraph();
+            // console.log(JSON.parse(data));
           },
           (err) => {
             console.log("Error in graph");
@@ -68,13 +71,14 @@ export class KnowledgeGraphComponent implements OnInit {
 
       // Graph data
       elements: {
-        nodes: [
-          { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
-          { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
-          { data: { id: 'c' , name: 'Summarization' } },
-          { data: { id: 'd' , name: 'Paperrrr' } },
-          { data: { id: 'e' , name: 'SCOREEEE' } },
-        ],
+        // nodes: [
+        //   { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
+        //   { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
+        //   { data: { id: 'c' , name: 'Summarization' } },
+        //   { data: { id: 'd' , name: 'Paperrrr' } },
+        //   { data: { id: 'e' , name: 'SCOREEEE' } },
+        // ],
+        nodes: this.graphNodes,
         edges: this.graphEdges,
         // edges: [
         //   { data: { source: 'a', target: 'b' } },
@@ -154,19 +158,46 @@ export class KnowledgeGraphComponent implements OnInit {
         ready: undefined, // callback on layoutready
         stop: undefined, // callback on layoutstop
       },
+
+      minZoom: 1e-50,
+      maxZoom: 1e50,
+      zoomingEnabled: true,
+      userZoomingEnabled: true,
+      panningEnabled: true,
+      userPanningEnabled: true,
+      boxSelectionEnabled: true,
+      selectionType: 'single',
     });
+
+    console.log("Hi");
     // // Add panzoom and navigator extensions
     panzoom(this.cy);
     navigator(this.cy);
   }
 
-  addDatatoGraph(){
+  addDataToGraph(){
     this.graphData.forEach(edge => {
       if(edge.from.title != undefined){
         let singleEdge = {'source':edge.from.title, 'target':edge.to.title};
-        this.graphEdges.push({data:singleEdge});
-        console.log(this.graphEdges);
+        this.graphEdges.push({'data':singleEdge});
+
+        uniquePapers.add(edge.from.title);
+        uniquePapers.add(edge.to.title);
       }
     });
+
+    console.log(this.graphEdges);
+    this.addNodestoGraph();
+  }
+
+  addNodestoGraph(){
+
+    uniquePapers.forEach(key => {
+      let singleNode = {'id':key.toString(), 'name':key.toString()};
+      this.graphNodes.push({'data':singleNode});
+    });
+
+    console.log(JSON.stringify(this.graphNodes));
+    
   }
 }
