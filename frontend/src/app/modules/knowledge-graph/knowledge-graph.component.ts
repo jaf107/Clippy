@@ -51,11 +51,11 @@ export class KnowledgeGraphComponent implements OnInit {
       this.graphOn = value;
       if(this.graphOn){
         console.log("Hello from knowledge graph component");
-        this.featureService.getCitationGraph('649def34f8be52c8b66281af98ae884c09aef38b').subscribe(
+        this.featureService.getCitationGraph('e877fcfdddaeddd46f7f1afd70eb2e1c7a4bdfae').subscribe(
           (data) =>{
             this.graphData = JSON.parse(data);
-            this.addDataToGraph();
-            // console.log(JSON.parse(data));
+            // this.addDataToGraph();
+            console.log(JSON.parse(data));
           },
           (err) => {
             console.log("Error in graph");
@@ -71,22 +71,22 @@ export class KnowledgeGraphComponent implements OnInit {
 
       // Graph data
       elements: {
-        // nodes: [
-        //   { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
-        //   { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
-        //   { data: { id: 'c' , name: 'Summarization' } },
-        //   { data: { id: 'd' , name: 'Paperrrr' } },
-        //   { data: { id: 'e' , name: 'SCOREEEE' } },
-        // ],
-        nodes: this.graphNodes,
-        edges: this.graphEdges,
-        // edges: [
-        //   { data: { source: 'a', target: 'b' } },
-        //   { data: { source: 'a', target: 'c' } },
-        //   { data: { source: 'b', target: 'd' } },
-        //   { data: { source: 'd', target: 'e' } },
-        //   { data: { source: 'c', target: 'd' } },
-        // ],
+        nodes: [
+          { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
+          { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
+          { data: { id: 'c' , name: 'Summarization' } },
+          { data: { id: 'd' , name: 'Paperrrr' } },
+          { data: { id: 'e' , name: 'SCOREEEE' } },
+        ],
+        // nodes: this.graphNodes,
+        // edges: this.graphEdges,
+        edges: [
+          { data: { source: 'a', target: 'b' } },
+          { data: { source: 'a', target: 'c' } },
+          { data: { source: 'b', target: 'd' } },
+          { data: { source: 'd', target: 'e' } },
+          { data: { source: 'c', target: 'd' } },
+        ],
       },
 
       // Graph style
@@ -175,29 +175,29 @@ export class KnowledgeGraphComponent implements OnInit {
     navigator(this.cy);
   }
 
-  addDataToGraph(){
-    this.graphData.forEach(edge => {
-      if(edge.from.title != undefined){
-        let singleEdge = {'source':edge.from.title, 'target':edge.to.title};
-        this.graphEdges.push({'data':singleEdge});
+  // addDataToGraph(){
+  //   this.graphData.forEach(edge => {
+  //     if(edge.from.title != undefined){
+  //       let singleEdge = {'source':edge.from.title, 'target':edge.to.title};
+  //       this.graphEdges.push({'data':singleEdge});
 
-        uniquePapers.add(edge.from.title);
-        uniquePapers.add(edge.to.title);
-      }
-    });
+  //       uniquePapers.add(edge.from.title);
+  //       uniquePapers.add(edge.to.title);
+  //     }
+  //   });
 
-    console.log(this.graphEdges);
-    this.addNodestoGraph();
-  }
+  //   console.log(this.graphEdges);
+  //   this.addNodestoGraph();
+  // }
 
-  addNodestoGraph(){
+  // addNodestoGraph(){
 
-    uniquePapers.forEach(key => {
-      let singleNode = {'id':key.toString(), 'name':key.toString()};
-      this.graphNodes.push({'data':singleNode});
-    });
+  //   uniquePapers.forEach(key => {
+  //     let singleNode = {'id':key.toString(), 'name':key.toString()};
+  //     this.graphNodes.push({'data':singleNode});
+  //   });
 
-    console.log(JSON.stringify(this.graphNodes));
+  //   console.log(JSON.stringify(this.graphNodes));
     
-  }
+  // }
 }
