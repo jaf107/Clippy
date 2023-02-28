@@ -139,137 +139,138 @@ async function wrapper() {
   console.log(max);
 
   // Filter page chunk for regular text chunks
-  let regularText = arr[1].filter(
-    (item) =>
-      item.height < max.height + 0.7 &&
-      item.height > max.height - 0.7 &&
-      isAlphanumeric(item.str)
-  );
+  let finalOut = [];
+  for (let pageIndex = 0; pageIndex < arr.length; pageIndex++) {
+    let regularText = arr[pageIndex].filter(
+      (item) =>
+        item.height < max.height + 0.7 &&
+        item.height > max.height - 0.7 &&
+        isAlphanumeric(item.str)
+    );
 
-  // let regularText = arr[1].filter((item) => item.height === max.height);
-  writeChunksArrayToFile("./chunks.json", arr);
-  writeChunksArrayToFile("./chunksWithEOL.json", regularText);
+    // let regularText = arr[1].filter((item) => item.height === max.height);
+    writeChunksArrayToFile("./chunks.json", arr);
+    writeChunksArrayToFile("./chunksWithEOL.json", regularText);
 
-  // General Rules For finding figures, tables
+    // General Rules For finding figures, tables
 
-  /* 1. Find the keyword (table, figure)
+    /* 1. Find the keyword (table, figure)
    2. Then find the distance (x, y) of the particulur chunk with prev and next chunk
    3. Return max(y) , x,y,height
    **/
 
-  // Filter the starting chunk of the image
+    // Filter the starting chunk of the image
 
-  // x:  35,
-  // y:750,
+    // x:  35,
+    // y:750,
 
-  let temp = {
-    str: "",
-    page: 1,
-    height: 0,
-    weight: 0,
-    x: 0,
-    y: 0,
-  };
+    let temp = {
+      str: "",
+      page: 1,
+      height: 0,
+      weight: 0,
+      x: 0,
+      y: 0,
+    };
 
-  let finalOut = [];
-  let chunkBeforeImage = regularText.filter((item, index, array) => {
-    //  index++;
-    // Table
-    if (item.str.toLowerCase().includes("table")) {
-      if (
-        index + 1 < array.length &&
-        Math.abs(item.transform[5] - array[index + 1].transform[5]) >= 20
-      ) {
-        temp.str = extractKeywordFromStr(item.str, "table");
-        temp.page = 9; // Need to update the value
-        temp.height = 250;
-        temp.weight = 580;
-        if (item.transform[4] < 300) {
-          temp.x = 25;
-        } else temp.x = 280;
-        temp.y = item.transform[5];
-
-        finalOut.push(temp);
-
-        console.log(
-          "Index " +
-            index +
-            " er  start chunk: " +
-            item.str + // start chuk
-            "Last chunk:  " +
-            array[index + 1].str, // end chunk
-          item.transform[5] - array[index + 1].transform[5] // height of the image
-        );
-        return true;
-      } else return false;
-    }
-
-    // For figure
-
-    if (index == 0 && item.str.toLowerCase().includes("figure")) {
-      console.log("index 0 paise");
-      if (750 - item.transform[5] >= 30) {
-        // console.log(item.str);
-        temp.str = extractKeywordFromStr(item.str, "figure");
-        temp.page = 9; // Need to update the value
-        temp.height = 750 - item.transform[5];
-        temp.weight = 580;
-        if (item.transform[4] < 280) {
-          temp.x = 25;
-        } else temp.x = 280;
-        temp.y = 750;
-        finalOut.push(temp);
-
-        console.log(
-          "Index " +
-            index +
-            " er  start chunk: " +
-            item.str + // start chunk
-            "Last chunk:  " +
-            array[0].str, // end chunk
-          item.transform[5] - array[0].transform[5] // height of the image
-        );
-        return true;
-      }
-    } else if (
-      index + 1 < array.length &&
-      array[index + 1].str.toLowerCase().includes("figure") &&
-      index != 0
-    ) {
-      if (Math.abs(array[index + 1].transform[5] - item.transform[5]) >= 70) {
-        // If we find the previous chunk in the bottom of
-        if (item.transform[5] < 100) item.transform[5] = 750;
-        console.log(
-          "Index " +
-            index +
-            " er  start chunk: " +
-            item.str + // start chuk
-            "Last chunk:  " +
-            array[index + 1].str, // end chunk
-          item.transform[5] - array[index + 1].transform[5] // height of the image
-        );
-
-        temp.str = extractKeywordFromStr(array[index + 1].str, "figure");
-        temp.page = 9; // Need to update the value
-        if (item.transform[5] - array[index + 1].transform[5] > 0) {
-          temp.height = item.transform[5] - array[index + 1].transform[5];
+    let chunkBeforeImage = regularText.filter((item, index, array) => {
+      //  index++;
+      // Table
+      if (item.str.toLowerCase().includes("table")) {
+        if (
+          index + 1 < array.length &&
+          Math.abs(item.transform[5] - array[index + 1].transform[5]) >= 20
+        ) {
+          temp.str = extractKeywordFromStr(item.str, "table");
+          temp.page = pageIndex + 1; // Need to update the value
+          temp.height = 250;
+          temp.weight = 580;
+          if (item.transform[4] < 300) {
+            temp.x = 25;
+          } else temp.x = 280;
           temp.y = item.transform[5];
-        } else {
-          temp.height = 750 - array[index + 1].transform[5];
+
+          finalOut.push(temp);
+
+          console.log(
+            "Index " +
+              index +
+              " er  start chunk: " +
+              item.str + // start chuk
+              "Last chunk:  " +
+              array[index + 1].str, // end chunk
+            item.transform[5] - array[index + 1].transform[5] // height of the image
+          );
+          return true;
+        } else return false;
+      }
+
+      // For figure
+
+      if (index == 0 && item.str.toLowerCase().includes("figure")) {
+        console.log("index 0 paise");
+        if (750 - item.transform[5] >= 30) {
+          // console.log(item.str);
+          temp.str = extractKeywordFromStr(item.str, "figure");
+          temp.page = pageIndex + 1; // Need to update the value
+          temp.height = 750 - item.transform[5];
+          temp.weight = 580;
+          if (item.transform[4] < 280) {
+            temp.x = 25;
+          } else temp.x = 280;
           temp.y = 750;
+          finalOut.push(temp);
+
+          console.log(
+            "Index " +
+              index +
+              " er  start chunk: " +
+              item.str + // start chunk
+              "Last chunk:  " +
+              array[0].str, // end chunk
+            item.transform[5] - array[0].transform[5] // height of the image
+          );
+          return true;
         }
-        temp.weight = 580;
-        if (array[index + 1].transform[4] < 280) {
-          temp.x = 25;
-        } else temp.x = 280;
-        finalOut.push(temp);
+      } else if (
+        index + 1 < array.length &&
+        array[index + 1].str.toLowerCase().includes("figure") &&
+        index != 0
+      ) {
+        if (Math.abs(array[index + 1].transform[5] - item.transform[5]) >= 70) {
+          // If we find the previous chunk in the bottom of
+          if (item.transform[5] < 100) item.transform[5] = 750;
+          console.log(
+            "Index " +
+              index +
+              " er  start chunk: " +
+              item.str + // start chuk
+              "Last chunk:  " +
+              array[index + 1].str, // end chunk
+            item.transform[5] - array[index + 1].transform[5] // height of the image
+          );
 
-        return true;
-      } else return false;
-    }
-  });
+          temp.str = extractKeywordFromStr(array[index + 1].str, "figure");
+          temp.page = pageIndex + 1; // Need to update the value
+          if (item.transform[5] - array[index + 1].transform[5] > 0) {
+            temp.height = item.transform[5] - array[index + 1].transform[5];
+            temp.y = item.transform[5];
+          } else {
+            temp.height = 750 - array[index + 1].transform[5];
+            temp.y = 750;
+          }
+          temp.weight = 580;
+          if (array[index + 1].transform[4] < 280) {
+            temp.x = 25;
+          } else temp.x = 280;
+          finalOut.push(temp);
 
-  writeChunksArrayToFile("./out.json", chunkBeforeImage);
+          return true;
+        } else return false;
+      }
+    });
+    // writeChunksArrayToFile("./out.json", chunkBeforeImage);
+  }
   writeChunksArrayToFile("./finalOut.json", finalOut);
 }
 wrapper();
