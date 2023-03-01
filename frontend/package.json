@@ -32,6 +32,7 @@
     "file-saver": "^2.0.5",
     "ng2-tooltip-directive": "^2.10.3",
     "ngx-toastr": "^16.0.2",
+    "pdf2json": "^3.0.3",
     "pdfjs-dist": "~2.14.305",
     "rxjs": "~7.5.0",
     "sweetalert2": "^11.7.2",

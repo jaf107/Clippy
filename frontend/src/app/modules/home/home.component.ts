@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { pdfs } from 'src/app/interfaces/file';
 import { TokenStorageService } from 'src/app/token-storage.service';
 import { PdfShareService } from '../shared/pdf-share.service';
+import PDFParser from "pdf2json";
 
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
@@ -13,7 +14,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit{
   constructor(
     private toastr: ToastrService,
     public pdfShareService: PdfShareService,
@@ -26,8 +27,17 @@ export class HomeComponent {
   faMagnifyingGlass = faMagnifyingGlass;
 
   searchedTerm = '';
+  searchBy = 'Search by';
 
   visitedFiles = [];
+
+  ngOnInit(){
+    this.pdfShareService.getHistory().subscribe(
+      (data) => {
+        console.log(data);
+      }
+    )
+  }
 
   openFileDialog() {
     document.querySelector('input').click();
@@ -42,6 +52,10 @@ export class HomeComponent {
       console.log('Not supported file type!');
       this.errorsmsg();
     } else {
+
+      //send form to server
+      this.sendFile();
+
       this.visitedFiles.push({ name: this.file.name, lastVisited: new Date() });
       console.log(this.visitedFiles);
 
@@ -66,4 +80,23 @@ export class HomeComponent {
   searchPaper(){
     console.log('Searched paper is ' + this.searchedTerm);
   }
+
+  sendFile(){
+    const formData: FormData = new FormData();
+    formData.append('file', this.file);
+
+    this.pdfShareService.sendFiletoServer(formData).subscribe(
+      (data) => {
+
+      },
+      (err) => {
+        console.log("File sending failed");
+      }
+    )
+  }
+
+  searchPaperToggle(searchType : string){
+    this.searchBy = searchType;
+  }
+
 }

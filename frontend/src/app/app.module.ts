@@ -45,7 +45,7 @@ import { TooltipModule } from 'ng2-tooltip-directive';
     TooltipModule,
     PdfViewerModule,
     ClipboardModule,
-    FontAwesomeModule
+    FontAwesomeModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

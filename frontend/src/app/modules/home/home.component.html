@@ -22,7 +22,7 @@
       Upload PDF
     </button>
     <br />Or<br />
-    <div class="form-outline mb-4">
+    <div class="form-outline mb-4 searchBar">
       <!-- <label class="form-label" for="form3Example3">Email address</label> -->
       <input
         type="search"
@@ -31,6 +31,15 @@
         placeholder="Enter Paper Title or DOI"
         [(ngModel)]="searchedTerm"
       />
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+          {{searchBy}}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          <li><a class="dropdown-item" (click)="searchPaperToggle('Title')">Title</a></li>
+          <li><a class="dropdown-item" (click)="searchPaperToggle('DOI')">DOI</a></li>
+        </ul>
+      </div>
     </div>
     <button class="input-group-text border-0" id="search-addon" (click)="searchPaper()">
       <fa-icon [icon]="faMagnifyingGlass"></fa-icon>

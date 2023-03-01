@@ -1,12 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { TokenStorageService } from 'src/app/token-storage.service';
 
 const API_URL = 'http://localhost:8080/api/paper/';
-
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-};
 
 
 @Injectable({
@@ -17,12 +14,20 @@ export class FeaturesService {
   
   public summarizerType: string = '';
 
-  constructor(private http : HttpClient) { 
+  constructor(private http : HttpClient, public tokenStorage: TokenStorageService) { 
     this.summarizerOnCheck.next(false);
   }
 
+  headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
+    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
+    'x-auth-token': JSON.stringify(this.tokenStorage.getToken()),
+  });
+
   getCitationGraph(_id : string): Observable<any> {
-    return this.http.get(API_URL + _id + '/citations', { responseType: 'text' });
+    return this.http.get(API_URL + _id + '/citations', { headers : this.headers });
     // '?fields=citations'
   }
 

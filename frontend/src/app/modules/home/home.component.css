@@ -60,6 +60,20 @@ h5{
     text-overflow: ellipsis; 
 }
 
+.searchBar{
+  display: flex;
+}
+
+.dropdown button{
+  margin-top: 1rem;
+  background: transparent;
+  border: none;
+}
+
+.dropdown-menu{
+  background-color: #ffffff9d;
+}
+
 #search-addon{
   background: transparent; 
   color: white; 
