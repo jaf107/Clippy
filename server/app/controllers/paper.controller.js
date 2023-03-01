@@ -11,25 +11,6 @@ const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const { OneAI } = require("oneai");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 
-class CitationNode {
-  constructor(paperId, title, level) {
-    this.paperId = paperId;
-    this.title = title;
-    this.level = level;
-    this.citationChildren = [];
-  }
-
-  addCitation(citation) {
-    this.citationChildren.push(citation);
-  }
-}
-
-class CitationEdge {
-  constructor(from, to) {
-    this.from = from;
-    this.to = to;
-  }
-}
 
 class Paragraph {
   constructor(title, text) {
@@ -207,6 +188,7 @@ exports.searchPaperById = async (req, res) => {
 };
 exports.getAbstractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
+  let noOfSentenceInSummary;
   if (paper) {
     if (paper.abstractive_summary !== "")
       res.status(200).send(paper.abstractive_summary);
@@ -368,20 +350,20 @@ async function createJsonObjectFromPdf(src) {
   let { textChunkArray: arr } = await getPdfTextContent(src);
   arr = arr.flat();
 
-  heights = [];
+  let heights = [];
   arr.forEach((element) => {
     heights.push(element.height);
   });
-  allHeights = heights;
+  let allHeights = heights;
 
   const uniqueHeight = new Set(heights);
 
   heights = Array.from(uniqueHeight);
-  sortedHeights = heights.sort(function (a, b) {
+  let sortedHeights = heights.sort(function (a, b) {
     return b - a;
   });
 
-  heightsCounter = new Array(heights.length).fill(0);
+  let heightsCounter = new Array(heights.length).fill(0);
   allHeights.forEach((element) => {
     for (var i = 0; i < heights.length; i++) {
       if (heights[i] === element) {
@@ -394,13 +376,14 @@ async function createJsonObjectFromPdf(src) {
   let generalTextHeightIndex = 0;
 
   let tempMax = -1;
-  for (var i = 0; i < heights.length; i++) {
+  let i;
+  for (i = 0; i < heights.length; i++) {
     if (heightsCounter[i] > heightsCounter[generalTextHeightIndex]) {
       generalTextHeightIndex = i;
     }
   }
   tempMax = -1;
-  for (var i = 0; i < generalTextHeightIndex; i++) {
+  for (i = 0; i < generalTextHeightIndex; i++) {
     if (heightsCounter[i] > heightsCounter[titleHeightIndex]) {
       titleHeightIndex = i;
     }
@@ -490,13 +473,21 @@ async function createJsonObjectFromPdf(src) {
   });
   return paragraphs;
 }
-
+function noOfSentences(context) {
+  let noOfSentence = 0;
+  for (var i = 0; i < context.length; i++) {
+    if (context[i] == "." || context[i] == "?" || context[i] == "!")
+      noOfSentence++;
+  }
+  // console.log(noOfSentence);
+  return noOfSentence;
+}
 async function getPdfTextContent(src) {
   const doc = await pdfjs.getDocument(src).promise;
   const totalPageCount = doc.numPages;
   doc.getDestination;
   let textChunkArray = [];
-  heights = [];
+  let heights = [];
 
   for (let i = 1; i <= totalPageCount; i++) {
     const page = await doc.getPage(i);
@@ -506,7 +497,7 @@ async function getPdfTextContent(src) {
   }
   const uniqueHeight = new Set(heights);
   heights = Array.from(uniqueHeight);
-  sortedHeights = heights.sort(function (a, b) {
+  let sortedHeights = heights.sort(function (a, b) {
     return b - a;
   });
 
