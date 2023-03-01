@@ -7,7 +7,7 @@ import { Component, Input, OnChanges } from '@angular/core';
   styleUrls: ['./pdf-preview.component.css']
 })
 export class PdfPreviewComponent implements OnChanges{
-  @Input('pdfPath') pdfPath: any = '../../../../assets/sample.pdf';
+  @Input('pdfPath') pdfPath: any;
   @Input('show') show: Boolean;
   @Input('page') page: number;
   @Input('offsetX') offsetX: string; 
@@ -19,6 +19,7 @@ export class PdfPreviewComponent implements OnChanges{
   //widthSTR = '300px';
   shadowSTR = "7px 8px 13px -3px rgba(0,0,0,0.72)" 
   ngOnInit() {
+    console.log('preview: ',this.pdfPath, this.page, this.offsetX, this.offsetY, this.height, this.width)
   }
   ngOnChanges() {
    // this.pdfPath = '../../../../assets/sample.pdf';
