@@ -112,7 +112,7 @@ exports.uploadPaper = async (req, res) => {
           paper_id: uuid,
           title: req.body.title,
           knowledge_graph: "",
-          url: SERVER_ADDRESS + "/upload/" + uuid + ".pdf",
+          url: "/upload/" + uuid + ".pdf",
           abstract: "",
           abstractive_summary: "",
           extractive_summary: "",
@@ -131,18 +131,23 @@ exports.uploadPaper = async (req, res) => {
 };
 
 exports.searchPaperByTitle = async (req, res) => {
-  const paper_data = await axios.get(
-    SEMANTIC_SCHOLAR_API +
-      `search?query=${req.body.title}&limit=10&fields=isOpenAccess,openAccessPdf`
-  );
+  const paper_data = await axios
+    .get(
+      SEMANTIC_SCHOLAR_API +
+        `search?query=${req.body.title}&limit=10&fields=isOpenAccess,openAccessPdf`
+    )
+    .then((response) => {
+      res.status(200).send(JSON.stringify(response.data));
+    })
+    .catch((err) => {
+      res.status(404).send(err);
+    });
 
-  if (paper_data) {
-    res.status(200).send(JSON.stringify(paper_data.data));
-  } else {
-    res.status(404).send("Paper not found");
-  }
-
-  // .catch((err) => res.status(404).send("Paper Not Found"));
+  // if (paper_data) {
+  //   res.status(200).send(JSON.stringify(paper_data.data));
+  // } else {
+  //   res.status(404).send("Paper not found");
+  // }
 };
 
 exports.searchPaperById = async (req, res) => {
@@ -166,7 +171,7 @@ exports.searchPaperById = async (req, res) => {
       else {
         var paper = {
           title: paper_data.data.title,
-          paper_id: req.body.paper_id,
+          paper_id: paper_data.data.paperId,
           knowledge_graph: "",
           abstract: paper_data.data.abstract,
           url: paper_data.data.openAccessPdf.url,
@@ -227,10 +232,10 @@ exports.getExtractSummary = async (req, res) => {
         res.status(200).send(paper.abstractive_summary);
       });
     } else {
-      await AbstractSummary(req.file.path).then((paragraphs) => {
+      await ExtractSummary(req.file.path).then((paragraphs) => {
         const result = Paper.updateOne(
           { paper_id: req.params.id },
-          { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
+          { $set: { extractive_summary: JSON.stringify(paragraphs) } },
           { upsert: true }
         ).catch((err) => res.status(200).send(err));
         if (result) {
@@ -239,6 +244,7 @@ exports.getExtractSummary = async (req, res) => {
             console.log("successfully deleted");
             res.status(200).send(JSON.stringify(paragraphs));
           });
+          s;
         }
       });
     }
@@ -251,7 +257,7 @@ exports.getCitation = async (req, res) => {
   const rootPaperId = req.params.id;
   var paperInDB = await Paper.findOne({ paper_id: rootPaperId });
   if (paperInDB && paperInDB.knowledge_graph != "") {
-    res.status(200).send(JSON.parse(paperInDB.knowledge_graph));
+    res.status(200).send(paperInDB.knowledge_graph);
   } else {
     var citationResponse = await axios
       .get(SEMANTIC_SCHOLAR_API + `${rootPaperId}?fields=title,citations`)
