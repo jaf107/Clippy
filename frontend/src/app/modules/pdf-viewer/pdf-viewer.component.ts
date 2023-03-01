@@ -28,7 +28,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.pdfPath = this.pdfShareService.getFile();
     //console.log(this.pdfPath);
 
-    this.pdfPath = '../../../assets/sample4.pdf';
+    this.pdfPath = '../../../assets/icse22_toxicity.pdf';
 
     this.summarizerOn = false;
 
@@ -182,7 +182,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   placeWrappingTagForRefrence(spanStr, startingIndex, finalIndex) {
     let finalStr = '';
     for (let i = 0; i < startingIndex; i++) finalStr += spanStr[i];
-    finalStr += `<a href="https://www.google.com" class="reference-text" style="backgournd-color: yellow !important;">`;
+    finalStr += `<a href="" #manualRefererencingNeeded class="reference-text" style="backgournd-color: yellow !important;">`;
     for (let i = startingIndex; i <= finalIndex; i++) finalStr += spanStr[i];
     finalStr += `</a>`;
     for (let i = finalIndex + 1; i < spanStr.length; i++)
@@ -209,7 +209,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     let startingIndex = spanStr.indexOf(segStr);
     let wrappedText = ``;
     for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
-    wrappedText += `<a class="highlighed-text ${selectionClass}" style="background-color: ${highlightColor} !important; color: ${highlightColor} !important;">`;
+    wrappedText += `<a class="highlighed-text ${selectionClass}" #manual style="background-color: ${highlightColor} !important; color: ${highlightColor} !important;">`;
     for (let i = startingIndex; i < startingIndex + segStr.length; i++)
       wrappedText += spanStr[i];
     wrappedText += `</a>`;
@@ -224,7 +224,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       .split(' ')
       .map((w) => {
         if (w.includes('95')) {
-          return `<a href="https://www.google.com" style="color:red !important; background-color: red !important" class="clickable-text">${w}</a>`;
+          return `<a href="" style="color:red !important; background-color: red !important" class="clickable-text">${w}</a>`;
         }
         return w;
       })
