@@ -190,9 +190,13 @@ exports.getAbstractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
   let noOfSentenceInSummary;
   if (paper) {
-    if (paper.abstractive_summary !== "")
-      res.status(200).send(paper.abstractive_summary);
-    else {
+    if (paper.abstractive_summary !== "") {
+      fs.unlink(req.file.path, (err) => {
+        if (err) throw err;
+        console.log("successfully deleted");
+        res.status(200).send(paper.abstractive_summary);
+      });
+    } else {
       await AbstractSummary(req.file.path).then((paragraphs) => {
         const result = Paper.updateOne(
           { paper_id: req.params.id },
@@ -200,12 +204,73 @@ exports.getAbstractSummary = async (req, res) => {
           { upsert: true }
         ).catch((err) => res.status(200).send(err));
         if (result) {
-          res.status(200).send(JSON.stringify(paragraphs));
+          fs.unlink(req.file.path, (err) => {
+            if (err) throw err;
+            console.log("successfully deleted");
+            res.status(200).send(JSON.stringify(paragraphs));
+          });
         }
       });
     }
   } else {
     res.status(404).send("Paper not found");
+  }
+};
+
+exports.getExtractSummary = async (req, res) => {
+  var paper = await Paper.findOne({ paper_id: req.params.id });
+  if (paper) {
+    if (paper.extractive_summary !== "") {
+      fs.unlink(req.file.path, (err) => {
+        if (err) throw err;
+        console.log("successfully deleted");
+        res.status(200).send(paper.abstractive_summary);
+      });
+    } else {
+      await AbstractSummary(req.file.path).then((paragraphs) => {
+        const result = Paper.updateOne(
+          { paper_id: req.params.id },
+          { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
+          { upsert: true }
+        ).catch((err) => res.status(200).send(err));
+        if (result) {
+          fs.unlink(req.file.path, (err) => {
+            if (err) throw err;
+            console.log("successfully deleted");
+            res.status(200).send(JSON.stringify(paragraphs));
+          });
+        }
+      });
+    }
+  } else {
+    res.status(404).send("Paper not found");
+  }
+};
+
+exports.getCitation = async (req, res) => {
+  const rootPaperId = req.params.id;
+  var paperInDB = await Paper.findOne({ paper_id: rootPaperId });
+  if (paperInDB && paperInDB.knowledge_graph != "") {
+    res.status(200).send(JSON.parse(paperInDB.knowledge_graph));
+  } else {
+    var citationResponse = await axios
+      .get(SEMANTIC_SCHOLAR_API + `${rootPaperId}?fields=title,citations`)
+      .catch((err) => res.status(404).send(err));
+    let rootNodeTitle = citationResponse.data.title;
+    let rootCitationData = citationResponse.data.citations;
+    rootCitationData.unshift({
+      paperId: citationResponse.data.paperId,
+      title: citationResponse.data.title,
+    });
+
+    const result = await Paper.updateOne(
+      { paper_id: rootPaperId },
+      { $set: { knowledge_graph: JSON.stringify(rootCitationData) } },
+      { upsert: true }
+    ).catch((err) => res.status(200).send(err));
+    if (result) {
+      res.status(200).send(JSON.stringify(rootCitationData));
+    }
   }
 };
 
@@ -248,33 +313,6 @@ async function AbstractSummary(filepath) {
     return paragraphs;
   }
 }
-
-exports.getCitation = async (req, res) => {
-  const rootPaperId = req.params.id;
-  var paperInDB = await Paper.findOne({ paper_id: rootPaperId });
-  if (paperInDB && paperInDB.knowledge_graph != "") {
-    res.status(200).send(JSON.parse(paperInDB.knowledge_graph));
-  } else {
-    var citationResponse = await axios
-      .get(SEMANTIC_SCHOLAR_API + `${rootPaperId}?fields=title,citations`)
-      .catch((err) => res.status(404).send(err));
-    let rootNodeTitle = citationResponse.data.title;
-    let rootCitationData = citationResponse.data.citations;
-    rootCitationData.unshift({
-      paperId: citationResponse.data.paperId,
-      title: citationResponse.data.title,
-    });
-
-    const result = await Paper.updateOne(
-      { paper_id: rootPaperId },
-      { $set: { knowledge_graph: JSON.stringify(rootCitationData) } },
-      { upsert: true }
-    ).catch((err) => res.status(200).send(err));
-    if (result) {
-      res.status(200).send(JSON.stringify(rootCitationData));
-    }
-  }
-};
 
 async function updateHistory(userId, paper_id, title) {
   // Find the document that matches the paper_id in the history array
