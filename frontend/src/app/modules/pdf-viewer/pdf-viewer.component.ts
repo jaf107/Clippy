@@ -114,20 +114,48 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
           !remainingWords[0].toLocaleLowerCase().localeCompare('fig') ||
           !remainingWords[0].toLocaleLowerCase().localeCompare('figure')
         ) {
-          console.log(remainingWords);
-          for (let k = 1; k < remainingWords.length; k++) {
-            if (remainingWords[k].length > 0) {
-              let wordWithNo = remainingWords[k];
-              if (
-                wordWithNo.charCodeAt(0) >= '0'.charCodeAt(0) &&
-                wordWithNo.charCodeAt(0) <= '9'.charCodeAt(0)
-              ) {
-                console.log('id:', remainingWords[k], 'index:', k);
-                break;
-              }
+          for (let i = startingIndex; i < spanText.length; i++) {
+            if (
+              spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
+              spanText.charCodeAt(i) <= '9'.charCodeAt(0)
+            ) {
+              finalIndex = i;
+              break;
             }
           }
-          return;
+
+          span.innerHTML = this.placeWrappingTagForRefrence(
+            span.innerHTML,
+            startingIndex,
+            finalIndex
+          );
+          console.log(startingIndex, restOfTheString, finalIndex);
+
+          // console.log(remainingWords);
+          // let refDatas = AllRefs.filter((ref) => ref.str.includes('figure'));
+          // for (let k = 1; k < remainingWords.length; k++) {
+          //   if (remainingWords[k].length > 0) {
+          //     let wordWithNo = remainingWords[k];
+          //     if (
+          //       wordWithNo.charCodeAt(0) >= '0'.charCodeAt(0) &&
+          //       wordWithNo.charCodeAt(0) <= '9'.charCodeAt(0)
+          //     ) {
+          //       let data = {};
+          //       let key = remainingWords[k][0];
+          //       console.log('id:', key, 'index:', k);
+          //       for (let r = 0; r < refDatas.length; r++) {
+          //         if (refDatas[r].str.includes(key)) {
+          //           data = refDatas[r];
+          //           break;
+          //         }
+          //       }
+          //       console.log({ ...data, requireManualAnnotaion: true });
+
+          //       break;
+          //     }
+          //   }
+          // }
+          // return;
         }
       }
 
@@ -141,20 +169,39 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
           !remainingWords[0].toLocaleLowerCase().localeCompare('tab') ||
           !remainingWords[0].toLocaleLowerCase().localeCompare('table')
         ) {
-          console.log(remainingWords);
-          for (let k = 1; k < remainingWords.length; k++) {
-            if (remainingWords[k].length > 0) {
-              let wordWithNo = remainingWords[k];
-              if (
-                wordWithNo.charCodeAt(0) >= '0'.charCodeAt(0) &&
-                wordWithNo.charCodeAt(0) <= '9'.charCodeAt(0)
-              ) {
-                console.log('id:', remainingWords[k], 'index:', k);
-                break;
-              }
+          for (let i = startingIndex; i < spanText.length; i++) {
+            if (
+              spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
+              spanText.charCodeAt(i) <= '9'.charCodeAt(0)
+            ) {
+              finalIndex = i;
+              break;
             }
           }
-          return;
+
+          span.innerHTML = this.placeWrappingTagForRefrence(
+            span.innerHTML,
+            startingIndex,
+            finalIndex
+          );
+          console.log(startingIndex, restOfTheString, finalIndex);
+
+          // let refDatas = AllRefs.filter((ref) => ref.str.includes('table'));
+          // console.log(remainingWords);
+          // for (let k = 1; k < remainingWords.length; k++) {
+          //   if (remainingWords[k].length > 0) {
+          //     let wordWithNo = remainingWords[k];
+          //     if (
+          //       wordWithNo.charCodeAt(0) >= '0'.charCodeAt(0) &&
+          //       wordWithNo.charCodeAt(0) <= '9'.charCodeAt(0)
+          //     ) {
+          //       console.log('id:', remainingWords[k], 'index:', k);
+
+          //       break;
+          //     }
+          //   }
+          // }
+          // return;
         }
       }
     });
@@ -172,6 +219,17 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       }
     }
     return segmentsForAPage;
+  }
+
+  placeWrappingTagForRefrence(spanStr, startingIndex, finalIndex) {
+    let finalStr = '';
+    for (let i = 0; i < startingIndex; i++) finalStr += spanStr[i];
+    finalStr += `<a class="reference-text">`;
+    for (let i = startingIndex; i <= finalIndex; i++) finalStr += spanStr[i];
+    finalStr += `</a>`;
+    for (let i = finalIndex + 1; i < spanStr.length; i++)
+      finalStr += spanStr[i];
+    return finalStr;
   }
 
   addWrappingTagForSummaryHighlight(
