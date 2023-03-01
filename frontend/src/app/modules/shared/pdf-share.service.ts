@@ -13,15 +13,17 @@ export class PdfShareService {
 
   public file: any;
 
+  public paper_id = '649def34f8be52c8b66281af98ae884c09aef38b';
+
   constructor(
     public http: HttpClient,
     public tokenStorage: TokenStorageService
   ) { }
 
   headers = new HttpHeaders({
-    'Content-Type': 'application/json',
+    'Content-Type': 'multipart/form-data, text',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, x-access-token',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
     'x-access-token': this.tokenStorage.getToken(),
   });
@@ -46,8 +48,8 @@ export class PdfShareService {
     return this.http.get(API_USER_URL + _id, { headers : this.headers });
   }
 
-  searchPaperByTitle(): Observable<any> {
-    return this.http.get(API_URL + '/searchByTitle', { headers : this.headers });
+  searchPaperByTitle(searchedTerm: any): Observable<any> {
+    return this.http.get(API_URL + 'searchByTitle', { headers : this.headers });
   }
 
   searchPaperbyId(searchedTerm: any): Observable<any> {

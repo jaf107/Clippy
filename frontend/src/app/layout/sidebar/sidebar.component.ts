@@ -11,7 +11,7 @@ export class SidebarComponent {
   public isActive: boolean = true;
   public optionsActive: boolean = false;
 
-  constructor(public featureService: FeaturesService) { }
+  constructor(public featureService: FeaturesService, public pdfShareService: PdfShareService) { }
 
   public extractiveOn: boolean = false;
   public abstractiveOn: boolean = false;
@@ -47,6 +47,12 @@ export class SidebarComponent {
       if(this.extractiveOn == false){
         this.extractiveOn = true;
         this.abstractiveOn = false;
+
+        this.featureService.getExtractiveSummary(this.pdfShareService.paper_id).subscribe(
+          (data) => {
+            console.log(data);
+          }
+        )
       }
       else{
         this.extractiveOn = false;

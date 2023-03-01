@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TokenStorageService } from 'src/app/token-storage.service';
+import { PdfShareService } from './pdf-share.service';
 
 const API_URL = 'http://localhost:8080/api/paper/';
 
@@ -14,23 +15,19 @@ export class FeaturesService {
   
   public summarizerType: string = '';
 
-  constructor(private http : HttpClient, public tokenStorage: TokenStorageService) { 
+  public fileurl: string = '';
+
+  constructor(private http : HttpClient, public tokenStorage: TokenStorageService, public pdfShareService: PdfShareService) { 
     this.summarizerOnCheck.next(false);
   }
 
   headers = new HttpHeaders({
     'Content-Type': 'application/json, text',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, x-access-token',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
     'x-access-token': JSON.stringify(this.tokenStorage.getToken()),
   });
-
-  getCitationGraph(_id : string): Observable<any> {
-    return this.http.get(API_URL + _id + '/citations', { headers : this.headers, responseType: 'text' });
-    // '?fields=citations'
-  }
-
   
   knowledgeGraphOnCheck: Subject<boolean> = new Subject<boolean>();
 
@@ -61,6 +58,18 @@ export class FeaturesService {
 
   getKnowledgeGraphStatus(): Observable<boolean> {
     return this.knowledgeGraphOnCheck.asObservable();
+  }
+
+  getCitationGraph(_id : string): Observable<any> {
+    return this.http.get(API_URL + _id + '/citations', { headers : this.headers, responseType: 'text' });
+    // '?fields=citations'
+  }
+
+  getExtractiveSummary(_id: string): Observable<any>{
+    const formData: FormData = new FormData();
+    console.log(this.pdfShareService.file);
+    formData.append('paper', this.pdfShareService.file);
+    return this.http.post(API_URL + _id + '/extractiveSummary', formData, { headers : this.headers, responseType: 'text' });
   }
 
 }

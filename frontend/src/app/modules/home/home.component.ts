@@ -76,6 +76,7 @@ export class HomeComponent implements OnInit{
       const reader = new FileReader();
       reader.onload = () => {
         this.url = reader.result;
+        console.log(this.url);
         this.pdfShareService.sendFile(this.url);
 
         this.router.navigate(['pdfviewer']);
@@ -94,7 +95,11 @@ export class HomeComponent implements OnInit{
   searchPaper(){
     console.log('Searched paper is ' + this.searchedTerm);
     if(this.searchBy == 'Title'){
-      
+      this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
+        (data) => {
+          console.log(data);
+        }
+      )
     }
     else if(this.searchBy == 'DOI'){
       this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
@@ -116,7 +121,7 @@ export class HomeComponent implements OnInit{
 
     this.pdfShareService.sendFiletoServer(formData).subscribe(
       (data) => {
-
+        
       },
       (err) => {
         console.log("File sending failed");
