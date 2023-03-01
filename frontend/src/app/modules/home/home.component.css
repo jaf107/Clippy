@@ -28,7 +28,7 @@ h6 {
   margin-top: 1rem;
   color: #c6c6c6;
   text-align: center;
-  background-color: #404040;
+  background-color: transparent;
   border: 2px solid #2e2e2e;
 }
 #paper::placeholder {
@@ -58,4 +58,11 @@ h5{
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis; 
+}
+
+#search-addon{
+  background: transparent; 
+  color: white; 
+  margin-top: -4rem;
+  z-index: 10;
 }

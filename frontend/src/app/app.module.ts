@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { ClipboardModule } from '@angular/cdk/clipboard'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppComponent } from './app.component';
 import { LandingPageComponent } from './modules/landing-page/landing-page.component';
@@ -43,7 +44,8 @@ import { TooltipModule } from 'ng2-tooltip-directive';
     AppRoutingModule,
     TooltipModule,
     PdfViewerModule,
-    ClipboardModule
+    ClipboardModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent],

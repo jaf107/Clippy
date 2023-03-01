@@ -6,6 +6,8 @@ import { pdfs } from 'src/app/interfaces/file';
 import { TokenStorageService } from 'src/app/token-storage.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -20,6 +22,10 @@ export class HomeComponent {
 
   private file: File | null;
   private url: any;
+
+  faMagnifyingGlass = faMagnifyingGlass;
+
+  searchedTerm = '';
 
   visitedFiles = [];
 
@@ -55,5 +61,9 @@ export class HomeComponent {
       'The uploaded file is not a pdf',
       'Unsupported File Type'
     );
+  }
+
+  searchPaper(){
+    console.log('Searched paper is ' + this.searchedTerm);
   }
 }

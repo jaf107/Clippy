@@ -1,5 +1,5 @@
 <app-navbar></app-navbar>
-<div class="container-fluid">
+<div class="container">
   <div class="select-paper">
     <button class="btn upload align-items-center" (click)="openFileDialog()">
       <input type="file" style="display:none" (change)="handle($event)" accept="application/pdf">
@@ -25,12 +25,16 @@
     <div class="form-outline mb-4">
       <!-- <label class="form-label" for="form3Example3">Email address</label> -->
       <input
-        type="text"
+        type="search"
         id="paper"
         class="form-control"
         placeholder="Enter Paper Title or DOI"
+        [(ngModel)]="searchedTerm"
       />
     </div>
+    <button class="input-group-text border-0" id="search-addon" (click)="searchPaper()">
+      <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+    </button>
   </div>
   <div class="history">
     <h3 class="mb-5" style="color: white">History</h3>

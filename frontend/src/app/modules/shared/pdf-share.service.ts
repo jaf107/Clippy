@@ -7,9 +7,6 @@ import { Observable, Subject } from 'rxjs';
 export class PdfShareService {
 
   public file: any;
-
-  public summarizerType: string = '';
-
   sendFile(uploadedFile: any){
     this.file = uploadedFile;
   }
@@ -19,39 +16,8 @@ export class PdfShareService {
     return this.file;
   }
 
-    knowledgeGraphOnCheck: Subject<boolean> = new Subject<boolean>();
-
-    summarizerOnCheck: Subject<boolean> = new Subject<boolean>();
-    summarizerTypeCheck: Subject<string> = new Subject<string>();
-
     constructor(){
-      this.summarizerOnCheck.next(false);
     }
 
-    setSummarizerOn(type: string, onOff : boolean) {
-        this.summarizerOnCheck.next(onOff);
-        this.summarizerTypeCheck.next(type);
-    }
-
-    setSummarizerOff(onOff : boolean){
-      this.summarizerOnCheck.next(onOff);
-    }
-
-    getSummarizerStatus(): Observable<boolean> {
-      return this.summarizerOnCheck.asObservable();
-    }
-
-    getSummarizerType(): Observable<string> {
-      return this.summarizerTypeCheck.asObservable();
-    }
-
-    setKnowledgeGraphOn(onOff : boolean){
-      this.knowledgeGraphOnCheck.next(onOff);
-      console.log("knowledge graph turned on");
-    }
-
-    getKnowledgeGraphStatus(): Observable<boolean> {
-      return this.knowledgeGraphOnCheck.asObservable();
-    }
 
 }

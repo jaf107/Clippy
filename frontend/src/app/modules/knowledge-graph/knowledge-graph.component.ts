@@ -38,7 +38,6 @@ export class KnowledgeGraphComponent implements OnInit {
   public graphNodes : nodes[] = [];
 
   constructor(
-    public pdfShareService: PdfShareService,
     private featureService: FeaturesService
     ){}
 
@@ -48,7 +47,7 @@ export class KnowledgeGraphComponent implements OnInit {
 
   ngOnInit() {
 
-    this.pdfShareService.getKnowledgeGraphStatus().subscribe((value)=>{
+    this.featureService.getKnowledgeGraphStatus().subscribe((value)=>{
       this.graphOn = value;
       if(this.graphOn){
         console.log("Hello from knowledge graph component");

@@ -11,7 +11,7 @@ export class SidebarComponent {
   public isActive: boolean = true;
   public optionsActive: boolean = false;
 
-  constructor(public pdfShareService: PdfShareService) { }
+  constructor(public featureService: FeaturesService) { }
 
   public extractiveOn: boolean = false;
   public abstractiveOn: boolean = false;
@@ -20,14 +20,14 @@ export class SidebarComponent {
 
   ngOnInit(): void {
 
-    this.pdfShareService.getSummarizerStatus().subscribe((value)=>{
+    this.featureService.getSummarizerStatus().subscribe((value)=>{
       if(value == false){
         this.extractiveOn = false;
         this.abstractiveOn = false;
       }
     })
 
-    this.pdfShareService.getKnowledgeGraphStatus().subscribe((value)=>{
+    this.featureService.getKnowledgeGraphStatus().subscribe((value)=>{
       this.knowledgeGraphOn = value;
     })
 
@@ -53,7 +53,7 @@ export class SidebarComponent {
         this.abstractiveOn = false;
       }
 
-      this.pdfShareService.setSummarizerOn(type, this.extractiveOn);
+      this.featureService.setSummarizerOn(type, this.extractiveOn);
     }
     else{
       if(this.abstractiveOn == false){
@@ -65,17 +65,17 @@ export class SidebarComponent {
         this.abstractiveOn = false;
       }
 
-      this.pdfShareService.setSummarizerOn(type, this.abstractiveOn);
+      this.featureService.setSummarizerOn(type, this.abstractiveOn);
       
     }
   }
 
   showGraph(){
     if(!this.knowledgeGraphOn){
-      this.pdfShareService.setKnowledgeGraphOn(true);
+      this.featureService.setKnowledgeGraphOn(true);
     }
     else{
-      this.pdfShareService.setKnowledgeGraphOn(false);
+      this.featureService.setKnowledgeGraphOn(false);
     }
   }
 

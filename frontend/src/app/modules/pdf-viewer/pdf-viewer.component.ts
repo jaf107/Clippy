@@ -18,9 +18,10 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   public summarizerOn: boolean;
   public graphOn: boolean;
 
-  zoom = 1;
+  zoom = 0.5;
   page = 1;
   totalPages = 0;
+  rotation = 0;
 
   private file: File | null;
   private url: any;
@@ -30,7 +31,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   constructor(
     private toastr: ToastrService,
-    public pdfShareService: PdfShareService,
+    private pdfShareService: PdfShareService,
+    public featureService: FeaturesService,
     private http: HttpClient
     ) {
     /* More likely than not you don't need to tweak the pdfDefaultOptions.
@@ -54,12 +56,12 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.summarizerOn = false;
     this.graphOn = false;
 
-    this.pdfShareService.getSummarizerStatus().subscribe((value) => {
+    this.featureService.getSummarizerStatus().subscribe((value) => {
       this.summarizerOn = value;
       console.log('Summary is on ' + this.summarizerOn);
     });
 
-    this.pdfShareService.getKnowledgeGraphStatus().subscribe((value)=>{
+    this.featureService.getKnowledgeGraphStatus().subscribe((value)=>{
       this.graphOn = value;
     })
   }
@@ -151,9 +153,13 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   zoomOut() {
     this.zoom -= 0.1;
-    if (this.zoom < 0.5) {
-      this.zoom = 0.5;
+    if (this.zoom < 0.25) {
+      this.zoom = 0.25;
     }
+  }
+
+  rotate(angle: number) {
+    this.rotation += angle;
   }
 
   goToPage() {
