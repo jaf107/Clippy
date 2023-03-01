@@ -18,6 +18,8 @@ export class SignInComponent implements OnInit {
   errorMessage = '';
   roles: string[] = [];
 
+  homePath = '/home';
+
   constructor(
     private authService: AuthService,
     private tokenStorage: TokenStorageService,
@@ -28,6 +30,7 @@ export class SignInComponent implements OnInit {
     if (this.tokenStorage.getToken()) {
       this.isLoggedIn = true;
       this.roles = this.tokenStorage.getUser().roles;
+      this.router.navigate(['home']);
     }
   }
 

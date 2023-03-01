@@ -45,5 +45,9 @@ export class PdfShareService {
     return this.http.get(API_USER_URL + _id, { headers : this.headers });
   }
 
+  searchPaperByTitle(): Observable<any> {
+    return this.http.get(API_URL + '/searchByTitle', { headers : this.headers });
+  }
+
 
 }

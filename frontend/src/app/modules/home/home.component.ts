@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit{
   constructor(
     private toastr: ToastrService,
     public pdfShareService: PdfShareService,
-    private route: Router
+    private router: Router
   ) {}
 
   private file: File | null;
@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit{
         this.url = reader.result;
         this.pdfShareService.sendFile(this.url);
 
-        this.route.navigate(['pdfviewer']);
+        this.router.navigate(['pdfviewer']);
       };
       reader.readAsArrayBuffer(this.file);
     }
@@ -79,6 +79,9 @@ export class HomeComponent implements OnInit{
 
   searchPaper(){
     console.log('Searched paper is ' + this.searchedTerm);
+    if(this.searchBy == 'Title'){
+      
+    }
   }
 
   sendFile(){
