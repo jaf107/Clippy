@@ -28,7 +28,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.pdfPath = this.pdfShareService.getFile();
     //console.log(this.pdfPath);
 
-    this.pdfPath = '../../../assets/icse22_toxicity.pdf';
+    this.pdfPath = '../../../assets/sample4.pdf';
 
     this.summarizerOn = false;
 
@@ -128,7 +128,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
             startingIndex,
             finalIndex
           );
-          console.log(startingIndex, restOfTheString, finalIndex);
         }
       }
 
@@ -214,6 +213,9 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
             break;
           }
         }
+
+        this.reference = { ...data, requireManualAnnotaion: true };
+
         console.log({ ...data, requireManualAnnotaion: true });
         console.log(event);
       });
