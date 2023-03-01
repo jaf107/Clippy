@@ -24,20 +24,12 @@
     "y": 698.725
   },
   {
-    "str": "table 1.",
+    "str": "figure 3:",
     "page": 4,
-    "height": 250,
+    "height": 208.82899999999995,
     "weight": 580,
     "x": 25,
-    "y": 272.945
-  },
-  {
-    "str": "table 1.",
-    "page": 4,
-    "height": 250,
-    "weight": 580,
-    "x": 25,
-    "y": 272.945
+    "y": 750
   },
   {
     "str": "figure 5:",
@@ -56,36 +48,12 @@
     "y": 698.725
   },
   {
-    "str": "table 5",
+    "str": "table 3:",
     "page": 9,
     "height": 250,
     "weight": 580,
-    "x": 280,
-    "y": 216.159
-  },
-  {
-    "str": "table 5",
-    "page": 9,
-    "height": 250,
-    "weight": 580,
-    "x": 280,
-    "y": 216.159
-  },
-  {
-    "str": "table 5",
-    "page": 9,
-    "height": 250,
-    "weight": 580,
-    "x": 280,
-    "y": 216.159
-  },
-  {
-    "str": "table 5",
-    "page": 9,
-    "height": 250,
-    "weight": 580,
-    "x": 280,
-    "y": 216.159
+    "x": 25,
+    "y": 698.725
   },
   {
     "str": "figure 7:",

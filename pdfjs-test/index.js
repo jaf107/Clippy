@@ -179,29 +179,32 @@ async function wrapper() {
       if (item.str.toLowerCase().includes("table")) {
         if (
           index + 1 < array.length &&
-          Math.abs(item.transform[5] - array[index + 1].transform[5]) >= 20
+          Math.abs(item.transform[5] - array[index + 1].transform[5]) >= 25
         ) {
-          temp.str = extractKeywordFromStr(item.str, "table");
-          temp.page = pageIndex + 1; // Need to update the value
-          temp.height = 250;
-          temp.weight = 580;
-          if (item.transform[4] < 300) {
-            temp.x = 25;
-          } else temp.x = 280;
-          temp.y = item.transform[5];
+          let xPos = item.transform[4];
+          if (xPos - 300 > 15 || xPos - 50 > 15) {
+            temp.str = extractKeywordFromStr(item.str, "table");
+            temp.page = pageIndex + 1; // Need to update the value
+            temp.height = 250;
+            temp.weight = 580;
+            if (item.transform[4] < 300) {
+              temp.x = 25;
+            } else temp.x = 280;
+            temp.y = item.transform[5];
 
-          finalOut.push(temp);
+            finalOut.push(temp);
 
-          console.log(
-            "Index " +
-              index +
-              " er  start chunk: " +
-              item.str + // start chuk
-              "Last chunk:  " +
-              array[index + 1].str, // end chunk
-            item.transform[5] - array[index + 1].transform[5] // height of the image
-          );
-          return true;
+            console.log(
+              "Index " +
+                index +
+                " er  start chunk: " +
+                item.str + // start chuk
+                "Last chunk:  " +
+                array[index + 1].str, // end chunk
+              item.transform[5] - array[index + 1].transform[5] // height of the image
+            );
+            return true;
+          } else return false;
         } else return false;
       }
 
@@ -209,7 +212,7 @@ async function wrapper() {
 
       if (index == 0 && item.str.toLowerCase().includes("figure")) {
         console.log("index 0 paise");
-        if (750 - item.transform[5] >= 30) {
+        if (710 - item.transform[5] >= 50) {
           // console.log(item.str);
           temp.str = extractKeywordFromStr(item.str, "figure");
           temp.page = pageIndex + 1; // Need to update the value
@@ -228,7 +231,7 @@ async function wrapper() {
               item.str + // start chunk
               "Last chunk:  " +
               array[0].str, // end chunk
-            item.transform[5] - array[0].transform[5] // height of the image
+            710 - array[0].transform[5] // height of the image
           );
           return true;
         }
