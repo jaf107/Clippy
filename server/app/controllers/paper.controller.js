@@ -10,6 +10,8 @@ var apiKey = "b93d9d2475ed072f999710c6949f6a65";
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const { OneAI } = require("oneai");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
+var FormData = require("form-data");
+const { DownloaderHelper } = require("node-downloader-helper");
 
 class Paragraph {
   constructor(title, text) {
@@ -55,10 +57,12 @@ exports.uploadPaper = async (req, res) => {
   if (!req.body.title || !req.file) {
     res.status(404).send("File and Title are required");
   } else {
-    const paper_data = await axios.get(
-      SEMANTIC_SCHOLAR_API +
-        `search?query=${req.body.title}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
-    );
+    const paper_data = await axios
+      .get(
+        SEMANTIC_SCHOLAR_API +
+          `search?query=${req.body.title}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
+      )
+      .catch((err) => res.status(404).send(err));
     if (paper_data && paper_data.data) {
       const data = paper_data.data.data[0];
       const ppr = await Paper.findOne({ paper_id: data.paperId });
@@ -229,7 +233,7 @@ exports.getExtractSummary = async (req, res) => {
       fs.unlink(req.file.path, (err) => {
         if (err) throw err;
         console.log("successfully deleted");
-        res.status(200).send(paper.abstractive_summary);
+        res.status(200).send(paper.extractive_summary);
       });
     } else {
       await ExtractSummary(req.file.path).then((paragraphs) => {
@@ -244,7 +248,6 @@ exports.getExtractSummary = async (req, res) => {
             console.log("successfully deleted");
             res.status(200).send(JSON.stringify(paragraphs));
           });
-          s;
         }
       });
     }
@@ -318,6 +321,210 @@ async function AbstractSummary(filepath) {
     }
     return paragraphs;
   }
+}
+
+async function ExtractSummary(src) {
+  let paragraphs = await createJsonObjectFromPdf(src);
+  let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  let apiKey = "dffe1d46b7dc44e77c2807c775855819";
+
+  for (let i = 0; i < paragraphs.length; i++) {
+    let element = paragraphs[i];
+
+    if (element.noOfSentences > 50) {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
+    } else {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+    }
+
+    let contextString = element.text;
+    let retryCount = 0;
+
+    while (retryCount < 3) {
+      try {
+        let summary = await requestSummaryWithRetry(
+          contextString,
+          noOfSentenceInSummary,
+          apiKey,
+          retryCount
+        );
+        // console.log(`Summary holo: index ${i} ${JSON.stringify(summary)}`);
+
+        if (summary) {
+          paragraphs[i].summaryText = summary;
+        }
+        break; // Exit the retry loop if request succeeds
+      } catch (error) {
+        console.log(`Error: index ${i} ${error}`);
+        retryCount++;
+        await delay(1000); // Wait for 1 second before making the next request
+      }
+    }
+  }
+
+  async function requestSummaryWithRetry(
+    contextString,
+    noOfSentences,
+    apiKey,
+    retryCount
+  ) {
+    let formData = new FormData();
+    formData.append("key", apiKey);
+    formData.append("txt", contextString);
+    formData.append("sentences", noOfSentences);
+    formData.append("retry", retryCount); // Add retry count to formData
+
+    let requestOptions = {
+      method: "POST",
+      body: formData,
+      redirect: "follow",
+    };
+
+    let response = await axios
+      .post("https://api.meaningcloud.com/summarization-1.0", formData)
+      .catch((err) => {
+        throw new Error(`Request failed with error :  ${err}`);
+      });
+    if (response.data) {
+      let { summary } = response.data;
+
+      return summary;
+    }
+    // let { summary } = await response;
+
+    // return summary;
+  }
+  await createChunkForHighlighting(src, paragraphs).then();
+}
+
+async function createChunkForHighlighting(src, paragraph) {
+  let paragraphs = paragraph;
+  let { textChunkArray: originalArr, uniqueHeight: heightArr } =
+    await getPdfTextContent(src);
+
+  let summaryArray = [];
+  paragraphs.forEach((element) => {
+    if (element.title.toLowerCase().localeCompare("references") !== 0) {
+      summaryArray.push(element.summaryText);
+    }
+  });
+
+  let chunkSentencesArr = [];
+  originalArr.map((page) => {
+    let pageChunks = page.map((chunk) => {
+      let chunkSentences = breakTextChunkIntoSentence(chunk.str);
+      return chunkSentences;
+    });
+    chunkSentencesArr.push(pageChunks);
+  });
+
+  let highlightsSegments = [];
+  let stillCountingSentence = false;
+  let temp = {
+    sentence: "",
+    segment: [],
+  };
+  for (let pageIndex = 0; pageIndex < chunkSentencesArr.length; pageIndex++) {
+    let pageChunks = chunkSentencesArr[pageIndex];
+    for (let chunkIndex = 0; chunkIndex < pageChunks.length; chunkIndex++) {
+      let chunk = pageChunks[chunkIndex];
+
+      if (chunk.length > 1) {
+        // Start
+        if (stillCountingSentence) {
+          temp.sentence += chunk[0];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+
+          highlightsSegments.push(temp);
+          // reset temp
+          temp = {
+            sentence: "",
+            segment: [],
+          };
+
+          stillCountingSentence = false;
+        }
+
+        // Middle
+        for (let i = 1; i < chunk.length - 1; i++) {
+          temp.sentence += chunk[i];
+          temp.segment.push({
+            str: chunk[i],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+
+          highlightsSegments.push(temp);
+          // reset temp
+          temp = {
+            sentence: "",
+            segment: [],
+          };
+        }
+
+        // End
+        stillCountingSentence = true;
+        temp.sentence += chunk[chunk.length - 1];
+        temp.segment.push({
+          str: chunk[chunk.length - 1],
+          pageNo: pageIndex + 1,
+          chunkIndex: chunkIndex,
+        });
+      } else {
+        if (stillCountingSentence) {
+          temp.sentence += chunk[chunk.length - 1];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+        } else {
+          stillCountingSentence = true;
+          temp.sentence += chunk[chunk.length - 1];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+        }
+      }
+    }
+  }
+
+  //Match with summary text
+  function matchSummaryandHighlight() {
+    let allSegmentCheck = highlightsSegments;
+    let summaryCheck = summaryArray;
+    let filteredSegments = [];
+
+    for (let i = 0; i < allSegmentCheck.length; i++) {
+      let sens = allSegmentCheck[i];
+      if (
+        summaryCheck.some((summary) => summary.includes(sens?.sentence)) &&
+        sens?.sentence.trim().split(" ").length > 1
+      )
+        filteredSegments.push(sens);
+      else {
+        let demo = { sentence: sens.sentence, segment: [] };
+        for (let j = 0; j < sens.segment.length; j++) {
+          if (
+            summaryCheck.some((summary) =>
+              summary.includes(sens.segment[j].str)
+            ) &&
+            sens.segment[j].str.trim().split(" ").length > 1
+          )
+            demo.segment.push(sens.segment[j]);
+        }
+        if (demo.segment.length > 0) filteredSegments.push(demo);
+      }
+    }
+    return filteredSegments;
+  }
+  return matchSummaryandHighlight();
 }
 
 async function updateHistory(userId, paper_id, title) {
