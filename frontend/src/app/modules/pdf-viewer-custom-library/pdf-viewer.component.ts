@@ -240,22 +240,33 @@ export class PdfViewerComponent
       refParent = event.target.parentElement;
       let refBoundingRect = refParent.getBoundingClientRect();
       
-      console.log('ref rect: ', refBoundingRect)
+      //console.log('ref rect: ', refBoundingRect)
       const refDestination = await this._pdf.getDestination(referenceID);
       if (refDestination == null) {
         return;
       }
       this.initPopOverEventBus();
       this.initPopOverPDFService();
+      let maxHeight, maxwidth, x, y;
       const pageNum = this.pdfLinkService._cachedPageNumber(refDestination[0]);
-      console.log(pageNum)
-      this.hover.emit({
-        show: true,
-        page: pageNum,
-        refDestination: refDestination,
-        clientX: event.clientX,
-        clienY: event.clientY
-      });
+      this._pdf.getPage(pageNum).then((pdfPage)=>{
+        let viewPort = pdfPage.getViewport({ scale: 1.0 });
+			  maxHeight = viewPort.height < pdfPage.view[3] * 0.5 ? viewPort.height  : pdfPage.view[3] * 0.5;
+				maxwidth = viewPort.width
+        x = refBoundingRect.x + refBoundingRect.width / 2;
+				y = refBoundingRect.y + refBoundingRect.height / 2;
+        this.hover.emit({
+          show: true,
+          page: pageNum,
+          refDestination: refDestination,
+          clientX: event.clientX,
+          clienY: event.clientY,
+          height: maxHeight,
+          width: maxwidth
+        });
+      })
+      
+      
       refParent.addEventListener("mouseleave", ()=>{
         this.hover.emit({
           show:false
@@ -733,7 +744,7 @@ export class PdfViewerComponent
         if(pageNum!=undefined){
           this._pdf.getPage(pageNum).then((page:PDFPageProxy)=>{
             const pageInfo = page._pageInfo;
-            console.log('page info: ', pageInfo)
+            // console.log('page info: ', pageInfo)
             const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
             ref.push(obj)
             ref.push({name: 'XYZ'})
