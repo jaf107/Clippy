@@ -3,5 +3,6 @@
     [show-borders]="false"
     [startingPosition]="reference"
     [ngStyle]="{'height': heightSTR, 'width': widthSTR, top: offsetY, left: offsetX}"
+    (references)="getReferences($event)"
     >
 </pdf-viewer>

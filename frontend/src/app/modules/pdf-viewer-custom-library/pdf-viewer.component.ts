@@ -371,6 +371,7 @@ export class PdfViewerComponent
   return type event: {data: references[]}
   */
   public getReferences() {
+    console.log('get ref called')
     let references = [];
     this.destinations=[];
     this.annotations=[];
@@ -650,6 +651,7 @@ export class PdfViewerComponent
 
     if (this.lastLoaded === this.src) {
       this.update();
+      this.getReferences()
       return;
     }
 
@@ -670,6 +672,7 @@ export class PdfViewerComponent
       .subscribe({
         next: (pdf) => {
           this._pdf = pdf;
+          this.getReferences()
           //this._pdfClone._transport =  this._pdf._transport;
           //this._pdfClone._pdfInfo = this._pdf._pdfInfo;
           //this._pdfClone.
@@ -716,13 +719,15 @@ export class PdfViewerComponent
     }
 
     this.updateSize();
+    //preview required
     if(this.startingPosition){
-      if(this.annotations.length>0){
+      //document has annotaitons, no manual annotation creation required
+      if(!this.startingPosition.requireManualAnnotation){
         console.log('start pos', this.startingPosition)
         this.pdfLinkService.goToDestination(this.startingPosition)
       }
       else{
-        //console.log(pageNum)
+        //document needs manudal references created before being loaded
         let pageNum = this.startingPosition.page;
         let ref = [];
         if(pageNum!=undefined){

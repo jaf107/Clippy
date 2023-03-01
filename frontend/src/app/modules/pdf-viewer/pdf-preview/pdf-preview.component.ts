@@ -29,4 +29,8 @@ export class PdfPreviewComponent implements OnChanges{
    console.log(this.page)
    console.log(this.reference)
   }
+
+  getReferences(e: any) {
+    console.log('event preview')
+  }
 }
