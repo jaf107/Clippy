@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit} from '@angular/core';
+import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { FeaturesService } from '../shared/features.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 import { saveAs } from 'file-saver';
@@ -28,31 +28,28 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   visitedFiles = [];
 
-
   constructor(
     private toastr: ToastrService,
     private pdfShareService: PdfShareService,
     public featureService: FeaturesService,
     private http: HttpClient
-    ) {
+  ) {
     /* More likely than not you don't need to tweak the pdfDefaultOptions.
        They are a collecton of less frequently used options.
        To illustrate how they're used, here are two example settings: */
     // but most devices support much higher resolutions.
     // Increasing this setting allows your users to use higher zoom factors,
     // trading image quality for performance.
-    
-    }
-
+  }
 
   ngOnInit() {
     this.pdfPath = this.pdfShareService.getFile();
     console.log(this.pdfPath);
 
-    if(this.pdfPath == null){
-      this.pdfPath = "./assets/SCORE_intro.pdf";
+    if (this.pdfPath == null) {
+      this.pdfPath = './assets/SCORE_intro.pdf';
     }
-    
+
     this.summarizerOn = false;
     this.graphOn = false;
 
@@ -61,9 +58,9 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       console.log('Summary is on ' + this.summarizerOn);
     });
 
-    this.featureService.getKnowledgeGraphStatus().subscribe((value)=>{
+    this.featureService.getKnowledgeGraphStatus().subscribe((value) => {
       this.graphOn = value;
-    })
+    });
   }
 
   getReferences(e: any) {
@@ -77,9 +74,9 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     // console.log('Failed ' + this.pdfPath);
   }
 
-    loaded(){
-      console.log("Loaded " + this.pdfPath);
-    }
+  loaded() {
+    console.log('Loaded ' + this.pdfPath);
+  }
   starts() {
     // console.log('Started ' + this.pdfPath);
   }
@@ -169,46 +166,46 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     if (this.page < 1) {
       this.page = 1;
     }
-  
-}
+  }
 
-loadComplete(pdfData: any) {
-   this.totalPages = pdfData.numPages;
-}
+  loadComplete(pdfData: any) {
+    this.totalPages = pdfData.numPages;
+  }
 
-openFileDialog(){
-  document.getElementById('upload').click();
-}
+  openFileDialog() {
+    document.getElementById('upload').click();
+  }
 
+  downloadPdf() {
+    console.log(this.pdfPath);
+    const blob = new Blob([this.pdfPath], { type: 'application/octet-stream' });
+    saveAs(blob, 'test.pdf');
+  }
 
-downloadPdf() {
-  console.log(this.pdfPath);
-  const blob = new Blob([this.pdfPath], { type: 'application/octet-stream' });
-  saveAs(blob, 'test.pdf');
-}
-
-uploadPdf(e){
-  this.file = e.target.files[0];
-    this.visitedFiles.push({name:this.file.name, lastVisited: new Date()});
+  uploadPdf(e) {
+    this.file = e.target.files[0];
+    this.visitedFiles.push({ name: this.file.name, lastVisited: new Date() });
     console.log(this.visitedFiles);
 
-    if(this.file.type != 'application/pdf'){
+    if (this.file.type != 'application/pdf') {
       console.log('Not supported file type!');
       this.errorsmsg();
-     }
+    }
 
     const reader = new FileReader();
     reader.onload = () => {
       this.url = reader.result;
       this.pdfPath = this.url;
-
     };
     reader.readAsArrayBuffer(this.file);
-}
+  }
 
-errorsmsg(){  
-  this.toastr.error("The uploaded file is not a pdf",'Unsupported File Type');
-}
+  errorsmsg() {
+    this.toastr.error(
+      'The uploaded file is not a pdf',
+      'Unsupported File Type'
+    );
+  }
 
   /**
    * Page initialized callback.

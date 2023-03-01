@@ -8,9 +8,8 @@ describe('SignUpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SignUpComponent ]
-    })
-    .compileComponents();
+      declarations: [SignUpComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SignUpComponent);
     component = fixture.componentInstance;
@@ -19,5 +18,13 @@ describe('SignUpComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it(`should have isSuccessful as False`, () => {
+    expect(component.isSuccessful).toBeFalsy();
+  });
+
+  it(`should have isSignUpFailed as False`, () => {
+    expect(component.isSuccessful).toBeFalsy();
   });
 });

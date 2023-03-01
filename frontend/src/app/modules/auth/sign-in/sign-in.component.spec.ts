@@ -8,9 +8,8 @@ describe('SignInComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SignInComponent ]
-    })
-    .compileComponents();
+      declarations: [SignInComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -21,5 +20,13 @@ describe('SignInComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it(`should have isLoggedIn in as False`, () => {
+    expect(component.isLoggedIn).toBeFalsy();
+  });
+
+  it(`should have isLoginFailed in as False`, () => {
+    expect(component.isLoginFailed).toBeFalsy();
   });
 });

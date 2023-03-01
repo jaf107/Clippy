@@ -8,9 +8,8 @@ describe('SummarizerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SummarizerComponent ]
-    })
-    .compileComponents();
+      declarations: [SummarizerComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SummarizerComponent);
     component = fixture.componentInstance;
@@ -20,4 +19,6 @@ describe('SummarizerComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it(``, () => {});
 });
