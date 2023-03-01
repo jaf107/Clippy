@@ -8,9 +8,8 @@ describe('KnowledgeGraphComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KnowledgeGraphComponent ]
-    })
-    .compileComponents();
+      declarations: [KnowledgeGraphComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(KnowledgeGraphComponent);
     component = fixture.componentInstance;
@@ -19,5 +18,9 @@ describe('KnowledgeGraphComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it(`should have errorGraph as false`, () => {
+    expect(component.errorGraph).toBeFalsy();
   });
 });
