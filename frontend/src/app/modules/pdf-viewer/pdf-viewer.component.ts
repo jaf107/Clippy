@@ -204,7 +204,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
           type = 'table';
 
         let refDatas = AllRefs.filter((ref) => ref.str.includes(type));
-        let data = {};
+        let data: any = {};
         let key = splittedStr[1];
 
         for (let r = 0; r < refDatas.length; r++) {
@@ -215,6 +215,12 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
         }
 
         this.reference = { ...data, requireManualAnnotaion: true };
+        this.showPreview = true;
+        this.previewPageNum = data.page;
+        this.leftCSSstr = data.x;
+        this.topCSSstr = data.y;
+        this.heightStr = data.height;
+        this.widthStr = data.width;
 
         console.log({ ...data, requireManualAnnotaion: true });
         console.log(event);
