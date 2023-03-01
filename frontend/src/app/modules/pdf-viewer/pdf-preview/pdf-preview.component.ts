@@ -15,14 +15,10 @@ export class PdfPreviewComponent implements OnChanges{
   @Input('height') height: string;
   @Input('width') width: string;
   @Input('reference') reference: any;
-  heightSTR = '300px';
-  widthSTR = '300px';
-  styleSTR = "width: 300px; height: 300px; top: -30px;position: relative; left: 30px;"
- // constructor(private pdfShareService: PdfShareService){}
+  //heightSTR = '300px';
+  //widthSTR = '300px';
+  shadowSTR = "7px 8px 13px -3px rgba(0,0,0,0.72)" 
   ngOnInit() {
-    this.reference = [
-      {num: 1, gen: 0},{name: 'XYZ'},53.798, 713.793, null
-    ]
   }
   ngOnChanges() {
    // this.pdfPath = '../../../../assets/sample.pdf';
