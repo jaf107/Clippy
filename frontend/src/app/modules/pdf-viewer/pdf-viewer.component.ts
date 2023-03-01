@@ -191,10 +191,30 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
 
   addEventHandler() {
+    let AllRefs = Array.from(refs);
     let refTextAnchors = document.querySelectorAll('.reference-text');
     refTextAnchors.forEach((anchor) => {
-      anchor.addEventListener('mouseenter', (event) => {
+      anchor.addEventListener('mouseenter', (event: any) => {
         event.preventDefault();
+        let text = event.target.innerText;
+        let splittedStr = text.split(' ');
+
+        let type, id;
+        if (splittedStr[0].toLocaleLowerCase().includes('fig')) type = 'figure';
+        else if (splittedStr[0].toLocaleLowerCase().includes('tab'))
+          type = 'table';
+
+        let refDatas = AllRefs.filter((ref) => ref.str.includes(type));
+        let data = {};
+        let key = splittedStr[1];
+
+        for (let r = 0; r < refDatas.length; r++) {
+          if (refDatas[r].str.includes(key)) {
+            data = refDatas[r];
+            break;
+          }
+        }
+        console.log({ ...data, requireManualAnnotaion: true });
         console.log(event);
       });
     });
@@ -216,20 +236,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     for (let i = startingIndex + segStr.length; i < spanStr.length; i++)
       wrappedText += spanStr[i];
     return wrappedText;
-  }
-
-  replaceTextChunk(spanElement: any) {
-    if (spanElement.children.length > 0) return;
-    let finalHTML = spanElement.innerHTML
-      .split(' ')
-      .map((w) => {
-        if (w.includes('95')) {
-          return `<a href="https://www.google.com" style="color:red !important; background-color: red !important" class="clickable-text">${w}</a>`;
-        }
-        return w;
-      })
-      .join(' ');
-    spanElement.innerHTML = finalHTML;
   }
 
   convertVHToPx(value: number): number {

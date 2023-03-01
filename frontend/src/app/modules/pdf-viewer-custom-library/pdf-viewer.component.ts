@@ -14,7 +14,7 @@ import {
   ViewChild,
   AfterViewChecked,
   NgZone,
-  Renderer2
+  Renderer2,
 } from '@angular/core';
 import { from, fromEvent, Subject } from 'rxjs';
 import { debounceTime, filter, takeUntil } from 'rxjs/operators';
@@ -31,7 +31,7 @@ import type {
   PDFProgressData,
   PDFDocumentProxy,
   PDFDocumentLoadingTask,
-  PDFViewerOptions
+  PDFViewerOptions,
 } from './typings';
 import { PDFSinglePageViewer } from 'pdfjs-dist/web/pdf_viewer';
 
@@ -42,32 +42,29 @@ if (!isSSR()) {
 export enum RenderTextMode {
   DISABLED,
   ENABLED,
-  ENHANCED
+  ENHANCED,
 }
 
-interface IReference { 
-  TargetXCoordinate: number, 
-  TargetYCoordinate: number, 
-  rectangleOfOccurance: number[],
-  destintationString: string,
-  destinationPageNumber: string,
-
-} 
+interface IReference {
+  TargetXCoordinate: number;
+  TargetYCoordinate: number;
+  rectangleOfOccurance: number[];
+  destintationString: string;
+  destinationPageNumber: string;
+}
 
 @Component({
   selector: 'pdf-viewer',
   template: `
     <div #pdfViewerContainer class="ng2-pdf-viewer-container">
-      <div class="pdfViewer" 
-        (mouseover)="handlePopOver($event)"
-        >
-      </div>
+      <div class="pdfViewer" (mouseover)="handlePopOver($event)"></div>
     </div>
   `,
-  styleUrls: ['./pdf-viewer.component.scss']
+  styleUrls: ['./pdf-viewer.component.scss'],
 })
 export class PdfViewerComponent
-  implements OnChanges, OnInit, OnDestroy, AfterViewChecked {
+  implements OnChanges, OnInit, OnDestroy, AfterViewChecked
+{
   static CSS_UNITS = 96.0 / 72.0;
   static BORDER_WIDTH = 9;
 
@@ -82,7 +79,7 @@ export class PdfViewerComponent
   public popOverPDFViewer: PDFJSViewer.PDFViewer | PDFSinglePageViewer;
   private isVisible = false;
   public popOverPDFFindControler: PDFJSViewer.PDFFindController;
-   
+
   private _cMapsUrl =
     typeof PDFJS !== 'undefined'
       ? `https://unpkg.com/pdfjs-dist@${(PDFJS as any).version}/cmaps/`
@@ -115,19 +112,22 @@ export class PdfViewerComponent
   private loadingTask: PDFDocumentLoadingTask;
   private destroy$ = new Subject<void>();
   private destroyPopOver$ = new Subject<void>();
-  flag1=false;
-  flag2=false;
+  flag1 = false;
+  flag2 = false;
 
-  @Output('after-load-complete') afterLoadComplete = new EventEmitter<PDFDocumentProxy>();
+  @Output('after-load-complete') afterLoadComplete =
+    new EventEmitter<PDFDocumentProxy>();
   @Output('page-rendered') pageRendered = new EventEmitter<CustomEvent>();
-  @Output('pages-initialized') pageInitialized = new EventEmitter<CustomEvent>();
-  @Output('text-layer-rendered') textLayerRendered = new EventEmitter<CustomEvent>();
+  @Output('pages-initialized') pageInitialized =
+    new EventEmitter<CustomEvent>();
+  @Output('text-layer-rendered') textLayerRendered =
+    new EventEmitter<CustomEvent>();
   @Output('error') onError = new EventEmitter<any>();
   @Output('on-progress') onProgress = new EventEmitter<PDFProgressData>();
   @Output() pageChange: EventEmitter<number> = new EventEmitter<number>(true);
   @Input() src: string | Uint8Array | PDFSource;
   @Output('references') references: EventEmitter<any> = new EventEmitter<any>();
-  @Output('hover') hover: EventEmitter<any> = new EventEmitter<any>()
+  @Output('hover') hover: EventEmitter<any> = new EventEmitter<any>();
   @Input('c-maps-url')
   set cMapsUrl(cMapsUrl: string) {
     this._cMapsUrl = cMapsUrl;
@@ -230,16 +230,17 @@ export class PdfViewerComponent
   }
 
   async handlePopOver(event: any) {
-    if (event.type != "mouseover") {
-			return;
+    console.log('in library');
+    if (event.type != 'mouseover') {
+      return;
     }
-    let refParent:HTMLElement;
-    if(event.target.hash != undefined){
+    let refParent: HTMLElement;
+    if (event.target.hash != undefined) {
       //if(event.clientX>=)
       const referenceID = event.target.hash.substring(1);
       refParent = event.target.parentElement;
       let refBoundingRect = refParent.getBoundingClientRect();
-      
+
       //console.log('ref rect: ', refBoundingRect)
       const refDestination = await this._pdf.getDestination(referenceID);
       if (refDestination == null) {
@@ -249,12 +250,15 @@ export class PdfViewerComponent
       this.initPopOverPDFService();
       let maxHeight, maxwidth, x, y;
       const pageNum = this.pdfLinkService._cachedPageNumber(refDestination[0]);
-      this._pdf.getPage(pageNum).then((pdfPage)=>{
+      this._pdf.getPage(pageNum).then((pdfPage) => {
         let viewPort = pdfPage.getViewport({ scale: 1.0 });
-			  maxHeight = viewPort.height < pdfPage.view[3] * 0.5 ? viewPort.height  : pdfPage.view[3] * 0.5;
-				maxwidth = viewPort.width
+        maxHeight =
+          viewPort.height < pdfPage.view[3] * 0.5
+            ? viewPort.height
+            : pdfPage.view[3] * 0.5;
+        maxwidth = viewPort.width;
         x = refBoundingRect.x + refBoundingRect.width / 2;
-				y = refBoundingRect.y + refBoundingRect.height / 2;
+        y = refBoundingRect.y + refBoundingRect.height / 2;
         this.hover.emit({
           show: true,
           page: pageNum,
@@ -262,19 +266,17 @@ export class PdfViewerComponent
           clientX: event.clientX,
           clienY: event.clientY,
           height: maxHeight,
-          width: maxwidth
+          width: maxwidth,
         });
-      })
-      
-      
-      refParent.addEventListener("mouseleave", ()=>{
+      });
+
+      refParent.addEventListener('mouseleave', () => {
         this.hover.emit({
-          show:false
-        })
-      })
+          show: false,
+        });
+      });
     }
   }
-
 
   static getLinkTarget(type: string) {
     switch (type) {
@@ -293,7 +295,11 @@ export class PdfViewerComponent
     return null;
   }
 
-  constructor(private element: ElementRef<HTMLElement>, private ngZone: NgZone, private renderer: Renderer2) {
+  constructor(
+    private element: ElementRef<HTMLElement>,
+    private ngZone: NgZone,
+    private renderer: Renderer2
+  ) {
     if (isSSR()) {
       return;
     }
@@ -307,8 +313,9 @@ export class PdfViewerComponent
     ) {
       pdfWorkerSrc = (window as any).pdfWorkerSrc;
     } else {
-      pdfWorkerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${(PDFJS as any).version
-        }/legacy/build/pdf.worker.min.js`;
+      pdfWorkerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${
+        (PDFJS as any).version
+      }/legacy/build/pdf.worker.min.js`;
     }
 
     assign(PDFJS.GlobalWorkerOptions, 'workerSrc', pdfWorkerSrc);
@@ -382,39 +389,39 @@ export class PdfViewerComponent
   return type event: {data: references[]}
   */
   public getReferences() {
-    console.log('get ref called')
+    console.log('get ref called');
     let references = [];
-    this.destinations=[];
-    this.annotations=[];
-    for(let i=1 ; i <= this._pdf.numPages; i++) {
-      this._pdf.getPage(i).then((page)=>{
+    this.destinations = [];
+    this.annotations = [];
+    for (let i = 1; i <= this._pdf.numPages; i++) {
+      this._pdf.getPage(i).then((page) => {
         page.getAnnotations().then(this.getRefPositions.bind(this));
-      })
+      });
     }
-    setTimeout(()=>{
+    setTimeout(() => {
       //console.log(this.destinations)
       //console.log(this.annotations)
-      this.references.emit({data: this.destinations})
-    },2000)
+      this.references.emit({ data: this.destinations });
+    }, 2000);
   }
   destinations = [];
-  annotations = []
-  async getRefPositions (annotations) {
+  annotations = [];
+  async getRefPositions(annotations) {
     var linkAnnotations = annotations.filter(function (annotation) {
-      return annotation.subtype === "Link";
+      return annotation.subtype === 'Link';
     });
-    this.annotations.push(linkAnnotations)
-    for(let i=0;i<linkAnnotations.length;i++) {
-      if(linkAnnotations[i].dest != undefined){
+    this.annotations.push(linkAnnotations);
+    for (let i = 0; i < linkAnnotations.length; i++) {
+      if (linkAnnotations[i].dest != undefined) {
         //console.log(linkAnnotations[i].dest)
-       var x = await this._pdf.getDestination(linkAnnotations[i].dest)
-       this.destinations.push(x)
+        var x = await this._pdf.getDestination(linkAnnotations[i].dest);
+        this.destinations.push(x);
       }
     }
   }
 
   public updateSize() {
-    console.log('update size: ', this._pdf)
+    console.log('update size: ', this._pdf);
     from(
       this._pdf.getPage(
         this.pdfViewer.currentPageNumber
@@ -427,7 +434,7 @@ export class PdfViewerComponent
           const viewportWidth =
             (page as any).getViewport({
               scale: this._zoom,
-              rotation
+              rotation,
             }).width * PdfViewerComponent.CSS_UNITS;
           let scale = this._zoom;
           let stickToPage = true;
@@ -444,7 +451,7 @@ export class PdfViewerComponent
           }
 
           this.pdfViewer._setScale(scale, stickToPage);
-        }
+        },
       });
   }
 
@@ -464,7 +471,9 @@ export class PdfViewerComponent
   }
 
   private getPDFLinkServiceConfig() {
-    const linkTarget = PdfViewerComponent.getLinkTarget(this._externalLinkTarget);
+    const linkTarget = PdfViewerComponent.getLinkTarget(
+      this._externalLinkTarget
+    );
 
     if (linkTarget) {
       return { externalLinkTarget: linkTarget };
@@ -479,9 +488,9 @@ export class PdfViewerComponent
     fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => {
-        setTimeout(()=>{
+        setTimeout(() => {
           this.pageRendered.emit(event);
-        },500)
+        }, 500);
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
@@ -516,15 +525,15 @@ export class PdfViewerComponent
     fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
       .pipe(takeUntil(this.destroyPopOver$))
       .subscribe((event) => {
-        setTimeout(()=>{
-         // this.pageRendered.emit(event);
-        },500)
+        setTimeout(() => {
+          // this.pageRendered.emit(event);
+        }, 500);
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
       .pipe(takeUntil(this.destroyPopOver$))
       .subscribe((event) => {
-       // this.pageInitialized.emit(event);
+        // this.pageInitialized.emit(event);
       });
 
     fromEvent(this.eventBus, 'pagechanging')
@@ -536,21 +545,21 @@ export class PdfViewerComponent
 
         this.pageScrollTimeout = window.setTimeout(() => {
           this._latestScrolledPage = pageNumber;
-        //  this.pageChange.emit(pageNumber);
+          //  this.pageChange.emit(pageNumber);
         }, 100);
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'textlayerrendered')
       .pipe(takeUntil(this.destroyPopOver$))
       .subscribe((event) => {
-       // this.textLayerRendered.emit(event);
+        // this.textLayerRendered.emit(event);
       });
   }
 
   private initPDFServices() {
     this.pdfLinkService = new PDFJSViewer.PDFLinkService({
       eventBus: this.eventBus,
-      ...this.getPDFLinkServiceConfig()
+      ...this.getPDFLinkServiceConfig(),
     });
     this.pdfFindController = new PDFJSViewer.PDFFindController({
       eventBus: this.eventBus,
@@ -561,7 +570,7 @@ export class PdfViewerComponent
   private initPopOverPDFService() {
     this.popOverPdfLinkService = new PDFJSViewer.PDFLinkService({
       eventBus: this.popOverEventBus,
-      ...this.getPDFLinkServiceConfig()
+      ...this.getPDFLinkServiceConfig(),
     });
     this.popOverPDFFindControler = new PDFJSViewer.PDFFindController({
       eventBus: this.popOverEventBus,
@@ -598,7 +607,7 @@ export class PdfViewerComponent
       renderer: 'canvas',
       l10n: undefined,
       imageResourcesPath: this._imageResourcesPath,
-    }
+    };
   }
 
   private setupViewer() {
@@ -608,9 +617,10 @@ export class PdfViewerComponent
 
     if (this._showAll) {
       this.pdfViewer = new PDFJSViewer.PDFViewer(this.getPDFOptions());
-      
     } else {
-      this.pdfViewer = new PDFJSViewer.PDFSinglePageViewer(this.getPDFOptions());
+      this.pdfViewer = new PDFJSViewer.PDFSinglePageViewer(
+        this.getPDFOptions()
+      );
     }
     this.pdfLinkService.setViewer(this.pdfViewer);
 
@@ -639,7 +649,7 @@ export class PdfViewerComponent
     const params: any = {
       cMapUrl: this._cMapsUrl,
       cMapPacked: true,
-      enableXfa: true
+      enableXfa: true,
     };
 
     if (srcType === 'string') {
@@ -662,7 +672,7 @@ export class PdfViewerComponent
 
     if (this.lastLoaded === this.src) {
       this.update();
-      this.getReferences()
+      this.getReferences();
       return;
     }
 
@@ -683,16 +693,18 @@ export class PdfViewerComponent
       .subscribe({
         next: (pdf) => {
           this._pdf = pdf;
-          this.getReferences()
+          this.getReferences();
           //this._pdfClone._transport =  this._pdf._transport;
           //this._pdfClone._pdfInfo = this._pdf._pdfInfo;
           //this._pdfClone.
-          this._pdfClone = Object.assign(Object.create(Object.getPrototypeOf(this._pdf)), this._pdf);
+          this._pdfClone = Object.assign(
+            Object.create(Object.getPrototypeOf(this._pdf)),
+            this._pdf
+          );
           //console.log(this._pdf, this._pdfClone)
-          
+
           this.lastLoaded = src;
-          
-            
+
           this.afterLoadComplete.emit(pdf);
           this.resetPdfDocument();
 
@@ -701,7 +713,7 @@ export class PdfViewerComponent
         error: (error) => {
           this.lastLoaded = null;
           this.onError.emit(error);
-        }
+        },
       });
   }
 
@@ -731,38 +743,40 @@ export class PdfViewerComponent
 
     this.updateSize();
     //preview required
-    if(this.startingPosition){
+    if (this.startingPosition) {
       //document has annotaitons, no manual annotation creation required
-      if(!this.startingPosition.requireManualAnnotation){
-        console.log('start pos', this.startingPosition)
-        this.pdfLinkService.goToDestination(this.startingPosition)
-      }
-      else{
+      if (!this.startingPosition.requireManualAnnotation) {
+        console.log('start pos', this.startingPosition);
+        this.pdfLinkService.goToDestination(this.startingPosition);
+      } else {
         //document needs manudal references created before being loaded
         let pageNum = this.startingPosition.page;
         let ref = [];
-        if(pageNum!=undefined){
-          this._pdf.getPage(pageNum).then((page:PDFPageProxy)=>{
+        if (pageNum != undefined) {
+          this._pdf.getPage(pageNum).then((page: PDFPageProxy) => {
             const pageInfo = page._pageInfo;
             // console.log('page info: ', pageInfo)
             const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
-            ref.push(obj)
-            ref.push({name: 'XYZ'})
-            ref.push(this.startingPosition.x)
-            ref.push(this.startingPosition.y)
+            ref.push(obj);
+            ref.push({ name: 'XYZ' });
+            ref.push(this.startingPosition.x);
+            ref.push(this.startingPosition.y);
             this.pdfLinkService.goToDestination(ref);
-          })
+          });
         }
-        
       }
     }
     this.getReferences();
   }
 
   private getScale(viewportWidth: number, viewportHeight: number) {
-    const borderSize = this._showBorders ? 2 * PdfViewerComponent.BORDER_WIDTH : 0;
-    const pdfContainerWidth = this.pdfViewerContainer.nativeElement.clientWidth - borderSize;
-    const pdfContainerHeight = this.pdfViewerContainer.nativeElement.clientHeight - borderSize;
+    const borderSize = this._showBorders
+      ? 2 * PdfViewerComponent.BORDER_WIDTH
+      : 0;
+    const pdfContainerWidth =
+      this.pdfViewerContainer.nativeElement.clientWidth - borderSize;
+    const pdfContainerHeight =
+      this.pdfViewerContainer.nativeElement.clientHeight - borderSize;
 
     if (
       pdfContainerHeight === 0 ||
