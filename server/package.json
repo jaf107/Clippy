@@ -33,6 +33,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.1.4",
     "multer": "^1.4.5-lts.1",
+    "node-downloader-helper": "^2.1.6",
     "nodemon": "^2.0.20",
     "oneai": "^0.7.9",
     "path": "^0.12.7",

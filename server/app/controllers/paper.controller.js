@@ -11,6 +11,7 @@ const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const { OneAI } = require("oneai");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 var FormData = require("form-data");
+const { DownloaderHelper } = require("node-downloader-helper");
 
 class Paragraph {
   constructor(title, text) {
@@ -56,10 +57,12 @@ exports.uploadPaper = async (req, res) => {
   if (!req.body.title || !req.file) {
     res.status(404).send("File and Title are required");
   } else {
-    const paper_data = await axios.get(
-      SEMANTIC_SCHOLAR_API +
-        `search?query=${req.body.title}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
-    );
+    const paper_data = await axios
+      .get(
+        SEMANTIC_SCHOLAR_API +
+          `search?query=${req.body.title}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
+      )
+      .catch((err) => res.status(404).send(err));
     if (paper_data && paper_data.data) {
       const data = paper_data.data.data[0];
       const ppr = await Paper.findOne({ paper_id: data.paperId });
@@ -391,7 +394,137 @@ async function ExtractSummary(src) {
 
     // return summary;
   }
-  return paragraphs;
+  await createChunkForHighlighting(src, paragraphs).then();
+}
+
+async function createChunkForHighlighting(src, paragraph) {
+  let paragraphs = paragraph;
+  let { textChunkArray: originalArr, uniqueHeight: heightArr } =
+    await getPdfTextContent(src);
+
+  let summaryArray = [];
+  paragraphs.forEach((element) => {
+    if (element.title.toLowerCase().localeCompare("references") !== 0) {
+      summaryArray.push(element.summaryText);
+    }
+  });
+
+  let chunkSentencesArr = [];
+  originalArr.map((page) => {
+    let pageChunks = page.map((chunk) => {
+      let chunkSentences = breakTextChunkIntoSentence(chunk.str);
+      return chunkSentences;
+    });
+    chunkSentencesArr.push(pageChunks);
+  });
+
+  let highlightsSegments = [];
+  let stillCountingSentence = false;
+  let temp = {
+    sentence: "",
+    segment: [],
+  };
+  for (let pageIndex = 0; pageIndex < chunkSentencesArr.length; pageIndex++) {
+    let pageChunks = chunkSentencesArr[pageIndex];
+    for (let chunkIndex = 0; chunkIndex < pageChunks.length; chunkIndex++) {
+      let chunk = pageChunks[chunkIndex];
+
+      if (chunk.length > 1) {
+        // Start
+        if (stillCountingSentence) {
+          temp.sentence += chunk[0];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+
+          highlightsSegments.push(temp);
+          // reset temp
+          temp = {
+            sentence: "",
+            segment: [],
+          };
+
+          stillCountingSentence = false;
+        }
+
+        // Middle
+        for (let i = 1; i < chunk.length - 1; i++) {
+          temp.sentence += chunk[i];
+          temp.segment.push({
+            str: chunk[i],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+
+          highlightsSegments.push(temp);
+          // reset temp
+          temp = {
+            sentence: "",
+            segment: [],
+          };
+        }
+
+        // End
+        stillCountingSentence = true;
+        temp.sentence += chunk[chunk.length - 1];
+        temp.segment.push({
+          str: chunk[chunk.length - 1],
+          pageNo: pageIndex + 1,
+          chunkIndex: chunkIndex,
+        });
+      } else {
+        if (stillCountingSentence) {
+          temp.sentence += chunk[chunk.length - 1];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+        } else {
+          stillCountingSentence = true;
+          temp.sentence += chunk[chunk.length - 1];
+          temp.segment.push({
+            str: chunk[0],
+            pageNo: pageIndex + 1,
+            chunkIndex: chunkIndex,
+          });
+        }
+      }
+    }
+  }
+
+  //Match with summary text
+  function matchSummaryandHighlight() {
+    let allSegmentCheck = highlightsSegments;
+    let summaryCheck = summaryArray;
+    let filteredSegments = [];
+
+    for (let i = 0; i < allSegmentCheck.length; i++) {
+      let sens = allSegmentCheck[i];
+      if (
+        summaryCheck.some((summary) => summary.includes(sens?.sentence)) &&
+        sens?.sentence.trim().split(" ").length > 1
+      )
+        filteredSegments.push(sens);
+      else {
+        let demo = { sentence: sens.sentence, segment: [] };
+        for (let j = 0; j < sens.segment.length; j++) {
+          if (
+            summaryCheck.some((summary) =>
+              summary.includes(sens.segment[j].str)
+            ) &&
+            sens.segment[j].str.trim().split(" ").length > 1
+          )
+            demo.segment.push(sens.segment[j]);
+        }
+        if (demo.segment.length > 0) filteredSegments.push(demo);
+      }
+    }
+    return filteredSegments;
+  }
+  return matchSummaryandHighlight();
 }
 
 async function updateHistory(userId, paper_id, title) {
