@@ -19,15 +19,15 @@ export class FeaturesService {
   }
 
   headers = new HttpHeaders({
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json, text',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
-    'x-auth-token': JSON.stringify(this.tokenStorage.getToken()),
+    'x-access-token': JSON.stringify(this.tokenStorage.getToken()),
   });
 
   getCitationGraph(_id : string): Observable<any> {
-    return this.http.get(API_URL + _id + '/citations', { headers : this.headers });
+    return this.http.get(API_URL + _id + '/citations', { headers : this.headers, responseType: 'text' });
     // '?fields=citations'
   }
 

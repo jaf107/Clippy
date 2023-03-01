@@ -58,24 +58,13 @@
         </div>
         <hr />
       </div>
-      <div class="list">
+      <div class="list" *ngFor="let history of historyList">
         <div class="row gx-5 history-files d-flex">
           <div class="col-9">
-            <h5>Deep learning based abstractive text summarization</h5>
+            <h5>{{history.title}}</h5>
           </div>
           <div class="col-3">
-            <h5>11 Jan, 03:03 PM</h5>
-          </div>
-        </div>
-        <hr />
-      </div>
-      <div class="list">
-        <div class="row gx-5 history-files d-flex">
-          <div class="col-9">
-            <h5>A Survey of Text summarization extraction techniques</h5>
-          </div>
-          <div class="col-3">
-            <h5>11 Jan, 03:03 PM</h5>
+            <h5>{{history.openedAt | date:'short' }}</h5>
           </div>
         </div>
         <hr />

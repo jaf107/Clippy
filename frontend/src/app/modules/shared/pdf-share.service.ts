@@ -23,11 +23,11 @@ export class PdfShareService {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
-    'x-auth-token': JSON.stringify(this.tokenStorage.getToken()),
+    'x-access-token': this.tokenStorage.getToken(),
   });
 
-  sendFile(uploadedFile: any) {
-    this.file = uploadedFile;
+  sendFile(uploadedOrSearchedFile: any) {
+    this.file = uploadedOrSearchedFile;
   }
 
   getFile(): any {
@@ -40,6 +40,7 @@ export class PdfShareService {
   }
 
   getHistory(): Observable<any> {
+    console.log(this.tokenStorage.getToken());
     let _id = this.tokenStorage.getUser().id;
     console.log(_id);
     return this.http.get(API_USER_URL + _id, { headers : this.headers });
@@ -47,6 +48,10 @@ export class PdfShareService {
 
   searchPaperByTitle(): Observable<any> {
     return this.http.get(API_URL + '/searchByTitle', { headers : this.headers });
+  }
+
+  searchPaperbyId(searchedTerm: any): Observable<any> {
+    return this.http.post(API_URL + 'uploadById', { paper_id: searchedTerm }, { headers : this.headers });
   }
 
 

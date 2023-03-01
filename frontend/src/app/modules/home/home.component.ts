@@ -9,11 +9,20 @@ import PDFParser from "pdf2json";
 
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
+interface history{
+  openedAt: string,
+  paper_id: string,
+  title: string,
+  _id: string
+}
+
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
+
 export class HomeComponent implements OnInit{
   constructor(
     private toastr: ToastrService,
@@ -31,10 +40,15 @@ export class HomeComponent implements OnInit{
 
   visitedFiles = [];
 
+  historyList: history[] = [];
+
   ngOnInit(){
     this.pdfShareService.getHistory().subscribe(
       (data) => {
         console.log(data);
+        this.historyList = data.history;
+        this.historyList = this.historyList.slice(0,2);
+        console.log(this.historyList);
       }
     )
   }
@@ -81,6 +95,18 @@ export class HomeComponent implements OnInit{
     console.log('Searched paper is ' + this.searchedTerm);
     if(this.searchBy == 'Title'){
       
+    }
+    else if(this.searchBy == 'DOI'){
+      this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
+        (data) => {
+          console.log(data);
+          this.pdfShareService.sendFile(data.url);
+          this.router.navigate(['pdfviewer']);
+        }
+      )
+    }
+    else{
+      this.toastr.error('Select Search Type');
     }
   }
 
