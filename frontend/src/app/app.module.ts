@@ -43,7 +43,6 @@ import { PdfPreviewComponent } from './modules/pdf-viewer/pdf-preview/pdf-previe
     FormsModule,
     ToastrModule.forRoot(),
     AppRoutingModule,
-    TooltipModule,
     PdfViewerModule,
     ClipboardModule,
     FontAwesomeModule,
