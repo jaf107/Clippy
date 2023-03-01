@@ -52,7 +52,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   widthStr: string;
 
   leftCSS: number;
-  @ViewChild('viewerRef') viewerRef: HTMLElement;
+  @ViewChild('viewerRef') viewerRef: any;
 
   ngOnInit() {
     this.pdfPath = this.pdfShareService.getFile();
@@ -124,80 +124,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     });
   }
 
-  /**
-   * mathc patterns: Fig, fig, figure, Figure, Table, table, tab
-   * @param pageNo current page no
-   * @param spans text spans for current page
-   * @param AllRefs All reference objects
-   */
-  // highlightReference(pageNo, spans, AllRefs) {
-  //   spans.map((span) => {
-  //     let spanText = span.innerHTML;
-
-  //     // referencing figure
-  //     let restOfTheString = '';
-  //     let startingIndex = spanText.toLowerCase().indexOf('fig');
-  //     let finalIndex = -1;
-
-  //     if (startingIndex > -1) {
-  //       for (let i = startingIndex; i < spanText.length; i++)
-  //         restOfTheString += spanText[i];
-  //       let remainingWords = restOfTheString.split(/[ .]/);
-  //       if (
-  //         !remainingWords[0].toLocaleLowerCase().localeCompare('fig') ||
-  //         !remainingWords[0].toLocaleLowerCase().localeCompare('figure')
-  //       ) {
-  //         for (let i = startingIndex; i < spanText.length; i++) {
-  //           if (
-  //             spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
-  //             spanText.charCodeAt(i) <= '9'.charCodeAt(0)
-  //           ) {
-  //             finalIndex = i;
-  //             break;
-  //           }
-  //         }
-
-  //         span.innerHTML = this.placeWrappingTagForRefrence(
-  //           span.innerHTML,
-  //           startingIndex,
-  //           finalIndex
-  //         );
-  //       }
-  //     }
-
-  //     startingIndex = spanText.toLocaleLowerCase().indexOf('table');
-  //     if (startingIndex > -1) {
-  //       restOfTheString = '';
-  //       for (let i = startingIndex; i < spanText.length; i++)
-  //         restOfTheString += spanText[i];
-  //       let remainingWords = restOfTheString.split(/[ .]/);
-  //       if (
-  //         !remainingWords[0].toLocaleLowerCase().localeCompare('tab') ||
-  //         !remainingWords[0].toLocaleLowerCase().localeCompare('table')
-  //       ) {
-  //         for (let i = startingIndex; i < spanText.length; i++) {
-  //           if (
-  //             spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
-  //             spanText.charCodeAt(i) <= '9'.charCodeAt(0)
-  //           ) {
-  //             finalIndex = i;
-  //             break;
-  //           }
-  //         }
-
-  //         span.innerHTML = this.placeWrappingTagForRefrence(
-  //           span.innerHTML,
-  //           startingIndex,
-  //           finalIndex
-  //         );
-  //        // console.log(startingIndex, restOfTheString, finalIndex);
-  //       }
-  //     }
-  //   });
-
-  //   this.addEventHandler();
-  // }
-
   // Helpers for highlighting
 
   filterDataSegmentsForAPage(dataSegments, pageNo) {
@@ -211,56 +137,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     }
     return segmentsForAPage;
   }
-
-  // placeWrappingTagForRefrence(spanStr, startingIndex, finalIndex) {
-  //   let finalStr = '';
-  //   for (let i = 0; i < startingIndex; i++) finalStr += spanStr[i];
-  //   finalStr += `<a href="" #manualRefererencingNeeded class="reference-text" style="backgournd-color: yellow !important;">`;
-  //   for (let i = startingIndex; i <= finalIndex; i++) finalStr += spanStr[i];
-  //   finalStr += `</a>`;
-  //   for (let i = finalIndex + 1; i < spanStr.length; i++)
-  //     finalStr += spanStr[i];
-  //   return finalStr;
-  // }
-
-  // addEventHandler() {
-  //   let AllRefs = Array.from(refs);
-  //   let refTextAnchors = document.querySelectorAll('.reference-text');
-  //   refTextAnchors.forEach((anchor) => {
-  //     anchor.addEventListener('mouseenter', (event: any) => {
-  //       event.preventDefault();
-  //       let text = event.target.innerText;
-  //       let splittedStr = text.split(' ');
-
-  //       let type, id;
-  //       if (splittedStr[0].toLocaleLowerCase().includes('fig')) type = 'figure';
-  //       else if (splittedStr[0].toLocaleLowerCase().includes('tab'))
-  //         type = 'table';
-
-  //       let refDatas = AllRefs.filter((ref) => ref.str.includes(type));
-  //       let data: any = {};
-  //       let key = splittedStr[1];
-
-  //       for (let r = 0; r < refDatas.length; r++) {
-  //         if (refDatas[r].str.includes(key)) {
-  //           data = refDatas[r];
-  //           break;
-  //         }
-  //       }
-
-  //       this.reference = { ...data, requireManualAnnotaion: true };
-  //       //this.showPreview = true;
-  //       this.previewPageNum = data.page;
-  //       this.leftCSSstr = data.x + 'px';
-  //       this.topCSSstr = data.y + 'px';
-  //       this.heightStr = data.height + 'px';
-  //       this.widthStr = data.width + 'px';
-
-  //       //console.log({ ...data, requireManualAnnotaion: true });
-  //       //console.log(event);
-  //     });
-  //   });
-  // }
 
   addWrappingTagForSummaryHighlight(
     spanStr,
@@ -318,10 +194,17 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   loadComplete(pdfData: any) {
     this.totalPages = pdfData.numPages;
+    console.log('pdfData: ',pdfData);
+    console.log('metadata: ',this.viewerRef.pdfFindController.pageContents[0].metadata);
   }
 
   openFileDialog() {
     document.getElementById('upload').click();
+  }
+
+  receiveMetaData(e: string) {
+    this.pdfShareService.setTitle(e);
+    this.sendFile();
   }
 
   downloadPdf() {
@@ -346,6 +229,21 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       this.pdfPath = this.url;
     };
     reader.readAsArrayBuffer(this.file);
+  }
+
+  sendFile(){
+    const formData: FormData = new FormData();
+    formData.append('paper', this.pdfShareService.getFile());
+    formData.append('title', this.pdfShareService.getTitle());
+    console.log('formdata: ',formData.get('title'), formData.get('file'))
+    this.pdfShareService.sendFiletoServer(formData).subscribe(
+      (data) => {
+        
+      },
+      (err) => {
+        console.log("File sending failed");
+      }
+    )
   }
 
   errorsmsg() {

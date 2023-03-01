@@ -131,6 +131,8 @@ export class PdfViewerComponent
   @Input() src: string | Uint8Array | PDFSource;
   @Output('references') references: EventEmitter<any> = new EventEmitter<any>();
   @Output('hover') hover: EventEmitter<any> = new EventEmitter<any>();
+  @Output('metadata') metadata: EventEmitter<any> = new EventEmitter<any>();
+
   @Input('c-maps-url')
   set cMapsUrl(cMapsUrl: string) {
     this._cMapsUrl = cMapsUrl;
@@ -228,6 +230,12 @@ export class PdfViewerComponent
   @Input('show-borders')
   set showBorders(value: boolean) {
     this._showBorders = Boolean(value);
+  }
+
+  async getMetaData() {
+    let metData:any = await this._pdf.getMetadata();
+    //console.log(metData.info.Title)
+    this.metadata.emit(metData.info.Title)
   }
 
   async handlePopOver(event: any) {
@@ -677,9 +685,11 @@ export class PdfViewerComponent
       .pipe(takeUntil(this.destroy$))
       .subscribe((event:any) => {
         setTimeout( async () => {
+          //this.getMetaData()
           console.log(this.destinations.length)
           if(this.destinations.length==0){
             //manual referencing start if no automatic reference found
+            
             this.refs = await getManualReferences(this.src)
             let spans = event.source.textLayer.textDivs;
             this.highlightReference(event.pageChange, spans, Array.from(this.refs));
@@ -691,6 +701,7 @@ export class PdfViewerComponent
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => {
+        this.getMetaData()
         this.pageInitialized.emit(event);
       });
 

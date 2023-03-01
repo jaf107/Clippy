@@ -12,6 +12,7 @@ const API_USER_URL = 'http://localhost:8080/api/user/';
 export class PdfShareService {
 
   public file: any;
+  public title: string;
 
   public paper_id = '649def34f8be52c8b66281af98ae884c09aef38b';
 
@@ -35,6 +36,14 @@ export class PdfShareService {
   getFile(): any {
     console.log(this.file);
     return this.file;
+  }
+
+  setTitle(title: string) {
+    this.title = title;
+  }
+
+  getTitle() {
+    return this.title;
   }
 
   sendFiletoServer(formData: FormData): Observable<any> {

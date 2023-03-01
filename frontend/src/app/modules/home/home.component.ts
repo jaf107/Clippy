@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PdfShareService } from '../shared/pdf-share.service';
-import PDFParser from "pdf2json";
+
 
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
@@ -115,8 +115,9 @@ export class HomeComponent implements OnInit{
 
   sendFile(){
     const formData: FormData = new FormData();
-    formData.append('file', this.file);
-
+    formData.append('paper', this.file);
+    formData.append('title', this.pdfShareService.getTitle());
+    //console.log('formdata: ',formData)
     this.pdfShareService.sendFiletoServer(formData).subscribe(
       (data) => {
         
