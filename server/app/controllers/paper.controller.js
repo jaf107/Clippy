@@ -10,6 +10,7 @@ var apiKey = "b93d9d2475ed072f999710c6949f6a65";
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const { OneAI } = require("oneai");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
+var FormData = require("form-data");
 
 class Paragraph {
   constructor(title, text) {
@@ -229,7 +230,7 @@ exports.getExtractSummary = async (req, res) => {
       fs.unlink(req.file.path, (err) => {
         if (err) throw err;
         console.log("successfully deleted");
-        res.status(200).send(paper.abstractive_summary);
+        res.status(200).send(paper.extractive_summary);
       });
     } else {
       await ExtractSummary(req.file.path).then((paragraphs) => {
@@ -244,7 +245,6 @@ exports.getExtractSummary = async (req, res) => {
             console.log("successfully deleted");
             res.status(200).send(JSON.stringify(paragraphs));
           });
-          s;
         }
       });
     }
@@ -318,6 +318,80 @@ async function AbstractSummary(filepath) {
     }
     return paragraphs;
   }
+}
+
+async function ExtractSummary(src) {
+  let paragraphs = await createJsonObjectFromPdf(src);
+  let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  let apiKey = "dffe1d46b7dc44e77c2807c775855819";
+
+  for (let i = 0; i < paragraphs.length; i++) {
+    let element = paragraphs[i];
+
+    if (element.noOfSentences > 50) {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
+    } else {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+    }
+
+    let contextString = element.text;
+    let retryCount = 0;
+
+    while (retryCount < 3) {
+      try {
+        let summary = await requestSummaryWithRetry(
+          contextString,
+          noOfSentenceInSummary,
+          apiKey,
+          retryCount
+        );
+        // console.log(`Summary holo: index ${i} ${JSON.stringify(summary)}`);
+
+        if (summary) {
+          paragraphs[i].summaryText = summary;
+        }
+        break; // Exit the retry loop if request succeeds
+      } catch (error) {
+        console.log(`Error: index ${i} ${error}`);
+        retryCount++;
+        await delay(1000); // Wait for 1 second before making the next request
+      }
+    }
+  }
+
+  async function requestSummaryWithRetry(
+    contextString,
+    noOfSentences,
+    apiKey,
+    retryCount
+  ) {
+    let formData = new FormData();
+    formData.append("key", apiKey);
+    formData.append("txt", contextString);
+    formData.append("sentences", noOfSentences);
+    formData.append("retry", retryCount); // Add retry count to formData
+
+    let requestOptions = {
+      method: "POST",
+      body: formData,
+      redirect: "follow",
+    };
+
+    let response = await axios
+      .post("https://api.meaningcloud.com/summarization-1.0", formData)
+      .catch((err) => {
+        throw new Error(`Request failed with error :  ${err}`);
+      });
+    if (response.data) {
+      let { summary } = response.data;
+
+      return summary;
+    }
+    // let { summary } = await response;
+
+    // return summary;
+  }
+  return paragraphs;
 }
 
 async function updateHistory(userId, paper_id, title) {

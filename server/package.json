@@ -27,6 +27,7 @@
     "download": "^8.0.0",
     "express": "^4.17.2",
     "express-fileupload": "^1.4.0",
+    "form-data": "^4.0.0",
     "fs": "^0.0.1-security",
     "jsonschema": "1.4.0",
     "jsonwebtoken": "^9.0.0",
