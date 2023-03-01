@@ -28,7 +28,9 @@ router
   .route("/:id/semanticScholar")
   .get(controller.getPaperDetailsfromSemanticScholar);
 router.route("/:id/citations").get(controller.getCitation);
-router.route("/:id/abstractiveSummary").get(controller.getAbstractSummary);
+router
+  .route("/:id/abstractiveSummary")
+  .get(upload.single("paper"), controller.getAbstractSummary);
 router.route("/searchByTitle").get(controller.searchPaperByTitle);
 router.route("/:id").get(authJwt.checkToken, controller.getPaperDetails);
 

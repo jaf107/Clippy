@@ -11,26 +11,6 @@ const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const { OneAI } = require("oneai");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 
-class CitationNode {
-  constructor(paperId, title, level) {
-    this.paperId = paperId;
-    this.title = title;
-    this.level = level;
-    this.citationChildren = [];
-  }
-
-  addCitation(citation) {
-    this.citationChildren.push(citation);
-  }
-}
-
-class CitationEdge {
-  constructor(from, to) {
-    this.from = from;
-    this.to = to;
-  }
-}
-
 class Paragraph {
   constructor(title, text) {
     this.title = title;
@@ -205,58 +185,68 @@ exports.searchPaperById = async (req, res) => {
     }
   }
 };
+
 exports.getAbstractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
   if (paper) {
     if (paper.abstractive_summary !== "")
       res.status(200).send(paper.abstractive_summary);
     else {
-      console.log(paper);
-      let paragraphs = await createJsonObjectFromPdf(paper.url);
-      let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-      let absApiKey = "453265e9-a392-4e2b-aacc-ecc527a3f41f";
-
-      for (let i = 0; i < paragraphs.length; i++) {
-        let element = paragraphs[i];
-        let contextString = element.text;
-        let retryCount = 0;
-
-        if (element.noOfSentences > 50) {
-          noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
-        } else {
-          noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+      await AbstractSummary(req.file.path).then((paragraphs) => {
+        const result = Paper.updateOne(
+          { paper_id: req.params.id },
+          { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
+          { upsert: true }
+        ).catch((err) => res.status(200).send(err));
+        if (result) {
+          res.status(200).send(JSON.stringify(paragraphs));
         }
-
-        while (retryCount < 3) {
-          try {
-            let summary = await requestAbsSummaryWithRetry(
-              contextString,
-              absApiKey,
-              retryCount,
-              noOfSentenceInSummary
-            );
-            paragraphs[i].summaryText = summary;
-            break;
-          } catch (error) {
-            console.log(`Error: index ${i} ${error}`);
-            retryCount++;
-            await delay(1000);
-          }
-        }
-      }
-      const result = await Paper.updateOne(
-        { paper_id: req.params.id },
-        { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
-        { upsert: true }
-      ).catch((err) => res.status(200).send(err));
-      if (result) {
-        res.status(200).send(JSON.stringify(paragraphs));
-      }
+      });
     }
   } else {
     res.status(404).send("Paper not found");
   }
 };
+
+async function AbstractSummary(filepath) {
+  let paragraphs = await createJsonObjectFromPdf(filepath);
+  if (paragraphs.length > 0) {
+    let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    let absApiKey = "278aff3b-5c8d-4fe3-8fda-cb82b42fba4a";
+
+    for (let i = 0; i < paragraphs.length; i++) {
+      let element = paragraphs[i];
+      let contextString = element.text;
+      let retryCount = 0;
+
+      if (element.noOfSentences > 50) {
+        noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
+      } else {
+        noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+      }
+
+      while (retryCount < 3) {
+        try {
+          let summary = await requestAbsSummaryWithRetry(
+            contextString,
+            absApiKey,
+            retryCount,
+            noOfSentenceInSummary
+          );
+          if (summary.length > 0) {
+            paragraphs[i].summaryText = summary;
+          }
+          break;
+        } catch (error) {
+          console.log(`Error: index ${i} ${error}`);
+          retryCount++;
+          await delay(1000);
+        }
+      }
+    }
+    return paragraphs;
+  }
+}
 
 exports.getCitation = async (req, res) => {
   const rootPaperId = req.params.id;
@@ -273,38 +263,6 @@ exports.getCitation = async (req, res) => {
       paperId: citationResponse.data.paperId,
       title: citationResponse.data.title,
     });
-
-    // var rootNode = new CitationNode(rootPaperId, rootNodeTitle, 0);
-    // let edgeList = [];
-    // let rootEdge = new CitationEdge("-1", rootNode);
-    // edgeList.push(rootEdge);
-    // let nodeArray = [];
-    // nodeArray.push(rootNode);
-    // let runningNode = rootNode;
-    // let runningUrl = ``;
-    // while (nodeArray.length != 0) {
-    //   runningNode = nodeArray[0];
-    //   if (runningNode.level > 1) {
-    //     break;
-    //   }
-    //   paperId = runningNode.paperId;
-    //   runningUrl = SEMANTIC_SCHOLAR_API + `${paperId}?fields=title,citations`;
-    //   var runningCitationResponse = await axios
-    //     .get(runningUrl)
-    //     .catch((err) => res.status(404).send(err));
-    //   citationChildren = runningCitationResponse.data.citations;
-    //   citationChildren
-    //     .filter((element) => element.paperId != null)
-    //     .forEach((element) => {
-    //       let paperId = element.paperId;
-    //       let paperTitle = element.title;
-    //       let paperLevel = runningNode.level + 1;
-    //       let citationNode = new CitationNode(paperId, paperTitle, paperLevel);
-    //       if (nodeArray.length < 11) nodeArray.push(citationNode);
-    //       edgeList.push(new CitationEdge(runningNode, citationNode));
-    //     });
-    //   nodeArray.shift();
-    // }
 
     const result = await Paper.updateOne(
       { paper_id: rootPaperId },
@@ -512,6 +470,7 @@ async function getPdfTextContent(src) {
 
   return { textChunkArray, uniqueHeight };
 }
+
 function writeUniqueHeights(heights, content) {
   const items = content.items.map((item) => {
     heights.push(item.height);
@@ -525,4 +484,14 @@ function getTextChunkObject(content) {
     };
   });
   return retItems;
+}
+
+function noOfSentences(context) {
+  let noOfSentence = 0;
+  for (var i = 0; i < context.length; i++) {
+    if (context[i] == "." || context[i] == "?" || context[i] == "!")
+      noOfSentence++;
+  }
+  // console.log(noOfSentence);
+  return noOfSentence;
 }
