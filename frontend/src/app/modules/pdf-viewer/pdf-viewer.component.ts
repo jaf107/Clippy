@@ -28,7 +28,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.pdfPath = this.pdfShareService.getFile();
     //console.log(this.pdfPath);
 
-    this.pdfPath = '../../../assets/sample4.pdf';
+    this.pdfPath = '../../../assets/icse22_toxicity.pdf';
 
     this.summarizerOn = false;
 

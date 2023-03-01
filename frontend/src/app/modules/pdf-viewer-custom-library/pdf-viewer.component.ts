@@ -439,10 +439,11 @@ export class PdfViewerComponent
       });
     }
     setTimeout(() => {
-      //console.log(this.destinations)
-      //console.log(this.annotations)
+      if(this.references.length == 0) {
+
+      }
       this.references.emit({ data: this.destinations });
-    }, 2000);
+    }, 1000);
   }
   destinations = [];
   annotations = [];
@@ -558,14 +559,9 @@ export class PdfViewerComponent
           }
         }
         
-        // this.reference = { ...data, requireManualAnnotaion: true };
-        // //this.showPreview = true;
-        // this.previewPageNum = data.page;
-        // this.leftCSSstr = data.x + 'px';
-        // this.topCSSstr = data.y + 'px';
-        // this.heightStr = data.height + 'px';
-        // this.widthStr = data.width + 'px';
-
+        if(data.str== undefined){
+          return;
+        }
         console.log({ ...data, requireManualAnnotaion: true });
         var ref = [];
         this._pdf.getPage(data.page).then((page: PDFPageProxy) => {
@@ -679,11 +675,14 @@ export class PdfViewerComponent
       .pipe(takeUntil(this.destroy$))
       .subscribe((event:any) => {
         setTimeout(() => {
-          let spans = event.source.textLayer.textDivs;
-          this.highlightReference(event.pageChange, spans, Array.from(refs));
-          console.log('spans: ', spans)
-
-        }, 500);
+          console.log(this.destinations.length)
+          if(this.destinations.length==0){
+            //manual referencing start if no automatic reference found
+            let spans = event.source.textLayer.textDivs;
+            this.highlightReference(event.pageChange, spans, Array.from(refs));
+          }
+          
+        }, 1100);
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
