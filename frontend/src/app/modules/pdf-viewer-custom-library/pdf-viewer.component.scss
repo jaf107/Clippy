@@ -6,6 +6,15 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.popOverPDFViewer {
+  overflow-x: auto;
+  position: absolute;
+  height: 50%;
+  width: 50%;
+  -webkit-overflow-scrolling: touch;
+  z-index: 100;
+}
+
 :host {
   display: block;
   position: relative;

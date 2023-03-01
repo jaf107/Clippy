@@ -13,12 +13,16 @@ import {
   OnDestroy,
   ViewChild,
   AfterViewChecked,
-  NgZone
+  NgZone,
+  Renderer2,
 } from '@angular/core';
 import { from, fromEvent, Subject } from 'rxjs';
 import { debounceTime, filter, takeUntil } from 'rxjs/operators';
 import * as PDFJS from 'pdfjs-dist/build/pdf';
 import * as PDFJSViewer from 'pdfjs-dist/web/pdf_viewer';
+
+//import * as PopOverPDFJSViewer from 'pdfjs-dist/web/pdf_viewer';
+import { getManualReferences } from './manual-referencing';
 
 import { createEventBus } from '../utils/event-bus-utils';
 import { assign, isSSR } from '../utils/helpers';
@@ -29,7 +33,7 @@ import type {
   PDFProgressData,
   PDFDocumentProxy,
   PDFDocumentLoadingTask,
-  PDFViewerOptions
+  PDFViewerOptions,
 } from './typings';
 import { PDFSinglePageViewer } from 'pdfjs-dist/web/pdf_viewer';
 
@@ -40,31 +44,43 @@ if (!isSSR()) {
 export enum RenderTextMode {
   DISABLED,
   ENABLED,
-  ENHANCED
+  ENHANCED,
+}
+
+interface IReference {
+  TargetXCoordinate: number;
+  TargetYCoordinate: number;
+  rectangleOfOccurance: number[];
+  destintationString: string;
+  destinationPageNumber: string;
 }
 
 @Component({
   selector: 'pdf-viewer',
   template: `
     <div #pdfViewerContainer class="ng2-pdf-viewer-container">
-      <div class="pdfViewer"></div>
+      <div class="pdfViewer" (mouseover)="handlePopOver($event)"></div>
     </div>
   `,
-  styleUrls: ['./pdf-viewer.component.scss']
+  styleUrls: ['./pdf-viewer.component.scss'],
 })
 export class PdfViewerComponent
-  implements OnChanges, OnInit, OnDestroy, AfterViewChecked {
+  implements OnChanges, OnInit, OnDestroy, AfterViewChecked
+{
   static CSS_UNITS = 96.0 / 72.0;
   static BORDER_WIDTH = 9;
 
   @ViewChild('pdfViewerContainer') pdfViewerContainer;
-
+  @ViewChild('popOverContainer') pdfPopOverContainer: ElementRef;
   public eventBus: PDFJSViewer.EventBus;
+  public popOverEventBus: PDFJSViewer.EventBus;
   public pdfLinkService: PDFJSViewer.PDFLinkService;
+  public popOverPdfLinkService: PDFJSViewer.PDFLinkService;
   public pdfFindController: PDFJSViewer.PDFFindController;
   public pdfViewer: PDFJSViewer.PDFViewer | PDFSinglePageViewer;
-
+  public popOverPDFViewer: PDFJSViewer.PDFViewer | PDFSinglePageViewer;
   private isVisible = false;
+  public popOverPDFFindControler: PDFJSViewer.PDFFindController;
 
   private _cMapsUrl =
     typeof PDFJS !== 'undefined'
@@ -79,6 +95,7 @@ export class PdfViewerComponent
   private _stickToPage = false;
   private _originalSize = true;
   private _pdf: PDFDocumentProxy;
+  private _pdfClone: PDFDocumentProxy;
   private _page = 1;
   private _zoom = 1;
   private _zoomScale: 'page-height' | 'page-fit' | 'page-width' = 'page-width';
@@ -96,19 +113,24 @@ export class PdfViewerComponent
   private isInitialized = false;
   private loadingTask: PDFDocumentLoadingTask;
   private destroy$ = new Subject<void>();
-  flag1=false;
-  flag2=false;
+  private destroyPopOver$ = new Subject<void>();
+  refs: any[] = [];
+  flag1 = false;
+  flag2 = false;
 
-  @Output('after-load-complete') afterLoadComplete = new EventEmitter<PDFDocumentProxy>();
+  @Output('after-load-complete') afterLoadComplete =
+    new EventEmitter<PDFDocumentProxy>();
   @Output('page-rendered') pageRendered = new EventEmitter<CustomEvent>();
-  @Output('pages-initialized') pageInitialized = new EventEmitter<CustomEvent>();
-  @Output('text-layer-rendered') textLayerRendered = new EventEmitter<CustomEvent>();
+  @Output('pages-initialized') pageInitialized =
+    new EventEmitter<CustomEvent>();
+  @Output('text-layer-rendered') textLayerRendered =
+    new EventEmitter<CustomEvent>();
   @Output('error') onError = new EventEmitter<any>();
   @Output('on-progress') onProgress = new EventEmitter<PDFProgressData>();
   @Output() pageChange: EventEmitter<number> = new EventEmitter<number>(true);
   @Input() src: string | Uint8Array | PDFSource;
   @Output('references') references: EventEmitter<any> = new EventEmitter<any>();
-
+  @Output('hover') hover: EventEmitter<any> = new EventEmitter<any>();
   @Input('c-maps-url')
   set cMapsUrl(cMapsUrl: string) {
     this._cMapsUrl = cMapsUrl;
@@ -143,6 +165,8 @@ export class PdfViewerComponent
   set originalSize(originalSize: boolean) {
     this._originalSize = originalSize;
   }
+
+  @Input('startingPosition') startingPosition: any;
 
   @Input('show-all')
   set showAll(value: boolean) {
@@ -206,7 +230,95 @@ export class PdfViewerComponent
     this._showBorders = Boolean(value);
   }
 
- 
+  async handlePopOver(event: any) {
+    console.log('in library');
+    if (event.type != 'mouseover') {
+      console.log('not mouse over')
+      return;
+    }
+    let refParent: HTMLElement;
+    if (event.target.hash != undefined) {
+      
+      
+      this.initPopOverEventBus();
+      this.initPopOverPDFService();
+      
+      const referenceID = event.target.hash.substring(1);
+      refParent = event.target.parentElement;
+      let refBoundingRect = refParent.getBoundingClientRect();
+      //console.log(referenceID);
+      
+      //console.log('ref rect: ', refBoundingRect)
+      const refDestination = await this._pdf.getDestination(referenceID);
+      //console.log('siam')
+      if (refDestination == null) {
+        //console.log('upore',this.startingPosition)
+        if(this.startingPosition) {
+          //console.log('niche',this.startingPosition)
+          let pageNum = this.startingPosition.page;
+          let ref = [];
+          if (pageNum != undefined) {
+            this._pdf.getPage(pageNum).then((page: PDFPageProxy) => {
+              const pageInfo = page._pageInfo;
+              //console.log('page info: ', pageInfo)
+              const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
+              ref.push(obj);
+              ref.push({ name: 'XYZ' });
+              ref.push(this.startingPosition.x);
+              ref.push(this.startingPosition.y);
+              //ref.push(null);
+              //console.log('ref: ',ref)
+              this.pdfLinkService.goToDestination(ref);
+              //console.log('hover: ', this.hover)
+              //console.log('gotodestination')
+              
+              this.hover.emit(
+                {
+                  show: true,
+                  page: pageNum,
+                  refDestination: ref,
+                  clientX: this.startingPosition.x,
+                  clienY: this.startingPosition.y,
+                  height: this.startingPosition.height,
+                  width: this.startingPosition.width,
+                }
+                )
+              });
+            }
+          }
+      }
+      else{
+        let maxHeight, maxwidth, x, y;
+        const pageNum = this.pdfLinkService._cachedPageNumber(refDestination[0]);
+        this._pdf.getPage(pageNum).then((pdfPage) => {
+          let viewPort = pdfPage.getViewport({ scale: 1.0 });
+          maxHeight =
+            viewPort.height < pdfPage.view[3] * 0.5
+              ? viewPort.height
+              : pdfPage.view[3] * 0.5;
+          maxwidth = viewPort.width;
+          x = refBoundingRect.x + refBoundingRect.width / 2;
+          y = refBoundingRect.y + refBoundingRect.height / 2;
+          this.hover.emit({
+            show: true,
+            page: pageNum,
+            refDestination: refDestination,
+            clientX: event.clientX,
+            clienY: event.clientY,
+            height: maxHeight,
+            width: maxwidth,
+          });
+      });
+
+      refParent.addEventListener('mouseleave', () => {
+        this.hover.emit({
+          show: false,
+        });
+      });
+      }
+      
+    }
+  }
 
   static getLinkTarget(type: string) {
     switch (type) {
@@ -225,7 +337,11 @@ export class PdfViewerComponent
     return null;
   }
 
-  constructor(private element: ElementRef<HTMLElement>, private ngZone: NgZone) {
+  constructor(
+    private element: ElementRef<HTMLElement>,
+    private ngZone: NgZone,
+    private renderer: Renderer2
+  ) {
     if (isSSR()) {
       return;
     }
@@ -239,8 +355,9 @@ export class PdfViewerComponent
     ) {
       pdfWorkerSrc = (window as any).pdfWorkerSrc;
     } else {
-      pdfWorkerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${(PDFJS as any).version
-        }/legacy/build/pdf.worker.min.js`;
+      pdfWorkerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${
+        (PDFJS as any).version
+      }/legacy/build/pdf.worker.min.js`;
     }
 
     assign(PDFJS.GlobalWorkerOptions, 'workerSrc', pdfWorkerSrc);
@@ -252,8 +369,6 @@ export class PdfViewerComponent
     }
 
     const offset = this.pdfViewerContainer.nativeElement.offsetParent;
-    //this.getReferences();
-   // console.log(this._pdf)
     if (this.isVisible === true && offset == null) {
       this.isVisible = false;
       return;
@@ -284,7 +399,6 @@ export class PdfViewerComponent
     if (isSSR() || !this.isVisible) {
       return;
     }
-    //console.log('pdf: ', this._pdf)
     if ('src' in changes) {
       this.loadPDF();
     } else if (this._pdf) {
@@ -312,64 +426,45 @@ export class PdfViewerComponent
     }
   }
 
+  /*
+  returns the references from the pdf as an event. 
+  return type event: {data: references[]}
+  */
   public getReferences() {
-    //console.log('get ref: ',this._pdf)
+    console.log('get ref called');
     let references = [];
-    this.destinations=[];
-    this.annotations=[];
-    for(let i=1 ; i <= this._pdf.numPages; i++) {
-      this._pdf.getPage(i).then((page)=>{
+    this.destinations = [];
+    this.annotations = [];
+    for (let i = 1; i <= this._pdf.numPages; i++) {
+      this._pdf.getPage(i).then((page) => {
         page.getAnnotations().then(this.getRefPositions.bind(this));
-        //this.references.emit('');
-        if(i==this._pdf.numPages) this.flag1=true;
-        else this.flag1=false;
-        //console.log('i, numPages, flag1: ', i, this._pdf.numPages,this.flag1)
-      })
+      });
     }
-    setTimeout(()=>{
-      this.references.emit({data: this.destinations})
-    },2000)
-    
+    setTimeout(() => {
+      if(this.references.length == 0) {
+
+      }
+      this.references.emit({ data: this.destinations });
+    }, 1000);
   }
   destinations = [];
-  annotations = []
-  async getRefPositions (annotations) {
-    //console.log('2',this)
+  annotations = [];
+  async getRefPositions(annotations) {
     var linkAnnotations = annotations.filter(function (annotation) {
-      return annotation.subtype === "Link";
+      return annotation.subtype === 'Link';
     });
-    //console.log('link annotations: ',linkAnnotations.length);
-    this.annotations.push(linkAnnotations)
-    for(let i=0;i<linkAnnotations.length;i++) {
-      if(i>=linkAnnotations.length-1) this.flag2=true;
-      else this.flag2=false;
-      
-      if(linkAnnotations[i].dest != undefined){
-        //console.log(i)
-        var x = await this._pdf.getDestination(linkAnnotations[i].dest)
-        this.destinations.push(x)
-        //console.log('j, flag2 ', i, this.flag2)
-        // if(this.flag1 && this.flag2){
-          
-        //   this.references.emit({data: this.destinations})
-        //   this.flag1 = false;
-        //   this.flag2=false;
-          
-        // }
-        
+    this.annotations.push(linkAnnotations);
+    for (let i = 0; i < linkAnnotations.length; i++) {
+      if (linkAnnotations[i].dest != undefined) {
+        //console.log(linkAnnotations[i].dest)
+        var x = await this._pdf.getDestination(linkAnnotations[i].dest);
+        this.destinations.push(x);
       }
-      
     }
-   // console.log('adestinations: ',this.destinations)
-    //var x = await this._pdf.getDestination(linkAnnotation[26].dest);
-    //console.log(x)
-    //console.log(await this._pdf.getPageIndex(x[0]))
-    //console.log(await this._pdf.getPageLabels())
-   // this.pdfLinkService.goToDestination(await this.pdfDocument.getDestination(linkAnnotation[26].dest))
   }
 
   public updateSize() {
-    console.log('update size: ', this._pdf)
+    console.log('update size: ', this._pdf);
     from(
       this._pdf.getPage(
         this.pdfViewer.currentPageNumber
@@ -382,7 +477,7 @@ export class PdfViewerComponent
           const viewportWidth =
             (page as any).getViewport({
               scale: this._zoom,
-              rotation
+              rotation,
             }).width * PdfViewerComponent.CSS_UNITS;
           let scale = this._zoom;
           let stickToPage = true;
@@ -399,7 +494,7 @@ export class PdfViewerComponent
           }
 
           this.pdfViewer._setScale(scale, stickToPage);
-        }
+        },
       });
   }
 
@@ -419,7 +514,9 @@ export class PdfViewerComponent
   }
 
   private getPDFLinkServiceConfig() {
-    const linkTarget = PdfViewerComponent.getLinkTarget(this._externalLinkTarget);
+    const linkTarget = PdfViewerComponent.getLinkTarget(
+      this._externalLinkTarget
+    );
 
     if (linkTarget) {
       return { externalLinkTarget: linkTarget };
@@ -428,15 +525,167 @@ export class PdfViewerComponent
     return {};
   }
 
+  placeWrappingTagForRefrence(spanStr, startingIndex, finalIndex) {
+    let finalStr = '';
+    for (let i = 0; i < startingIndex; i++) finalStr += spanStr[i];
+    finalStr += `<a href="" #manualRefererencingNeeded class="reference-text" style="backgournd-color: yellow !important;">`;
+    for (let i = startingIndex; i <= finalIndex; i++) finalStr += spanStr[i];
+    finalStr += `</a>`;
+    for (let i = finalIndex + 1; i < spanStr.length; i++)
+      finalStr += spanStr[i];
+    return finalStr;
+  }
+
+  addEventHandler() {
+    let AllRefs = Array.from(this.refs);
+    let refTextAnchors = document.querySelectorAll('.reference-text');
+    refTextAnchors.forEach((anchor) => {
+      anchor.addEventListener('mouseenter', (event: any) => {
+        event.preventDefault();
+        let text = event.target.innerText;
+        let splittedStr = text.split(' ');
+
+        let type, id;
+        if (splittedStr[0].toLocaleLowerCase().includes('fig')) type = 'figure';
+        else if (splittedStr[0].toLocaleLowerCase().includes('tab'))
+          type = 'table';
+
+        let refDatas = AllRefs.filter((ref) => ref.str.includes(type));
+        let data: any = {};
+        let key = splittedStr[1];
+
+        for (let r = 0; r < refDatas.length; r++) {
+          if (refDatas[r].str.includes(key)) {
+            data = refDatas[r];
+            break;
+          }
+        }
+        
+        if(data.str== undefined){
+          return;
+        }
+        console.log({ ...data, requireManualAnnotaion: true });
+        var ref = [];
+        this._pdf.getPage(data.page).then((page: PDFPageProxy) => {
+          const pageInfo = page._pageInfo;
+          console.log('page info: ', pageInfo)
+          const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
+          ref.push(obj);
+          ref.push({ name: 'XYZ' });
+          ref.push(data.x);
+          ref.push(data.y);
+          ref.push(null);
+          console.log('ref: ',ref)
+          this.hover.emit(
+            {
+              show: true,
+              page: data.page,
+              refDestination: ref,
+              clientX: data.x,
+              clienY: data.y,
+              height: data.height,
+              width: data.width,
+            }
+          )
+        });
+      });
+
+      anchor.addEventListener('mouseleave', (event:any)=>{
+        this.hover.emit(
+          {
+            show: false
+          }
+        )
+      })
+    });
+  }
+
+
+
+  highlightReference(pageNo, spans, AllRefs) {
+    spans.map((span) => {
+      let spanText = span.innerHTML;
+
+      // referencing figure
+      let restOfTheString = '';
+      let startingIndex = spanText.toLowerCase().indexOf('fig');
+      let finalIndex = -1;
+
+      if (startingIndex > -1) {
+        for (let i = startingIndex; i < spanText.length; i++)
+          restOfTheString += spanText[i];
+        let remainingWords = restOfTheString.split(/[ .]/);
+        if (
+          !remainingWords[0].toLocaleLowerCase().localeCompare('fig') ||
+          !remainingWords[0].toLocaleLowerCase().localeCompare('figure')
+        ) {
+          for (let i = startingIndex; i < spanText.length; i++) {
+            if (
+              spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
+              spanText.charCodeAt(i) <= '9'.charCodeAt(0)
+            ) {
+              finalIndex = i;
+              break;
+            }
+          }
+
+          span.innerHTML = this.placeWrappingTagForRefrence(
+            span.innerHTML,
+            startingIndex,
+            finalIndex
+          );
+        }
+      }
+
+      startingIndex = spanText.toLocaleLowerCase().indexOf('table');
+      if (startingIndex > -1) {
+        restOfTheString = '';
+        for (let i = startingIndex; i < spanText.length; i++)
+          restOfTheString += spanText[i];
+        let remainingWords = restOfTheString.split(/[ .]/);
+        if (
+          !remainingWords[0].toLocaleLowerCase().localeCompare('tab') ||
+          !remainingWords[0].toLocaleLowerCase().localeCompare('table')
+        ) {
+          for (let i = startingIndex; i < spanText.length; i++) {
+            if (
+              spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
+              spanText.charCodeAt(i) <= '9'.charCodeAt(0)
+            ) {
+              finalIndex = i;
+              break;
+            }
+          }
+
+          span.innerHTML = this.placeWrappingTagForRefrence(
+            span.innerHTML,
+            startingIndex,
+            finalIndex
+          );
+         // console.log(startingIndex, restOfTheString, finalIndex);
+        }
+      }
+    });
+
+    this.addEventHandler();
+  }
+
   private initEventBus() {
     this.eventBus = createEventBus(PDFJSViewer, this.destroy$);
 
     fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
       .pipe(takeUntil(this.destroy$))
-      .subscribe((event) => {
-        setTimeout(()=>{
-          this.pageRendered.emit(event);
-        },500)
+      .subscribe((event:any) => {
+        setTimeout( async () => {
+          console.log(this.destinations.length)
+          if(this.destinations.length==0){
+            //manual referencing start if no automatic reference found
+            this.refs = await getManualReferences(this.src)
+            let spans = event.source.textLayer.textDivs;
+            this.highlightReference(event.pageChange, spans, Array.from(this.refs));
+          }
+          
+        }, 1100);
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
@@ -465,10 +714,47 @@ export class PdfViewerComponent
       });
   }
 
+  private initPopOverEventBus() {
+    this.popOverEventBus = createEventBus(PDFJSViewer, this.destroyPopOver$);
+
+    fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
+      .pipe(takeUntil(this.destroyPopOver$))
+      .subscribe((event) => {
+        setTimeout(() => {
+          // this.pageRendered.emit(event);
+        }, 500);
+      });
+
+    fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
+      .pipe(takeUntil(this.destroyPopOver$))
+      .subscribe((event) => {
+        // this.pageInitialized.emit(event);
+      });
+
+    fromEvent(this.eventBus, 'pagechanging')
+      .pipe(takeUntil(this.destroyPopOver$))
+      .subscribe(({ pageNumber }) => {
+        if (this.pageScrollTimeout) {
+          clearTimeout(this.pageScrollTimeout);
+        }
+
+        this.pageScrollTimeout = window.setTimeout(() => {
+          this._latestScrolledPage = pageNumber;
+          //  this.pageChange.emit(pageNumber);
+        }, 100);
+      });
+
+    fromEvent<CustomEvent>(this.eventBus, 'textlayerrendered')
+      .pipe(takeUntil(this.destroyPopOver$))
+      .subscribe((event) => {
+        // this.textLayerRendered.emit(event);
+      });
+  }
+
   private initPDFServices() {
     this.pdfLinkService = new PDFJSViewer.PDFLinkService({
       eventBus: this.eventBus,
-      ...this.getPDFLinkServiceConfig()
+      ...this.getPDFLinkServiceConfig(),
     });
     this.pdfFindController = new PDFJSViewer.PDFFindController({
       eventBus: this.eventBus,
@@ -476,6 +762,16 @@ export class PdfViewerComponent
     });
   }
 
+  private initPopOverPDFService() {
+    this.popOverPdfLinkService = new PDFJSViewer.PDFLinkService({
+      eventBus: this.popOverEventBus,
+      ...this.getPDFLinkServiceConfig(),
+    });
+    this.popOverPDFFindControler = new PDFJSViewer.PDFFindController({
+      eventBus: this.popOverEventBus,
+      linkService: this.popOverPdfLinkService,
+    });
+  }
   private getPDFOptions(): PDFViewerOptions {
     return {
       eventBus: this.eventBus,
@@ -492,6 +788,23 @@ export class PdfViewerComponent
     };
   }
 
+  private getPopOverPDFOptions(): PDFViewerOptions {
+    //console.log('pop element: ',this.pdfPopOverContainer.nativeElement)
+    //console.log('element: ', this.element.nativeElement.querySelector('div'))
+    return {
+      eventBus: this.popOverEventBus,
+      container: this.pdfPopOverContainer.nativeElement,
+      removePageBorders: true,
+      linkService: this.popOverPdfLinkService,
+      textLayerMode: this._renderText
+        ? this._renderTextMode
+        : RenderTextMode.DISABLED,
+      renderer: 'canvas',
+      l10n: undefined,
+      imageResourcesPath: this._imageResourcesPath,
+    };
+  }
+
   private setupViewer() {
     assign(PDFJS, 'disableTextLayer', !this._renderText);
 
@@ -500,7 +813,9 @@ export class PdfViewerComponent
     if (this._showAll) {
       this.pdfViewer = new PDFJSViewer.PDFViewer(this.getPDFOptions());
     } else {
-      this.pdfViewer = new PDFJSViewer.PDFSinglePageViewer(this.getPDFOptions());
+      this.pdfViewer = new PDFJSViewer.PDFSinglePageViewer(
+        this.getPDFOptions()
+      );
     }
     this.pdfLinkService.setViewer(this.pdfViewer);
 
@@ -529,7 +844,7 @@ export class PdfViewerComponent
     const params: any = {
       cMapUrl: this._cMapsUrl,
       cMapPacked: true,
-      enableXfa: true
+      enableXfa: true,
     };
 
     if (srcType === 'string') {
@@ -552,6 +867,7 @@ export class PdfViewerComponent
 
     if (this.lastLoaded === this.src) {
       this.update();
+      this.getReferences();
       return;
     }
 
@@ -572,6 +888,16 @@ export class PdfViewerComponent
       .subscribe({
         next: (pdf) => {
           this._pdf = pdf;
+          this.getReferences();
+          //this._pdfClone._transport =  this._pdf._transport;
+          //this._pdfClone._pdfInfo = this._pdf._pdfInfo;
+          //this._pdfClone.
+          this._pdfClone = Object.assign(
+            Object.create(Object.getPrototypeOf(this._pdf)),
+            this._pdf
+          );
+          //console.log(this._pdf, this._pdfClone)
+
           this.lastLoaded = src;
 
           this.afterLoadComplete.emit(pdf);
@@ -582,7 +908,7 @@ export class PdfViewerComponent
         error: (error) => {
           this.lastLoaded = null;
           this.onError.emit(error);
-        }
+        },
       });
   }
 
@@ -593,6 +919,7 @@ export class PdfViewerComponent
   }
 
   private render() {
+    console.log('render called')
     this._page = this.getValidPageNumber(this._page);
 
     if (
@@ -611,14 +938,60 @@ export class PdfViewerComponent
     }
 
     this.updateSize();
-    
+    //preview required
+    if (this.startingPosition) {
+      console.log(this.startingPosition)
+      //document has annotaitons, no manual annotation creation required
+      if (!this.startingPosition.requireManualAnnotaion) {
+        
+        console.log('start pos', this.startingPosition.requireManualAnnotaion);
+        this.pdfLinkService.goToDestination(this.startingPosition);
+      } else {
+        //document needs manudal references created before being loaded
+        console.log(this.startingPosition)
+        let pageNum = this.startingPosition.page;
+        let ref = [];
+        if (pageNum != undefined) {
+          this._pdf.getPage(pageNum).then((page: PDFPageProxy) => {
+            const pageInfo = page._pageInfo;
+            console.log('page info: ', pageInfo)
+            const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
+            ref.push(obj);
+            ref.push({ name: 'XYZ' });
+            ref.push(this.startingPosition.x);
+            ref.push(this.startingPosition.y);
+            //ref.push(null);
+            console.log('ref: ',ref)
+            this.pdfLinkService.goToDestination(ref);
+            console.log('hover: ', this.hover)
+            console.log('gotodestination')
+            
+            this.hover.emit(
+              {
+                show: true,
+                page: pageNum,
+                refDestination: ref,
+                clientX: this.startingPosition.x,
+                clienY: this.startingPosition.y,
+                height: this.startingPosition.height,
+                width: this.startingPosition.width,
+              }
+            )
+          });
+        }
+      }
+    }
     this.getReferences();
   }
 
   private getScale(viewportWidth: number, viewportHeight: number) {
-    const borderSize = this._showBorders ? 2 * PdfViewerComponent.BORDER_WIDTH : 0;
-    const pdfContainerWidth = this.pdfViewerContainer.nativeElement.clientWidth - borderSize;
-    const pdfContainerHeight = this.pdfViewerContainer.nativeElement.clientHeight - borderSize;
+    const borderSize = this._showBorders
+      ? 2 * PdfViewerComponent.BORDER_WIDTH
+      : 0;
+    const pdfContainerWidth =
+      this.pdfViewerContainer.nativeElement.clientWidth - borderSize;
+    const pdfContainerHeight =
+      this.pdfViewerContainer.nativeElement.clientHeight - borderSize;
 
     if (
       pdfContainerHeight === 0 ||
@@ -682,4 +1055,5 @@ export class PdfViewerComponent
         });
     });
   }
+
 }

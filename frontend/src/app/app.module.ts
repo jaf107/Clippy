@@ -20,7 +20,7 @@ import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { SummarizerComponent } from './modules/summarizer/summarizer.component';
 import { PdfViewerModule } from './modules/pdf-viewer-custom-library/pdf-viewer.module';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { TooltipModule } from 'ng2-tooltip-directive';
+import { PdfPreviewComponent } from './modules/pdf-viewer/pdf-preview/pdf-preview.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +33,8 @@ import { TooltipModule } from 'ng2-tooltip-directive';
     KnowledgeGraphComponent,
     PdfViewerComponent,
     SidebarComponent,
-    SummarizerComponent
+    SummarizerComponent,
+    PdfPreviewComponent
   ],
   imports: [
     BrowserModule,

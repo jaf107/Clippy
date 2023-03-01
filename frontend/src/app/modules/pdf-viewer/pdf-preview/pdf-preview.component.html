@@ -1,0 +1,8 @@
+<pdf-viewer 
+    [src]="pdfPath"
+    [show-borders]="false"
+    [startingPosition]="reference"
+    [ngStyle]="{'height': height, 'width': width, 'top': offsetY, 'left': offsetX, 'border-style': 'solid', 'border-color': 'black', 'border-width':'2px', 'box-shadow': shadowSTR}"
+    (references)="getReferences($event)"
+    >
+</pdf-viewer>

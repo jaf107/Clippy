@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChild } from '@angular/core';
 import { FeaturesService } from '../shared/features.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 import { saveAs } from 'file-saver';
@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 
 import * as HL from '../../../assets/highlight.json';
+import * as refs from '../../../assets/reference.json';
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -41,10 +42,21 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     // Increasing this setting allows your users to use higher zoom factors,
     // trading image quality for performance.
   }
+  previewPageNum: number;
+  reference: any;
+  showPreview: boolean;
+  topCSS: number;
+  leftCSSstr: string;
+  topCSSstr: string;
+  heightStr: string;
+  widthStr: string;
+
+  leftCSS: number;
+  @ViewChild('viewerRef') viewerRef: HTMLElement;
 
   ngOnInit() {
     this.pdfPath = this.pdfShareService.getFile();
-    console.log(this.pdfPath);
+    //console.log(this.pdfPath);
 
     if (this.pdfPath == null) {
       this.pdfPath = './assets/SCORE_intro.pdf';
@@ -55,7 +67,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
     this.featureService.getSummarizerStatus().subscribe((value) => {
       this.summarizerOn = value;
-      console.log('Summary is on ' + this.summarizerOn);
+      //console.log('Summary is on ' + this.summarizerOn);
     });
 
     this.featureService.getKnowledgeGraphStatus().subscribe((value) => {
@@ -64,10 +76,10 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
 
   getReferences(e: any) {
-    // console.log(e.data.length);
+    //console.log(e.data.length);
   }
   ngAfterViewInit() {
-    console.log('View is initialized ' + this.pdfPath);
+    //console.log('View is initialized ' + this.pdfPath);
   }
 
   failed() {
@@ -87,61 +99,197 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param e custom event
    */
   pageRendered(e: any) {
-    console.log('(page-rendered)', e);
+    //console.log('(page-rendered)', e);
     // Select page container
-    let spans = e.source.textLayer.textDivs;
-    let higlightedSegments = filterHighlightsForAPage(
-      Array.from(HL),
-      e.pageNumber
+    // let spans = e.source.textLayer.textDivs;
+    // this.highlightSummary(e.pageNumber, spans, Array.from(HL));
+    // this.highlightReference(e.pageChange, spans, Array.from(refs));
+  }
+
+  highlightSummary(pgaeNo, spans, AllSegments) {
+    let higlightedSegments = this.filterDataSegmentsForAPage(
+      AllSegments,
+      pgaeNo
     );
 
     higlightedSegments.map((segment) => {
       let span = spans[segment.chunkIndex];
-      let textToBeWrapped = addWrappingTag(span.innerHTML, segment.str);
+      let textToBeWrapped = this.addWrappingTagForSummaryHighlight(
+        span.innerHTML,
+        segment.str,
+        'summary-highlight',
+        'aqua'
+      );
       span.innerHTML = textToBeWrapped;
     });
-
-    // Helpers
-    function filterHighlightsForAPage(highlightSegments, pageNo) {
-      let segmentsForAPage = [];
-      for (let i = 0; i < highlightSegments.length; i++) {
-        let sen = highlightSegments[i];
-        for (let j = 0; j < sen.segment.length; j++) {
-          let seg = sen.segment[j];
-          if (seg.pageNo === pageNo) segmentsForAPage.push(seg);
-        }
-      }
-      return segmentsForAPage;
-    }
-
-    function addWrappingTag(spanStr, segStr) {
-      let startingIndex = spanStr.indexOf(segStr);
-      let wrappedText = ``;
-
-      for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
-      wrappedText += `<a class="highlighed-text">`;
-      for (let i = startingIndex; i < startingIndex + segStr.length; i++)
-        wrappedText += spanStr[i];
-      wrappedText += `</a>`;
-      for (let i = startingIndex + segStr.length; i < spanStr.length; i++)
-        wrappedText += spanStr[i];
-
-      return wrappedText;
-    }
   }
 
-  replaceTextChunk(spanElement: any) {
-    if (spanElement.children.length > 0) return;
-    let finalHTML = spanElement.innerHTML
-      .split(' ')
-      .map((w) => {
-        if (w.includes('95')) {
-          return `<a href="https://www.google.com" style="color:red !important; background-color: red !important" class="clickable-text">${w}</a>`;
-        }
-        return w;
-      })
-      .join(' ');
-    spanElement.innerHTML = finalHTML;
+  /**
+   * mathc patterns: Fig, fig, figure, Figure, Table, table, tab
+   * @param pageNo current page no
+   * @param spans text spans for current page
+   * @param AllRefs All reference objects
+   */
+  // highlightReference(pageNo, spans, AllRefs) {
+  //   spans.map((span) => {
+  //     let spanText = span.innerHTML;
+
+  //     // referencing figure
+  //     let restOfTheString = '';
+  //     let startingIndex = spanText.toLowerCase().indexOf('fig');
+  //     let finalIndex = -1;
+
+  //     if (startingIndex > -1) {
+  //       for (let i = startingIndex; i < spanText.length; i++)
+  //         restOfTheString += spanText[i];
+  //       let remainingWords = restOfTheString.split(/[ .]/);
+  //       if (
+  //         !remainingWords[0].toLocaleLowerCase().localeCompare('fig') ||
+  //         !remainingWords[0].toLocaleLowerCase().localeCompare('figure')
+  //       ) {
+  //         for (let i = startingIndex; i < spanText.length; i++) {
+  //           if (
+  //             spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
+  //             spanText.charCodeAt(i) <= '9'.charCodeAt(0)
+  //           ) {
+  //             finalIndex = i;
+  //             break;
+  //           }
+  //         }
+
+  //         span.innerHTML = this.placeWrappingTagForRefrence(
+  //           span.innerHTML,
+  //           startingIndex,
+  //           finalIndex
+  //         );
+  //       }
+  //     }
+
+  //     startingIndex = spanText.toLocaleLowerCase().indexOf('table');
+  //     if (startingIndex > -1) {
+  //       restOfTheString = '';
+  //       for (let i = startingIndex; i < spanText.length; i++)
+  //         restOfTheString += spanText[i];
+  //       let remainingWords = restOfTheString.split(/[ .]/);
+  //       if (
+  //         !remainingWords[0].toLocaleLowerCase().localeCompare('tab') ||
+  //         !remainingWords[0].toLocaleLowerCase().localeCompare('table')
+  //       ) {
+  //         for (let i = startingIndex; i < spanText.length; i++) {
+  //           if (
+  //             spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
+  //             spanText.charCodeAt(i) <= '9'.charCodeAt(0)
+  //           ) {
+  //             finalIndex = i;
+  //             break;
+  //           }
+  //         }
+
+  //         span.innerHTML = this.placeWrappingTagForRefrence(
+  //           span.innerHTML,
+  //           startingIndex,
+  //           finalIndex
+  //         );
+  //        // console.log(startingIndex, restOfTheString, finalIndex);
+  //       }
+  //     }
+  //   });
+
+  //   this.addEventHandler();
+  // }
+
+  // Helpers for highlighting
+
+  filterDataSegmentsForAPage(dataSegments, pageNo) {
+    let segmentsForAPage = [];
+    for (let i = 0; i < dataSegments.length; i++) {
+      let sen = dataSegments[i];
+      for (let j = 0; j < sen.segment.length; j++) {
+        let seg = sen.segment[j];
+        if (seg.pageNo === pageNo) segmentsForAPage.push(seg);
+      }
+    }
+    return segmentsForAPage;
+  }
+
+  // placeWrappingTagForRefrence(spanStr, startingIndex, finalIndex) {
+  //   let finalStr = '';
+  //   for (let i = 0; i < startingIndex; i++) finalStr += spanStr[i];
+  //   finalStr += `<a href="" #manualRefererencingNeeded class="reference-text" style="backgournd-color: yellow !important;">`;
+  //   for (let i = startingIndex; i <= finalIndex; i++) finalStr += spanStr[i];
+  //   finalStr += `</a>`;
+  //   for (let i = finalIndex + 1; i < spanStr.length; i++)
+  //     finalStr += spanStr[i];
+  //   return finalStr;
+  // }
+
+  // addEventHandler() {
+  //   let AllRefs = Array.from(refs);
+  //   let refTextAnchors = document.querySelectorAll('.reference-text');
+  //   refTextAnchors.forEach((anchor) => {
+  //     anchor.addEventListener('mouseenter', (event: any) => {
+  //       event.preventDefault();
+  //       let text = event.target.innerText;
+  //       let splittedStr = text.split(' ');
+
+  //       let type, id;
+  //       if (splittedStr[0].toLocaleLowerCase().includes('fig')) type = 'figure';
+  //       else if (splittedStr[0].toLocaleLowerCase().includes('tab'))
+  //         type = 'table';
+
+  //       let refDatas = AllRefs.filter((ref) => ref.str.includes(type));
+  //       let data: any = {};
+  //       let key = splittedStr[1];
+
+  //       for (let r = 0; r < refDatas.length; r++) {
+  //         if (refDatas[r].str.includes(key)) {
+  //           data = refDatas[r];
+  //           break;
+  //         }
+  //       }
+
+  //       this.reference = { ...data, requireManualAnnotaion: true };
+  //       //this.showPreview = true;
+  //       this.previewPageNum = data.page;
+  //       this.leftCSSstr = data.x + 'px';
+  //       this.topCSSstr = data.y + 'px';
+  //       this.heightStr = data.height + 'px';
+  //       this.widthStr = data.width + 'px';
+
+  //       //console.log({ ...data, requireManualAnnotaion: true });
+  //       //console.log(event);
+  //     });
+  //   });
+  // }
+
+  addWrappingTagForSummaryHighlight(
+    spanStr,
+    segStr,
+    selectionClass,
+    highlightColor
+  ) {
+    let startingIndex = spanStr.indexOf(segStr);
+    let wrappedText = ``;
+    for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
+    wrappedText += `<a class="highlighed-text ${selectionClass}" #manual style="background-color: ${highlightColor} !important; color: ${highlightColor} !important;">`;
+    for (let i = startingIndex; i < startingIndex + segStr.length; i++)
+      wrappedText += spanStr[i];
+    wrappedText += `</a>`;
+    for (let i = startingIndex + segStr.length; i < spanStr.length; i++)
+      wrappedText += spanStr[i];
+    return wrappedText;
+  }
+
+  convertVHToPx(value: number): number {
+    return (window.innerHeight * value) / 100;
+  }
+
+  convertREMToPx(value: number): number {
+    const html = document.querySelector('html');
+    const fontSize = window
+      .getComputedStyle(html)
+      .getPropertyValue('font-size');
+    return parseFloat(fontSize) * value;
   }
 
   zoomIn() {
@@ -223,5 +371,25 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    */
   pageChange(e: number) {
     // console.log('(page-change)', e);
+  }
+
+  createPreview(e: any) {
+    console.log('event received: ', e);
+    this.showPreview = e.show;
+    if (e.show) {
+      this.previewPageNum = e.page;
+      this.reference = e.refDestination;
+      this.reference.requireManualAnnotation = false;
+      let entireScreenHeight = this.convertVHToPx(90);
+      let entireScreenWidth = this.convertREMToPx(50);
+      //console.log(e);
+      this.topCSS = -1 * (entireScreenHeight - e.clienY);
+      //console.log(e.clienY);
+      this.leftCSS = e.clientX;
+      this.topCSSstr = this.topCSS + 'px';
+      this.leftCSSstr = this.leftCSS + 'px';
+      this.heightStr = e.height + 'px';
+      this.widthStr = e.width + 'px';
+    }
   }
 }

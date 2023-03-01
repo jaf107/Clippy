@@ -1,3 +1,8 @@
+# output txt files
+pdfjs-test/object.txt
+pdfjs-test/output.txt
+pdfjs-test/heights.txt
+
 # Logs
 logs
 *.log

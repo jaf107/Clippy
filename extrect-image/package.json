@@ -11,6 +11,8 @@
   "author": "Kazi Muktadir Ahmed",
   "license": "ISC",
   "dependencies": {
-    "pdf-export-images": "^1.0.9"
+    "pdf-export-images": "^1.0.9",
+    "pdfjs-dist": "^3.3.122",
+    "sharp": "^0.31.3"
   }
 }

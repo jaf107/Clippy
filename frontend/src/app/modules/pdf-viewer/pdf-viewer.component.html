@@ -65,6 +65,7 @@
          </div>
       </div>
       <pdf-viewer 
+      #viewerRef
       [src]="pdfPath" 
       [zoom]="zoom" 
       [rotation]="rotation"
@@ -79,7 +80,21 @@
       [render-text]="true" 
       [original-size]="false"
       style="width: 96vw; height: 90vh; margin: 0 auto; overflow: visible;"
+      (references)="getReferences($event)"
+      (hover)="createPreview($event)"
+      style="width: 50rem; height: 90vh"
       ></pdf-viewer>
+      <app-pdf-preview
+      [ngStyle]="{ display: showPreview ? 'block' : 'none' }"
+      [pdfPath]="pdfPath"
+      [page]="previewPageNum"
+      [reference]="reference"
+      [offsetX]="leftCSSstr"
+      [offsetY]="topCSSstr"
+      [height]="heightStr"
+      [width]="widthStr"
+    >
+    </app-pdf-preview>
    </div>
    <div class="leftGraph" [ngStyle]="{'visibility': graphOn == true ? 'visible':'hidden'}">
       <div class="graphCanvas">
