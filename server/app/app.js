@@ -17,6 +17,7 @@ const {
   userRouter,
   paperRouter,
 } = require("./routes");
+const { type } = require("os");
 
 // global constants
 dotenv.config();
@@ -31,12 +32,13 @@ const {
 // database
 connectToDatabase();
 
-// body parser setup
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json({ type: "*/*" }));
+app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.json({ limit: "4MB" }));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(fileUpload());
+app.use("/uploads", express.static("uploads"));
+
+//app.use(fileUpload());
 app.use(cors({ credentials: true, origin: "http://localhost:4200" }));
 
 // response headers setup; CORS
@@ -49,13 +51,6 @@ app.use(
     httpOnly: true,
   })
 );
-
-//Cloudinary Config
-cloudinary.config({
-  cloud_name: "dpf3hdncd",
-  api_key: "397994995141357",
-  api_secret: "1-IKBhBI4GlM2iwKJ0TQ5N5fa90",
-});
 
 app.use("/things", thingsRouter);
 app.use("/api/auth", authRouter);

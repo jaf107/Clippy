@@ -7,9 +7,20 @@ import { PdfShareService } from '../shared/pdf-share.service';
 
 
 interface edges{
-  "source":string,
-  "target":string
+  data:{
+  source:string,
+  target:string
+  }
 }
+
+interface nodes{
+  data:{
+    id:string,
+    name:string
+  }
+}
+
+const uniquePapers = new Set();
 
 @Component({
   selector: 'app-knowledge-graph',
@@ -21,11 +32,12 @@ interface edges{
 export class KnowledgeGraphComponent implements OnInit {
 
   cy: any;
+  public errorGraph = false;
 
   public graphEdges : edges[] = [];
+  public graphNodes : nodes[] = [];
 
   constructor(
-    public pdfShareService: PdfShareService,
     private featureService: FeaturesService
     ){}
 
@@ -35,44 +47,52 @@ export class KnowledgeGraphComponent implements OnInit {
 
   ngOnInit() {
 
-    this.pdfShareService.getKnowledgeGraphStatus().subscribe((value)=>{
+    this.featureService.getKnowledgeGraphStatus().subscribe((value)=>{
       this.graphOn = value;
       if(this.graphOn){
         console.log("Hello from knowledge graph component");
-        this.featureService.getCitationGraph('649def34f8be52c8b66281af98ae884c09aef38b').subscribe(
+        this.featureService.getCitationGraph('dad7810836060b8e6364e070ac3d0054644d17e7').subscribe(
           (data) =>{
             this.graphData = JSON.parse(data);
-            this.addDatatoGraph();
+            this.addDataToGraph();
             console.log(JSON.parse(data));
+
+            this.initializeGraph();
           },
           (err) => {
             console.log("Error in graph");
+            this.errorInGraph();
           }
         );
       }
     })
 
+  }
 
+
+  initializeGraph(){
     // Initialize cytoscape instance
     this.cy = cytoscape({
       container: document.getElementById('cy'),
 
       // Graph data
       elements: {
-        nodes: [
-          { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
-          { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
-          { data: { id: 'c' , name: 'Summarization' } },
-          { data: { id: 'd' , name: 'Paperrrr' } },
-          { data: { id: 'e' , name: 'SCOREEEE' } },
-        ],
-        edges: [
-          { data: { source: 'a', target: 'b' } },
-          { data: { source: 'a', target: 'c' } },
-          { data: { source: 'b', target: 'd' } },
-          { data: { source: 'd', target: 'e' } },
-          { data: { source: 'c', target: 'd' } },
-        ],
+        // nodes: [
+        //   { data: { id: 'a' , name: 'Automated Repair of Responsive Web Page Layouts' } },
+        //   { data: { id: 'b' , name: 'Automated User Experience Testing through Multi-Dimensional Performance Impact Analysis' } },
+        //   { data: { id: 'c' , name: 'Summarization' } },
+        //   { data: { id: 'd' , name: 'Paperrrr' } },
+        //   { data: { id: 'e' , name: 'SCOREEEE' } },
+        // ],
+        nodes: this.graphNodes,
+        edges: this.graphEdges,
+        // edges: [
+          // { data: { source: 'a', target: 'b' } },
+          // { data: { source: 'a', target: 'c' } },
+          // { data: { source: 'b', target: 'd' } },
+          // { data: { source: 'd', target: 'e' } },
+          // { data: { source: 'c', target: 'd' } },
+        // ],
       },
 
       // Graph style
@@ -124,13 +144,13 @@ export class KnowledgeGraphComponent implements OnInit {
 
       // Graph layout
       layout: {
-        name: 'breadthfirst',
+        name: 'concentric',
         fit: true, // whether to fit the viewport to the graph
         directed: true, // whether the tree is directed downwards (or edges can point in any direction if false)
         padding: 30, // padding on fit
         circle: false, // put depths in concentric circles if true, put depths top down if false
         grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
-        spacingFactor: 0.9, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
+        spacingFactor: 1.5, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
         boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
         avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
         nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
@@ -144,19 +164,42 @@ export class KnowledgeGraphComponent implements OnInit {
         ready: undefined, // callback on layoutready
         stop: undefined, // callback on layoutstop
       },
+
+      minZoom: 1e-50,
+      maxZoom: 1e50,
+      zoomingEnabled: true,
+      userZoomingEnabled: true,
+      panningEnabled: true,
+      userPanningEnabled: true,
+      boxSelectionEnabled: true,
+      selectionType: 'single',
     });
+
+    this.cy.add(this.graphNodes);
     // // Add panzoom and navigator extensions
     panzoom(this.cy);
     navigator(this.cy);
   }
+  
+  errorInGraph(){
+    this.errorGraph = true;
+  }
 
-  addDatatoGraph(){
-    this.graphData.forEach(edge => {
-      if(edge.from.title != undefined){
-        let singleEdge = {'source':edge.from.title, 'target':edge.to.title};
-        this.graphEdges.push(singleEdge);
-        console.log(singleEdge);
+  addDataToGraph(){
+
+    let root = this.graphData[0].title.toString();
+    this.graphData.forEach(node => {
+      let singleNode = {'id':node.title.toString(), 'name':node.title.toString()};
+      this.graphNodes.push({'data':singleNode});
+
+      if(root != node.title.toString()){
+        let singleEdge = {'source':root, 'target':node.title.toString()};
+        this.graphEdges.push({'data':singleEdge});
       }
     });
+
+    console.log(this.graphNodes);
+    console.log(this.graphEdges);
   }
+
 }

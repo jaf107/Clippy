@@ -6,54 +6,64 @@ import { pdfs } from 'src/app/interfaces/file';
 import { TokenStorageService } from 'src/app/token-storage.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
-export class HomeComponent{
-
+export class HomeComponent {
   constructor(
-    private toastr: ToastrService, 
-    public pdfShareService: PdfShareService, 
+    private toastr: ToastrService,
+    public pdfShareService: PdfShareService,
     private route: Router
-  ) { }  
+  ) {}
 
   private file: File | null;
   private url: any;
 
+  faMagnifyingGlass = faMagnifyingGlass;
+
+  searchedTerm = '';
+
   visitedFiles = [];
 
-  openFileDialog(){
+  openFileDialog() {
     document.querySelector('input').click();
   }
 
-  handle(e){
+  handle(e) {
     console.log('change input file');
     this.file = e.target.files[0];
     console.log('size', this.file.name);
 
-    this.visitedFiles.push({name:this.file.name, lastVisited: new Date()});
-    console.log(this.visitedFiles);
-
-    if(this.file.type != 'application/pdf'){
+    if (this.file.type != 'application/pdf') {
       console.log('Not supported file type!');
       this.errorsmsg();
-     }
+    } else {
+      this.visitedFiles.push({ name: this.file.name, lastVisited: new Date() });
+      console.log(this.visitedFiles);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.url = reader.result;
-      this.pdfShareService.sendFile(this.url);
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.url = reader.result;
+        this.pdfShareService.sendFile(this.url);
 
-      this.route.navigate(['pdfviewer']);
-    };
-    reader.readAsArrayBuffer(this.file);
-
+        this.route.navigate(['pdfviewer']);
+      };
+      reader.readAsArrayBuffer(this.file);
+    }
   }
 
-  errorsmsg(){  
-    this.toastr.error("The uploaded file is not a pdf",'Unsupported File Type');
+  errorsmsg() {
+    this.toastr.error(
+      'The uploaded file is not a pdf',
+      'Unsupported File Type'
+    );
+  }
+
+  searchPaper(){
+    console.log('Searched paper is ' + this.searchedTerm);
   }
 }

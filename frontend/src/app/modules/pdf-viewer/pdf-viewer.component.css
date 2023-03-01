@@ -12,18 +12,21 @@
     bottom: 0.5rem;
     width: 96%;
     margin: 0 auto;
-    z-index: 1000;
 }
 
-.right{
-    display: inline-block;
-    width: 4%;
+.right {
+  display: inline-block;
+  width: 4%;
 }
 
-.middle{
-    display: inline-block;
-    width: 0%;
-    vertical-align: top;
+.middle {
+  display: inline-block;
+  width: 0%;
+  vertical-align: top;
+}
+
+.highlighed-text {
+  background-color: yellow;
 }
 
 .graphCanvas{
@@ -32,4 +35,31 @@
     margin-top: 1rem;
     border: 1px solid white;
     border-radius: 10px;
+}
+
+.toolbar{
+    padding-top: 0.5rem;
+    color: #777777;
+    background-color: #404040;
+    box-shadow: 0 4px 2px -2px #333333;
+}
+
+button{
+    margin-right: 0.5rem;
+    background-color: transparent;
+    border: none;
+}
+
+button:hover{
+    background-color: #333333;
+}
+
+.page{
+    text-align: center;
+    color: white;
+    margin-right: 0.5rem;
+    width: 3rem;
+    background-color: transparent;
+    border: 1px solid #777777;
+    border-radius: 2px;
 }
