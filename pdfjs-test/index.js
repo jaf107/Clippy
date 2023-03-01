@@ -118,8 +118,6 @@ async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
     "./sample6.pdf"
   );
-  // arr[2];
-  let threshholdDistance = 90;
   let freq = Array.from(heights).map((item) => {
     return { height: item, count: 0 };
   });
@@ -145,15 +143,6 @@ async function wrapper() {
         item.height > max.height - 0.7 &&
         isAlphanumeric(item.str)
     );
-
-    let temp = {
-      str: "",
-      page: 1,
-      height: 0,
-      weight: 0,
-      x: 0,
-      y: 0,
-    };
 
     regularText.map((item, index, array) => {
       // Table
@@ -205,18 +194,6 @@ async function wrapper() {
         index != 0
       ) {
         if (Math.abs(array[index + 1].transform[5] - item.transform[5]) >= 70) {
-          // If we find the previous chunk in the bottom of
-          // if (item.transform[5] < 100) item.transform[5] = 750;
-          // console.log(
-          //   "Index " +
-          //     index +
-          //     " er  start chunk: " +
-          //     item.str + // start chuk
-          //     "Last chunk:  " +
-          //     array[index + 1].str, // end chunk
-          //   item.transform[5] - array[index + 1].transform[5] // height of the image
-          // );
-
           let tempHeight, tempY, tempX;
           if (item.transform[5] - array[index + 1].transform[5] > 0) {
             tempHeight = item.transform[5] - array[index + 1].transform[5];
