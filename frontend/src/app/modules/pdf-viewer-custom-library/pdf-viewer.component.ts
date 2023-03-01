@@ -133,8 +133,6 @@ export class PdfViewerComponent
     this._cMapsUrl = cMapsUrl;
   }
 
-  @Input('manualRef') manualRef: any;
-
   @Input('page')
   set page(_page) {
     _page = parseInt(_page, 10) || 1;
@@ -236,11 +234,10 @@ export class PdfViewerComponent
     }
     let refParent: HTMLElement;
     if (event.target.hash != undefined) {
-      //if(event.clientX>=)
       const referenceID = event.target.hash.substring(1);
       refParent = event.target.parentElement;
       let refBoundingRect = refParent.getBoundingClientRect();
-
+      console.log(referenceID);
       //console.log('ref rect: ', refBoundingRect)
       const refDestination = await this._pdf.getDestination(referenceID);
       if (refDestination == null) {
