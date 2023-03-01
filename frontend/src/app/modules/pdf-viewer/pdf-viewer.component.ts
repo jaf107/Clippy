@@ -22,7 +22,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   leftCSS: number;
   @ViewChild('viewerRef') viewerRef: HTMLElement;
-  
+
   ngOnInit() {
     this.pdfPath = this.pdfShareService.getFile();
     //console.log(this.pdfPath);
@@ -42,7 +42,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
   ngAfterViewInit() {
     //console.log('View is initialized ' + this.pdfPath);
-
   }
 
   constructor(public pdfShareService: PdfShareService) {}
@@ -97,12 +96,20 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       let wrappedText = ``;
 
       for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
-      wrappedText += `<a class="highlighed-text" style="background-color:#FF5733 !important">`;
+      wrappedText += `<a class="highlighed-text hoverable-text" style="background-color:#FF5733 !important">`;
       for (let i = startingIndex; i < startingIndex + segStr.length; i++)
         wrappedText += spanStr[i];
       wrappedText += `</a>`;
       for (let i = startingIndex + segStr.length; i < spanStr.length; i++)
         wrappedText += spanStr[i];
+
+      let spanList = document.querySelectorAll('.hoverable-text');
+      spanList.forEach((span) => {
+        span.addEventListener('mouseenter', (event) => {
+          event.preventDefault();
+          console.log('mouse over event fired');
+        });
+      });
 
       return wrappedText;
     }
@@ -128,7 +135,9 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   convertREMToPx(value: number): number {
     const html = document.querySelector('html');
-    const fontSize = window.getComputedStyle(html).getPropertyValue('font-size');
+    const fontSize = window
+      .getComputedStyle(html)
+      .getPropertyValue('font-size');
     return parseFloat(fontSize) * value;
   }
 
@@ -153,18 +162,18 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   createPreview(e: any) {
     console.log('event received: ', e);
     this.showPreview = e.show;
-    if(e.show){
+    if (e.show) {
       this.previewPageNum = e.page;
       this.reference = e.refDestination;
       this.reference.requireManualAnnotation = false;
       let entireScreenHeight = this.convertVHToPx(90);
       let entireScreenWidth = this.convertREMToPx(50);
       console.log(entireScreenHeight, entireScreenWidth);
-      this.topCSS = -1*(entireScreenHeight-e.clienY);
-      console.log(e.clienY)
+      this.topCSS = -1 * (entireScreenHeight - e.clienY);
+      console.log(e.clienY);
       this.leftCSS = e.clientX;
       this.topCSSstr = this.topCSS + 'px';
-      this.leftCSSstr = this.leftCSS + 'px'
+      this.leftCSSstr = this.leftCSS + 'px';
     }
   }
 }
