@@ -313,7 +313,7 @@ function noOfSentences(context) {
 async function ExtractiveSummary(src) {
   let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let apiKey = "b0bc1052057e9a922b1c247b7b10840a";
+  let apiKey = "dffe1d46b7dc44e77c2807c775855819";
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];

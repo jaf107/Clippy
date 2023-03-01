@@ -11,26 +11,6 @@ const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const { OneAI } = require("oneai");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 
-class CitationNode {
-  constructor(paperId, title, level) {
-    this.paperId = paperId;
-    this.title = title;
-    this.level = level;
-    this.citationChildren = [];
-  }
-
-  addCitation(citation) {
-    this.citationChildren.push(citation);
-  }
-}
-
-class CitationEdge {
-  constructor(from, to) {
-    this.from = from;
-    this.to = to;
-  }
-}
-
 class Paragraph {
   constructor(title, text) {
     this.title = title;
@@ -132,7 +112,7 @@ exports.uploadPaper = async (req, res) => {
           paper_id: uuid,
           title: req.body.title,
           knowledge_graph: "",
-          url: SERVER_ADDRESS + "/upload/" + uuid + ".pdf",
+          url: "/upload/" + uuid + ".pdf",
           abstract: "",
           abstractive_summary: "",
           extractive_summary: "",
@@ -151,18 +131,23 @@ exports.uploadPaper = async (req, res) => {
 };
 
 exports.searchPaperByTitle = async (req, res) => {
-  const paper_data = await axios.get(
-    SEMANTIC_SCHOLAR_API +
-      `search?query=${req.body.title}&limit=10&fields=isOpenAccess,openAccessPdf`
-  );
+  const paper_data = await axios
+    .get(
+      SEMANTIC_SCHOLAR_API +
+        `search?query=${req.body.title}&limit=10&fields=isOpenAccess,openAccessPdf`
+    )
+    .then((response) => {
+      res.status(200).send(JSON.stringify(response.data));
+    })
+    .catch((err) => {
+      res.status(404).send(err);
+    });
 
-  if (paper_data) {
-    res.status(200).send(JSON.stringify(paper_data.data));
-  } else {
-    res.status(404).send("Paper not found");
-  }
-
-  // .catch((err) => res.status(404).send("Paper Not Found"));
+  // if (paper_data) {
+  //   res.status(200).send(JSON.stringify(paper_data.data));
+  // } else {
+  //   res.status(404).send("Paper not found");
+  // }
 };
 
 exports.searchPaperById = async (req, res) => {
@@ -186,7 +171,7 @@ exports.searchPaperById = async (req, res) => {
       else {
         var paper = {
           title: paper_data.data.title,
-          paper_id: req.body.paper_id,
+          paper_id: paper_data.data.paperId,
           knowledge_graph: "",
           abstract: paper_data.data.abstract,
           url: paper_data.data.openAccessPdf.url,
@@ -205,53 +190,63 @@ exports.searchPaperById = async (req, res) => {
     }
   }
 };
+
 exports.getAbstractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
+  let noOfSentenceInSummary;
   if (paper) {
-    if (paper.abstractive_summary !== "")
-      res.status(200).send(paper.abstractive_summary);
-    else {
-      console.log(paper);
-      let paragraphs = await createJsonObjectFromPdf(paper.url);
-      let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-      let absApiKey = "453265e9-a392-4e2b-aacc-ecc527a3f41f";
-
-      for (let i = 0; i < paragraphs.length; i++) {
-        let element = paragraphs[i];
-        let contextString = element.text;
-        let retryCount = 0;
-
-        if (element.noOfSentences > 50) {
-          noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
-        } else {
-          noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+    if (paper.abstractive_summary !== "") {
+      fs.unlink(req.file.path, (err) => {
+        if (err) throw err;
+        console.log("successfully deleted");
+        res.status(200).send(paper.abstractive_summary);
+      });
+    } else {
+      await AbstractSummary(req.file.path).then((paragraphs) => {
+        const result = Paper.updateOne(
+          { paper_id: req.params.id },
+          { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
+          { upsert: true }
+        ).catch((err) => res.status(200).send(err));
+        if (result) {
+          fs.unlink(req.file.path, (err) => {
+            if (err) throw err;
+            console.log("successfully deleted");
+            res.status(200).send(JSON.stringify(paragraphs));
+          });
         }
+      });
+    }
+  } else {
+    res.status(404).send("Paper not found");
+  }
+};
 
-        while (retryCount < 3) {
-          try {
-            let summary = await requestAbsSummaryWithRetry(
-              contextString,
-              absApiKey,
-              retryCount,
-              noOfSentenceInSummary
-            );
-            paragraphs[i].summaryText = summary;
-            break;
-          } catch (error) {
-            console.log(`Error: index ${i} ${error}`);
-            retryCount++;
-            await delay(1000);
-          }
+exports.getExtractSummary = async (req, res) => {
+  var paper = await Paper.findOne({ paper_id: req.params.id });
+  if (paper) {
+    if (paper.extractive_summary !== "") {
+      fs.unlink(req.file.path, (err) => {
+        if (err) throw err;
+        console.log("successfully deleted");
+        res.status(200).send(paper.abstractive_summary);
+      });
+    } else {
+      await ExtractSummary(req.file.path).then((paragraphs) => {
+        const result = Paper.updateOne(
+          { paper_id: req.params.id },
+          { $set: { extractive_summary: JSON.stringify(paragraphs) } },
+          { upsert: true }
+        ).catch((err) => res.status(200).send(err));
+        if (result) {
+          fs.unlink(req.file.path, (err) => {
+            if (err) throw err;
+            console.log("successfully deleted");
+            res.status(200).send(JSON.stringify(paragraphs));
+          });
+          s;
         }
-      }
-      const result = await Paper.updateOne(
-        { paper_id: req.params.id },
-        { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
-        { upsert: true }
-      ).catch((err) => res.status(200).send(err));
-      if (result) {
-        res.status(200).send(JSON.stringify(paragraphs));
-      }
+      });
     }
   } else {
     res.status(404).send("Paper not found");
@@ -262,7 +257,7 @@ exports.getCitation = async (req, res) => {
   const rootPaperId = req.params.id;
   var paperInDB = await Paper.findOne({ paper_id: rootPaperId });
   if (paperInDB && paperInDB.knowledge_graph != "") {
-    res.status(200).send(JSON.parse(paperInDB.knowledge_graph));
+    res.status(200).send(paperInDB.knowledge_graph);
   } else {
     var citationResponse = await axios
       .get(SEMANTIC_SCHOLAR_API + `${rootPaperId}?fields=title,citations`)
@@ -274,38 +269,6 @@ exports.getCitation = async (req, res) => {
       title: citationResponse.data.title,
     });
 
-    // var rootNode = new CitationNode(rootPaperId, rootNodeTitle, 0);
-    // let edgeList = [];
-    // let rootEdge = new CitationEdge("-1", rootNode);
-    // edgeList.push(rootEdge);
-    // let nodeArray = [];
-    // nodeArray.push(rootNode);
-    // let runningNode = rootNode;
-    // let runningUrl = ``;
-    // while (nodeArray.length != 0) {
-    //   runningNode = nodeArray[0];
-    //   if (runningNode.level > 1) {
-    //     break;
-    //   }
-    //   paperId = runningNode.paperId;
-    //   runningUrl = SEMANTIC_SCHOLAR_API + `${paperId}?fields=title,citations`;
-    //   var runningCitationResponse = await axios
-    //     .get(runningUrl)
-    //     .catch((err) => res.status(404).send(err));
-    //   citationChildren = runningCitationResponse.data.citations;
-    //   citationChildren
-    //     .filter((element) => element.paperId != null)
-    //     .forEach((element) => {
-    //       let paperId = element.paperId;
-    //       let paperTitle = element.title;
-    //       let paperLevel = runningNode.level + 1;
-    //       let citationNode = new CitationNode(paperId, paperTitle, paperLevel);
-    //       if (nodeArray.length < 11) nodeArray.push(citationNode);
-    //       edgeList.push(new CitationEdge(runningNode, citationNode));
-    //     });
-    //   nodeArray.shift();
-    // }
-
     const result = await Paper.updateOne(
       { paper_id: rootPaperId },
       { $set: { knowledge_graph: JSON.stringify(rootCitationData) } },
@@ -316,6 +279,46 @@ exports.getCitation = async (req, res) => {
     }
   }
 };
+
+async function AbstractSummary(filepath) {
+  let paragraphs = await createJsonObjectFromPdf(filepath);
+  if (paragraphs.length > 0) {
+    let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    let absApiKey = "278aff3b-5c8d-4fe3-8fda-cb82b42fba4a";
+
+    for (let i = 0; i < paragraphs.length; i++) {
+      let element = paragraphs[i];
+      let contextString = element.text;
+      let retryCount = 0;
+
+      if (element.noOfSentences > 50) {
+        noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
+      } else {
+        noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
+      }
+
+      while (retryCount < 3) {
+        try {
+          let summary = await requestAbsSummaryWithRetry(
+            contextString,
+            absApiKey,
+            retryCount,
+            noOfSentenceInSummary
+          );
+          if (summary.length > 0) {
+            paragraphs[i].summaryText = summary;
+          }
+          break;
+        } catch (error) {
+          console.log(`Error: index ${i} ${error}`);
+          retryCount++;
+          await delay(1000);
+        }
+      }
+    }
+    return paragraphs;
+  }
+}
 
 async function updateHistory(userId, paper_id, title) {
   // Find the document that matches the paper_id in the history array
@@ -368,20 +371,20 @@ async function createJsonObjectFromPdf(src) {
   let { textChunkArray: arr } = await getPdfTextContent(src);
   arr = arr.flat();
 
-  heights = [];
+  let heights = [];
   arr.forEach((element) => {
     heights.push(element.height);
   });
-  allHeights = heights;
+  let allHeights = heights;
 
   const uniqueHeight = new Set(heights);
 
   heights = Array.from(uniqueHeight);
-  sortedHeights = heights.sort(function (a, b) {
+  let sortedHeights = heights.sort(function (a, b) {
     return b - a;
   });
 
-  heightsCounter = new Array(heights.length).fill(0);
+  let heightsCounter = new Array(heights.length).fill(0);
   allHeights.forEach((element) => {
     for (var i = 0; i < heights.length; i++) {
       if (heights[i] === element) {
@@ -394,13 +397,14 @@ async function createJsonObjectFromPdf(src) {
   let generalTextHeightIndex = 0;
 
   let tempMax = -1;
-  for (var i = 0; i < heights.length; i++) {
+  let i;
+  for (i = 0; i < heights.length; i++) {
     if (heightsCounter[i] > heightsCounter[generalTextHeightIndex]) {
       generalTextHeightIndex = i;
     }
   }
   tempMax = -1;
-  for (var i = 0; i < generalTextHeightIndex; i++) {
+  for (i = 0; i < generalTextHeightIndex; i++) {
     if (heightsCounter[i] > heightsCounter[titleHeightIndex]) {
       titleHeightIndex = i;
     }
@@ -490,13 +494,21 @@ async function createJsonObjectFromPdf(src) {
   });
   return paragraphs;
 }
-
+function noOfSentences(context) {
+  let noOfSentence = 0;
+  for (var i = 0; i < context.length; i++) {
+    if (context[i] == "." || context[i] == "?" || context[i] == "!")
+      noOfSentence++;
+  }
+  // console.log(noOfSentence);
+  return noOfSentence;
+}
 async function getPdfTextContent(src) {
   const doc = await pdfjs.getDocument(src).promise;
   const totalPageCount = doc.numPages;
   doc.getDestination;
   let textChunkArray = [];
-  heights = [];
+  let heights = [];
 
   for (let i = 1; i <= totalPageCount; i++) {
     const page = await doc.getPage(i);
@@ -506,12 +518,13 @@ async function getPdfTextContent(src) {
   }
   const uniqueHeight = new Set(heights);
   heights = Array.from(uniqueHeight);
-  sortedHeights = heights.sort(function (a, b) {
+  let sortedHeights = heights.sort(function (a, b) {
     return b - a;
   });
 
   return { textChunkArray, uniqueHeight };
 }
+
 function writeUniqueHeights(heights, content) {
   const items = content.items.map((item) => {
     heights.push(item.height);
@@ -525,4 +538,14 @@ function getTextChunkObject(content) {
     };
   });
   return retItems;
+}
+
+function noOfSentences(context) {
+  let noOfSentence = 0;
+  for (var i = 0; i < context.length; i++) {
+    if (context[i] == "." || context[i] == "?" || context[i] == "!")
+      noOfSentence++;
+  }
+  // console.log(noOfSentence);
+  return noOfSentence;
 }
