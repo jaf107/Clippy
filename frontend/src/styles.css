@@ -1,7 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Aboreto&family=Dancing+Script:wght@400;500&family=Great+Vibes&family=Poppins:wght@400;700&display=swap');
-
+@import '~ngx-toastr/toastr';
 
 body{
     background-color: #404040;
 }
+
+/* .toastr-container .ngx-toastr{
+} */
+
+.toast-container .toast {
+    box-shadow: none !important;
+}
+.toast-error {
+    background-color: #ac0000;
+    box-shadow: 0 0 12px #a30b0b !important;
+  }

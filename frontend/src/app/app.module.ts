@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LandingPageComponent } from './modules/landing-page/landing-page.component';
@@ -11,7 +14,10 @@ import { HomeComponent } from './modules/home/home.component';
 import { KnowledgeGraphComponent } from './modules/knowledge-graph/knowledge-graph.component';
 import { PdfViewerComponent } from './modules/pdf-viewer/pdf-viewer.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { SummarizerComponent } from './modules/summarizer/summarizer.component';
+import { PdfViewerModule } from './modules/pdf-viewer-custom-library/pdf-viewer.module';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { PdfPreviewComponent } from './modules/pdf-viewer/pdf-preview/pdf-preview.component';
 
 @NgModule({
   declarations: [
@@ -23,14 +29,22 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
     HomeComponent,
     KnowledgeGraphComponent,
     PdfViewerComponent,
-    SidebarComponent
+    SidebarComponent,
+    SummarizerComponent,
+    PdfPreviewComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ToastrModule.forRoot(),
     AppRoutingModule,
-    NgxExtendedPdfViewerModule
+    PdfViewerModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
+platformBrowserDynamic().bootstrapModule(AppModule);
+

@@ -1,0 +1,8 @@
+Dockerfile
+docker-compose.yml
+node_modules
+logos.png
+LICENSE
+README.md
+npm-debug.log
+

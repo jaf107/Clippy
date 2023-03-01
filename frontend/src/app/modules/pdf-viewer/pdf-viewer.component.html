@@ -1,15 +1,37 @@
 <app-navbar></app-navbar>
-<ngx-extended-pdf-viewer
-     [src]=""
-     [textLayer]="true"
-     (textLayerRendered)=highlightWords($event);
-     [page]="9"
-     [useBrowserLocale]="true"
-     [showHandToolButton]="true"
-     [showEditor]="true"
-     [handTool]="false"
-     theme="dark"
-     backgroundColor='#404040'
-     >
-  </ngx-extended-pdf-viewer>
-  <app-sidebar></app-sidebar>
+<div class="container-fluid">
+  <div class="left" [ngStyle]="{ width: summarizerOn == true ? '70%' : '96%' }">
+    <pdf-viewer
+      #viewerRef
+      [src]="pdfPath"
+      [render-text]="true"
+      (page-rendered)="pageRendered($event)"
+      (pages-initialized)="pageInitialized($event)"
+      (pageChange)="pageChange($event)"
+      [original-size]="false"
+      (references)="getReferences($event)"
+      (hover)="createPreview($event)"
+      style="width: 50rem; height: 90vh"
+    ></pdf-viewer>
+
+    <app-pdf-preview
+      [ngStyle]="{ display: showPreview ? 'block' : 'none' }"
+      [pdfPath]="pdfPath"
+      [page]="previewPageNum"
+      [reference]="reference"
+      [offsetX]="leftCSSstr"
+      [offsetY]="topCSSstr"
+    >
+    </app-pdf-preview>
+  </div>
+  <div
+    class="middle"
+    *ngIf="summarizerOn"
+    [ngStyle]="{ width: summarizerOn == true ? '27%' : '0%' }"
+  >
+    <app-summarizer></app-summarizer>
+  </div>
+  <div class="right">
+    <app-sidebar></app-sidebar>
+  </div>
+</div>

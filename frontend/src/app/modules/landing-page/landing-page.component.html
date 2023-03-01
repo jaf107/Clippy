@@ -6,7 +6,7 @@
     <div class="auth">
         <button type="button" class="btn btn-secondary login" routerLink="login" routerLinkActive="active">Sign In</button>
         <br>
-        <button type="button" class="btn btn-outline-secondary guest">Enter as Guest</button>
+        <button type="button" class="btn btn-outline-secondary guest" [routerLink]="homePath">Enter as Guest</button>
         <br>
         <h3 class="text-center signup">Don't have an account?<a routerLink="signup" routerLinkActive="active"><b> Sign Up</b></a></h3>
     </div>

@@ -1,107 +1,178 @@
-import { Component } from '@angular/core';
-import { NgxExtendedPdfViewerService, pdfDefaultOptions, TextLayerRenderedEvent } from 'ngx-extended-pdf-viewer';
+import { Component, AfterViewInit, OnInit, ViewChild } from '@angular/core';
+import { PdfShareService } from '../shared/pdf-share.service';
+import * as HL from '../../../assets/highlight.json';
 
 @Component({
   selector: 'app-pdf-viewer',
   templateUrl: './pdf-viewer.component.html',
-  styleUrls: ['./pdf-viewer.component.css']
+  styleUrls: ['./pdf-viewer.component.css'],
 })
-export class PdfViewerComponent {
-  private alreadyRendered: Array<HTMLSpanElement> = [];
+export class PdfViewerComponent implements AfterViewInit, OnInit {
+  pdfPath: any;
+  pdfSrc = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
+  public summarizerOn: boolean;
+  previewPageNum: number;
+  reference: any;
+  showPreview: boolean;
+  topCSS: number;
+  leftCSSstr: string;
+  topCSSstr: string;
+  heightStr: string;
+  widthStr: string;
 
-  private _showBoxes = false;
-  private _showTextLayer = false;
-  public _markLongWords = false;
+  leftCSS: number;
+  @ViewChild('viewerRef') viewerRef: HTMLElement;
 
-  public get markLongWords(): boolean {
-    return this._markLongWords;
+  ngOnInit() {
+    this.pdfPath = this.pdfShareService.getFile();
+    //console.log(this.pdfPath);
+
+    this.pdfPath = '../../../assets/icse22_toxicity.pdf';
+
+    this.summarizerOn = false;
+
+    this.pdfShareService.getSummarizerStatus().subscribe((value) => {
+      this.summarizerOn = value;
+      //console.log('Summary is on ' + this.summarizerOn);
+    });
   }
 
-  public set markLongWords(mark: boolean) {
-    this._markLongWords = mark;
-    this.alreadyRendered.forEach((span) => this.doMarkLongWordsInSpan(span));
+  getReferences(e: any) {
+    //console.log(e.data.length);
+  }
+  ngAfterViewInit() {
+    //console.log('View is initialized ' + this.pdfPath);
   }
 
-  public doMarkLongWordsInSpan(span: HTMLSpanElement): void {
-    if (!this._markLongWords) {
-      span.innerHTML = span.innerText.replace("\n", '');
-    } else {
-      const withMarks = span.innerText
-        .split(' ')
-        .map((t) => this.markOneLongWord(t))
-        .join(' ');
-      span.innerHTML = withMarks;
-    }
+  constructor(public pdfShareService: PdfShareService) {}
+
+  loaded() {
+    // console.log('Loaded ' + this.pdfPath);
   }
 
-  private markOneLongWord(word: string): string {
-    if (word.length > 6) {
-      return `<div class="long-word">${word}</div>`;
-    }
-    return word;
+  failed() {
+    // console.log('Failed ' + this.pdfPath);
   }
 
-  public get showTextLayer(): boolean {
-    return this._showTextLayer;
+  starts() {
+    // console.log('Started ' + this.pdfPath);
   }
 
-  public set showTextLayer(layer: boolean) {
-    this._showTextLayer = layer;
-    const divs = document.getElementsByClassName('textLayer');
-    for (let i = 0; i < divs.length; i++) {
-      const div = divs.item(i);
-      if (layer) {
-        div.classList.add('show-text-layer');
-      } else {
-        div.classList.remove('show-text-layer');
-      }
-    }
-  }
-  
-  public get showBoxes(): boolean {
-    return this._showBoxes;
-  }
+  /**
+   * Page rendered callback, which is called when a page is rendered (called multiple times)
+   *
+   * @param e custom event
+   */
+  pageRendered(e: any) {
+    //console.log('(page-rendered)', e);
+    // Select page container
+    let spans = e.source.textLayer.textDivs;
+    let higlightedSegments = filterHighlightsForAPage(
+      Array.from(HL),
+      e.pageNumber
+    );
 
-  public set showBoxes(show: boolean) {
-    if (show) {
-      this.alreadyRendered.forEach((span) => {
-        span.classList.add('box');
-      });
-    } else {
-      this.alreadyRendered.forEach((span) => {
-        span.classList.remove('box');
-      });
-    }
-  }
-
-  public highlightWords(event: TextLayerRenderedEvent): void {
-    event.source.textDivs.forEach((span) => {
-      this.alreadyRendered.push(span);
+    higlightedSegments.map((segment) => {
+      let span = spans[segment.chunkIndex];
+      let textToBeWrapped = addWrappingTag(span.innerHTML, segment.str);
+      span.innerHTML = textToBeWrapped;
     });
 
-    if (this.showTextLayer) {
-      event.source.textDivs.forEach((span) => {
-        span.classList.add('box');
-      });
+    // Helpers
+    function filterHighlightsForAPage(highlightSegments, pageNo) {
+      let segmentsForAPage = [];
+      for (let i = 0; i < highlightSegments.length; i++) {
+        let sen = highlightSegments[i];
+        for (let j = 0; j < sen.segment.length; j++) {
+          let seg = sen.segment[j];
+          if (seg.pageNo === pageNo) segmentsForAPage.push(seg);
+        }
+      }
+      return segmentsForAPage;
     }
 
-    if (this._markLongWords) {
-      event.source.textDivs.forEach((span) => {
-        this.doMarkLongWordsInSpan(span);
+    function addWrappingTag(spanStr, segStr) {
+      let startingIndex = spanStr.indexOf(segStr);
+      let wrappedText = ``;
+
+      for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
+      wrappedText += `<a class="highlighed-text hoverable-text" style="background-color:#FF5733 !important">`;
+      for (let i = startingIndex; i < startingIndex + segStr.length; i++)
+        wrappedText += spanStr[i];
+      wrappedText += `</a>`;
+      for (let i = startingIndex + segStr.length; i < spanStr.length; i++)
+        wrappedText += spanStr[i];
+
+      let spanList = document.querySelectorAll('.hoverable-text');
+      spanList.forEach((span) => {
+        span.addEventListener('mouseenter', (event) => {
+          event.preventDefault();
+          console.log('mouse over event fired');
+        });
       });
+
+      return wrappedText;
     }
   }
 
-  constructor(private pdfService: NgxExtendedPdfViewerService) {
-    /* More likely than not you don't need to tweak the pdfDefaultOptions.
-       They are a collecton of less frequently used options.
-       To illustrate how they're used, here are two example settings: */
-    pdfDefaultOptions.doubleTapZoomFactor = '150%'; // The default value is '200%'
-    pdfDefaultOptions.maxCanvasPixels = 4096 * 4096 * 5; // The default value is 4096 * 4096 pixels,
-    // but most devices support much higher resolutions.
-    // Increasing this setting allows your users to use higher zoom factors,
-    // trading image quality for performance.
+  replaceTextChunk(spanElement: any) {
+    if (spanElement.children.length > 0) return;
+    let finalHTML = spanElement.innerHTML
+      .split(' ')
+      .map((w) => {
+        if (w.includes('95')) {
+          return `<a href="https://www.google.com" style="color:red !important; background-color: red !important" class="clickable-text">${w}</a>`;
+        }
+        return w;
+      })
+      .join(' ');
+    spanElement.innerHTML = finalHTML;
+  }
 
-    
+  convertVHToPx(value: number): number {
+    return (window.innerHeight * value) / 100;
+  }
+
+  convertREMToPx(value: number): number {
+    const html = document.querySelector('html');
+    const fontSize = window
+      .getComputedStyle(html)
+      .getPropertyValue('font-size');
+    return parseFloat(fontSize) * value;
+  }
+
+  /**
+   * Page initialized callback.
+   *
+   * @param {CustomEvent} e
+   */
+  pageInitialized(e: CustomEvent) {
+    // console.log('(page-initialized)', e);
+  }
+
+  /**
+   * Page change callback, which is called when a page is changed (called multiple times)
+   *
+   * @param e number
+   */
+  pageChange(e: number) {
+    // console.log('(page-change)', e);
+  }
+
+  createPreview(e: any) {
+    console.log('event received: ', e);
+    this.showPreview = e.show;
+    if (e.show) {
+      this.previewPageNum = e.page;
+      this.reference = e.refDestination;
+      let entireScreenHeight = this.convertVHToPx(90);
+      let entireScreenWidth = this.convertREMToPx(50);
+      console.log(entireScreenHeight, entireScreenWidth);
+      this.topCSS = -1 * (entireScreenHeight - e.clienY);
+      console.log(e.clienY);
+      this.leftCSS = e.clientX;
+      this.topCSSstr = this.topCSS + 'px';
+      this.leftCSSstr = this.leftCSS + 'px';
     }
+  }
 }

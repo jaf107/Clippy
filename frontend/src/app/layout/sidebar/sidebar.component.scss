@@ -1,6 +1,6 @@
 .nav__cont {
     position: fixed;
-    width: 4rem;
+    width: 2.5rem;
     right:0;
     top:3.8rem;
     height: 100vh;
@@ -11,7 +11,7 @@
     cursor:pointer;
     box-shadow:4px 7px 10px rgba(0,0,0,.4);
     &:hover {
-      width:18rem;
+      width:16rem;
     }
     @media screen and (min-width: 600px) {
       width: 4rem;
@@ -28,52 +28,95 @@
   }
   
   .nav__items {
-    padding-bottom:1rem;
+    padding-bottom:0.2rem;
     font-family: 'roboto';
-     a {
+    width: 100%;
+     .item {
       position: relative;
       display:block;
-      top:-35px;
-      padding-left:25px;
-      padding-right:15px;
+      top:-33px;
+      padding: 0.5rem 0.9rem 0.5rem 1.5rem;
       transition:all .3s ease;
-      margin-left:25px;
-      margin-right:10px;
+      margin-left:20px;
+      // margin-right:10px;
       text-decoration: none;
       color:white;
       font-family: 'Poppins';
       font-weight: 70;
       font-size: 1.05em;
-       &:after {
-         content:'';
-         width: 100%;
-         height: 100%;
-         position: absolute;
-         top:0;
-         left:0;
-         border-radius:2px;
-         background:radial-gradient(circle at 94.02% 88.03%, #54a4ff, transparent 100%);
-         opacity:0;
-         transition:all .5s ease;
-         z-index: -10;
-       }
+      &:after {
+        content:'';
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top:0;
+        left:0;
+        border-radius:2px;
+        background:radial-gradient(circle at 94.02% 88.03%, #a7a7a7, transparent 100%);
+        opacity:0;
+        transition:all .5s ease;
+        z-index: -10;
+      }
     }
-    &:hover a:after {
+    &:hover .item:after {
       opacity:1;
     }
      svg{
       width:20px;
       height:20px;
       position: relative;
-      left:-25px;
+      left:-15px;
       cursor:pointer;
       @media screen and (min-width:600px) {
-        width:30px;
-      height:30px;
-  left:-15px;
+        width:25px;
+        height:25px;
+        left:-12px;
       }
     }
   }
+
+  .sub_items{
+    margin-top: 0.5rem;
+    svg{
+      width:12px;
+      height:12px;
+      position: relative;
+      top:-10px;
+      left: 30px;
+      cursor:pointer;
+      @media screen and (min-width:600px) {
+        width:20px;
+        height:20px;
+        left: 35px;
+      }
+    }
+
+  }
+
+  .sub-item{
+    position: relative;
+    display:block;
+    top:-20px;
+    padding: 0.5rem 0.9rem 0.5rem 1.5rem;
+    transition:all .3s ease;
+    margin-left:40px;
+    // margin-right:10px;
+    text-decoration: none;
+    color:white;
+    font-family: 'Poppins';
+    font-weight: 70;
+    font-size: 1.05em;
+}
+
+.sub-item:hover{
+    border-radius:2px;
+    background:radial-gradient(circle at 94.02% 88.03%, #575757, transparent 100%);
+    transition:all .5s ease;
+}
+
+.toggle-icon{
+  position: absolute;
+}
   
   body {
     height: 100vh;
