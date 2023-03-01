@@ -11,5 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "pdfjs-dist": "^3.1.81"
-  }
+  },
+  "keywords": []
 }
