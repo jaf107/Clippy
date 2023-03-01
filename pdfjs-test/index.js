@@ -31,7 +31,6 @@ async function getPdfTextContent(src) {
     return b - a;
   });
 
-  // console.log(sortedHeights);
   sortedHeights.forEach((element) => {
     fs.appendFileSync(
       "./heights.txt",
@@ -70,7 +69,6 @@ function writeObjectToFile(filePath, content, pageNo) {
 
   const items = content.items.map((item) => {
     let style = content.styles[item.fontName];
-    // console.log(item, style);
 
     heights.push(item.height);
 
@@ -116,7 +114,7 @@ function writeChunksArrayToFile(filepath, chunksArray) {
 
 async function wrapper() {
   let { textChunkArray: arr, uniqueHeight: heights } = await getPdfTextContent(
-    "./sample6.pdf"
+    "./sample4.pdf"
   );
   let freq = Array.from(heights).map((item) => {
     return { height: item, count: 0 };
@@ -172,7 +170,6 @@ async function wrapper() {
 
       // For figure
       else if (index == 0 && item.str.toLowerCase().includes("figure")) {
-        // console.log("index 0 paise", item.str);
         if (710 - item.transform[5] >= 50) {
           let tempX = -1;
           if (item.transform[4] < 280) {
@@ -230,7 +227,6 @@ function extractKeywordFromStr(chunkStr, type) {
   for (let i = startingIndex; i < chunkStr.length; i++) textStr += chunkStr[i];
   let splittedArr = textStr.split(" ");
   textStr = splittedArr[0] + " " + splittedArr[1];
-  console.log("In extract key:", chunkStr, " type: ", type);
   return textStr;
 }
 

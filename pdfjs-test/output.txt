@@ -1,4359 +1,2459 @@
 page No: 1 
 ===============
-Adaptive Performance Anomaly Detection for Online Service
-Systems via Pattern Sketching
-
-Zhuangbin Chen
-
-The Chinese University of Hong Kong
-Hong Kong, China
-
-Jinyang Liu
-
-The Chinese University of Hong Kong
-Hong Kong, China
-
-Yuxin Su
+Automatic Generation of Text
+Descriptive Comments for Code Blocks
+Yuding Liang, Kenny Q. Zhu
 ∗
 
-School of Software Engineering
-Sun Yat-sen University
-Zhuhai, China
+liangyuding@sjtu.edu.cn, kzhu@cs.sjtu.edu.cn
+Department of Computer Science and Engineering
+Shanghai Jiao Tong University
+800 Dongchuan Road, Shanghai, China 200240
 
-Hongyu Zhang
+Abstract
 
-The University of Newcastle
-NSW, Australia
-
-Xiao Ling
-Yongqiang Yang
-
-Huawei Cloud BU
-Beijing, China
-
-Michael R. Lyu
-
-The Chinese University of Hong Kong
-Hong Kong, China
-
-ABSTRACT
-
-To ensure the performance of online service systems, their status
-is closely monitored with various software and system metrics.
-Performance anomalies represent the performance degradation is-
-sues (e.g., slow response) of the service systems. When performing
-anomaly detection over the metrics, existing methods often lack the
-merit of interpretability, which is vital for engineers and analysts to
-take remediation actions. Moreover, they are unable to effectively
-accommodate the ever-changing services in an online fashion. To
-address these limitations, in this paper, we propose ADSketch, an in-
-terpretable and adaptive performance anomaly detection approach
-based on pattern sketching. ADSketch achieves interpretability by
-identifying groups of anomalous metric patterns, which represent
-particular types of performance issues. The underlying issues can
-then be immediately recognized if similar patterns emerge again.
-In addition, an adaptive learning algorithm is designed to embrace
-unprecedented patterns induced by service updates or user behav-
-ior changes. The proposed approach is evaluated with public data
-as well as industrial data collected from a representative online
-service system in Huawei Cloud. The experimental results show
-that ADSketch outperforms state-of-the-art approaches by a sig-
-nificant margin, and demonstrate the effectiveness of the online
-algorithm in new pattern discovery. Furthermore, our approach has
-been successfully deployed in industrial practice.
-
-CCS CONCEPTS
-
-•
+We propose a framework to automatically generate descrip-
+tive comments for source code blocks. While this problem
+has been studied by many researchers previously, their meth-
+ods are mostly based on fixed template and achieves poor
+results. Our framework does not rely on any template, but
+makes use of a new recursive neural network called Code-
+RNN to extract features from the source code and embed
+them into one vector. When this vector representation is input
+to a new recurrent neural network (Code-GRU), the overall
+framework generates text descriptions of the code with accu-
+racy (Rouge-2 value) significantly higher than other learning-
+based approaches such as sequence-to-sequence model. The
+Code-RNN model can also be used in other scenario where
+the representation of code is required.
  
-Computer systems organization
- 
-→
- 
-Cloud computing
-;
- 
-Reli-
-ability
-;
- 
-Maintainability and maintenance
-.
-
-KEYWORDS
-
-Cloud computing, performance anomaly detection, online learning
-
-∗
-Corresponding author (suyx35@mail.sysu.edu.cn).
-Permission to make digital or hard copies of all or part of this work for personal or
-classroom use is granted without fee provided that copies are not made or distributed
-for profit or commercial advantage and that copies bear this notice and the full citation
-on the first page. Copyrights for components of this work owned by others than ACM
-must be honored. Abstracting with credit is permitted. To copy otherwise, or republish,
-to post on servers or to redistribute to lists, requires prior specific permission and/or a
-fee. Request permissions from permissions@acm.org.
-
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
-
-©
- 
-2022 Association for Computing Machinery.
-ACM ISBN 978-1-4503-9221-1/22/05. . . $15.00
-https://doi.org/10.1145/3510003.3510085
-
-ACM Reference Format:
-
-Zhuangbin Chen, Jinyang Liu, Yuxin Su, Hongyu Zhang, Xiao Ling, Yongqiang
-Yang, and Michael R. Lyu. 2022. Adaptive Performance Anomaly Detection
-for Online Service Systems via Pattern Sketching. In
- 
-44th International Con-
-ference on Software Engineering (ICSE ’22), May 21–29, 2022, Pittsburgh, PA,
-USA.
- 
-ACM, New York, NY, USA, 12 pages. https://doi.org/10.1145/3510003.
-3510085
+1
 
 1
  
-INTRODUCTION
+Introduction
 
-With the emergence of cloud computing, many traditional soft-
-ware systems have been migrated to cloud computing platforms as
-online services. Similar to conventional shrink-wrapped software,
-the performance of online service systems is an important quality
-attribute. As online services need to serve millions of customers
-worldwide, a short period of performance degradation could lead
-to economic loss and user dissatisfaction. Therefore, proactive and
-even adaptive system troubleshooting has become the core compe-
-tence of online service providers. Enterprises that have promoted
-the automation of system troubleshooting have already received
-real gains in reliability, efficiency, and agility [6, 7, 21].
-In industrial scenarios, online service systems are closely moni-
-tored with various metrics (e.g., the CPU usage of an application,
-service response delay) on a 24
-×
-7 basis. This is because the monitor-
-ing metrics often serve as the most direct and fine-grained signals
-that flag the occurrence of service performance issues. In addition,
-they provide informative clues for engineers to pinpoint the root
-causes. However, due to the large scale and complexity of online
-service systems, the number of metrics is overwhelming the ex-
-isting troubleshooting systems [
-6
-]. Automated anomaly detection
-over the metrics, which aims to discover the unexpected or rare
-behaviors of the metric time series, is therefore an important means
-to ensure the reliability and availability of service systems.
-Although many efforts, e.g., [
-13
- 
-,
- 
-32
-,
- 
-37
- 
-], have been devoted to
-performance anomaly detection, most of the existing work does not
-possess the merit of interpretability. Specifically, at each timestamp,
-they calculate a probability indicating the likelihood of performance
-anomalies. A threshold is then chosen to convert the probability
-into a binary label – normal vs. anomaly. However, in reality, a
-simple recommendation of the suspicious anomalies might not be of
-much interest to engineers. This is because they need to manually
-investigate the problematic metrics (recommended by the model)
-for fault localization. For large-scale online services, this process
+Real-world software development involves large source
+code repositories. Reading and trying to understand other
+people’s code in such repositories is a difficult and unpleas-
+ant process for many software developers, especially when
+the code is not sufficiently commented. For example, if the
+Java method in Fig. 1 does not have the comment in the be-
+ginning, it will take the programmer quite some efforts to
+grasp the meaning of the code. However, with a meaning-
+ful sentence such as “calculates dot product of two points”
+as a descriptive comment, programmer’s productivity can be
+tremendously improved.
 
-arXiv:2201.02944v4 [cs.SE] 7 May 2022
+/* Calculates
+ 
+dot
+ 
+product
+ 
+of
+ 
+two
+ 
+points.
+*
+ 
+@return
+ 
+float */
+public static float
+ 
+ccpDot(final CGPoint
+ 
+v1,
+ 
+final
+CGPoint
+ 
+v2) {
+return
+ 
+v1.x * v2.x
+ 
++
+ 
+v1.y * v2.y;
+}
+
+Figure 1: source code example
+A related scenario happens when one wants to search for
+a piece of code with a specific functionality or meaning. Or-
+dinary keyword search would not work because expressions
+Copyright c
+©
+ 
+2018, Association for the Advancement of Artificial
+Intelligence (www.aaai.org). All rights reserved.
+1
+ 
+Kenny Q. Zhu is the contact author.
+in programs can be quite different from natural languages.
+If methods are annotated with meaningful natural language
+comments, then keyword matching or even fuzzy semantic
+search can be achieved.
+Even though comments are so useful, programmers are
+not using them enough in their coding. Table 1 shows the
+number of methods in ten actively developed Java reposito-
+ries from Github, and those of which annotated with a de-
+scriptive comment. On average, only 15.4% of the methods
+are commented.
+To automatically generate descriptive comments from
+source code, one needs a way of accurately representing the
+semantics of code blocks. One potential solution is to treat
+each code block as a document and represent it by a topic
+distribution using models such as LDA (Blei, Ng, and Jor-
+dan 2003). However, topic models, when applied to source
+code, have several limitations:
+
+•
+ 
+a topic model treats documents as a bag of words and ig-
+nores the structural information such as programming lan-
+guage syntax and function or method calls in the code;
+
+•
+ 
+the contribution of lexical semantics to the meaning of
+code is exaggerated;
+
+•
+ 
+comments produced can only be words but not phrases or
+sentences.
+One step toward generating readable comments is to use
+templates (McBurney and McMillan 2014; Sridhara et al.
+2010). The disadvantage is that comments created by tem-
+plates are often very similar to each other and only rele-
+vant to parts of the code that fit the template. For example,
+the comment generated by McBurney’s model for Fig. 1 is
+fairly useless:
+ 
+“This method handles the ccp dot and returns
+a float. ccpDot() seems less important than average because
+it is not called by any methods.”
+
+To overcome these problems, in this paper, we propose to
+use Recursive Neural Network (RNN) (Socher et al. 2011a;
+2011b) to combine the semantic and structural information
+from code. Recursive NN has previously been applied to
+parse trees of natural language sentences, such as the ex-
+ample of two sentences in Fig. 2. In our problem, source
+codes can be accurately parsed into their parse trees, so re-
+cursive NN can be applied in our work readily. To this end,
+we design a new recursive NN called Code-RNN to extract
+the features from the source code.
+
+The Thirty-Second AAAI Conference
+on Artificial Intelligence (AAAI-18)
+5229
 
 page No: 2 
 ===============
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
+Table 1: Ten Active Projects on Github
+Project
  
-Zhuangbin Chen, Jinyang Liu, Yuxin Su, Hongyu Zhang, Xiao Ling, Yongqiang Yang, and Michael R. Lyu
+Description
+ 
+# of bytes
+ 
+# of Java Files
+ 
+# of Methods
+ 
+# Methods Commented
+Activiti
+ 
+a light-weight workflow and Business Process Management (BPM) Platform
+ 
+168M
+ 
+2939
+ 
+15875
+ 
+1080
+aima-java
+ 
+Java implementation of algorithms from “Artificial Intelligence - A Modern Approach”
+ 
+182M
+ 
+889
+ 
+4078
+ 
+1130
+neo4j
+ 
+the worlds leading Graph Database.
+ 
+270M
+ 
+4125
+ 
+24529
+ 
+1197
+cocos2d
+ 
+cocos2d for android, based on cocos2d-android-0.82
+ 
+78M
+ 
+512
+ 
+3677
+ 
+1182
+rhino
+ 
+a Java implementation of JavaScript.
+ 
+21M
+ 
+352
+ 
+4610
+ 
+1195
+spring-batch
+ 
+a framework for writing offline and batch applications using Spring and Java
+ 
+56M
+ 
+1742
+ 
+7936
+ 
+1827
+Smack
+ 
+an open source, highly modular, easy to use, XMPP client library written in Java
+ 
+41M
+ 
+1335
+ 
+5034
+ 
+2344
+guava
+ 
+Java-based projects: collections, caching, primitives
+ 
+80M
+ 
+1710
+ 
+20321
+ 
+3079
+jersey
+ 
+a REST framework that provides JAX-RS Reference Implementation and more.
+ 
+73M
+ 
+2743
+ 
+14374
+ 
+2540
+libgdx
+ 
+a cross-platform Java game development framework based on OpenGL (ES)
+ 
+989M
+ 
+1906
+ 
+18889
+ 
+2828
+A comment here refers to the description at the beginning of a method, with more than eight words.
 
-is like finding a needle in a haystack. The problem is compounded
-by the fact that false alerts are not rare. Moreover, many state-
-of-the-art methods train models with historical metric data in an
-offline setting. As online services continuously undergo feature
-upgrades and system renewal, the patterns of metrics may evolve
-accordingly, i.e., concept drift [
-11
+ŵĞ
+^ŚĞ
  
-,
+ůŝŬĞƐ
+ŵŝĐĞ
+ĞĂƚ
+dŚĞ
  
-12
- 
-]. Without adaptability, these
-models are unable to accommodate the ever-changing services and
-user behaviors.
-In this paper, we propose ADSketch, a performance anomaly
-detection approach for online service systems based on
- 
-pattern
-sketching
-, which is interpretable and adaptive. The main idea is to
-identify discriminative subsequences from metric time series that
-can represent classes of service performance issues. This is similar
-to the problem of shapelet discovery in time series data [
- 
-28
- 
-,
- 
-36
- 
-].
-Particularly, for multiple subsequences that describe the same type
-of performance issue, we take the average of them and regard the
-result as a
- 
-metric pattern
- 
-for the issue. For example, services may
-be experiencing performance degradation when we observe a level
-shift down on Service Throughput or a level shift up on CPU Uti-
-lization. The advantages of such metric patterns are twofold. First,
-the normality of the incoming metric subsequences can be quickly
-determined through a comparison with the metric patterns. Second,
-by associating the patterns with typical anomaly symptoms, we
-can immediately understand the ongoing performance issues when
-the metric subsequences exhibit known patterns. This is similar to
-failure/issue profiling [
-18
- 
-,
- 
-22
-,
- 
-27
- 
-]. In this way, ADSketch provides
-a novel mechanism to characterize service performance issues with
-metric time series. Previous work on failure/issue profiling often
-requires handcrafted features, which suffers from limited general-
-ization. For example, Brandon et al. [
- 
-4
-] manually defined a set of
-features collected from metrics, logs, and anomalies to characterize
-failures. Pattern sketching with metrics enjoys the advantages of
-automation and accuracy. Moreover, ADSketch is able to adaptively
-embrace new anomalous patterns when detecting anomalies on the
-fly. Experimental results demonstrate the superiority of our design
-over the existing state-of-the-art time series anomaly detectors on
-both public and industrial data. In particular, we have achieved an
-average F1 score of over 0.8 in production systems.
-To sum up, this work makes the following major contributions:
+ĐĂƚƐ
+
+Figure 2: The Recursive Neural Networks of Two Sentences
+Using Code-RNN to train from the source code, we can
+get a vector representation of each code block and this vec-
+tor contains rich semantics of the code block, just like word
+vectors (Mikolov et al. 2013). We then use a Recurrent Neu-
+ral Network to learn to generate meaningful comments. Ex-
+isting recurrent NN does not take good advantage of the
+code block representation vectors. Thus we propose a new
+GRU (Cho et al. 2014) cell that does a better job.
+In sum, this paper makes the following contributions:
 
 •
  
-We propose ADSketch, an interpretable and adaptive ap-
-proach for service performance anomaly detection. ADS-
-ketch offers a way to characterize service performance issues
-with monitoring metrics. Different from the existing work,
-ADSketch is able to provide explanations (e.g., the type of
-the underlying performance issues) for its prediction results
-and accept new patterns on the fly. The implementation of
-ADSketch and datasets are publicly available on GitHub
-1
-.
+by designing a new Recursive Neural Network,
+ 
+Code-
+RNN
+, we are able to describe the
+ 
+structural information
+
+of source code;
 
 •
  
-We conduct experiments with public data as well as indus-
-trial service metric data collected from Huawei Cloud. The
-experimental results demonstrate the effectiveness of ADS-
-ketch in terms of both anomaly detection and adaptive met-
-ric pattern learning. Furthermore, our framework has been
-successfully incorporated into the service performance mon-
-itoring system of Huawei Cloud. Our industrial practice
-confirms its practical usefulness.
+with the new design of a GRU cell, namely
+ 
+Code-GRU
+,
+we make the best out of code block representation vector
+to effectively generate comments for source codes;
 
-1
-https://github.com/OpsPAI/ADSketch
-0
+•
  
-2000
+the
  
-4000
+overall
  
-6000
+framework
  
-8000
+achieves
  
-10000
-0.0
-0.5
-1.0
-
-Interface Throughput
-
-0
+remarkable
  
-2000
- 
-4000
- 
-6000
- 
-8000
- 
-10000
-0.0
-0.5
-1.0
- 
-Request Timeout Number
-
-0
- 
-2000
- 
-4000
- 
-6000
- 
-8000
- 
-10000
-
-Time
-
-0.0
-0.5
-1.0
- 
-Application CPU Usage
-
-Figure 1: Examples of performance anomaly patterns
+accuracy
+(Rouge-2 value) in the task of generating descriptive com-
+ments for Java methods, compared to state-of-the-art ap-
+proaches.
 
 2
  
-BACKGROUND & PROBLEM STATEMENT
+Framework
+
+In this section, we introduce the details of how to repre-
+sent source code and how to use the representation vector
+of source code to generate comments.
+
 2.1
  
-Performance Anomaly Patterns in Online
-Service Systems
+Code Representation
 
-In online service systems, a large number of metrics are configured
-to monitor various aspects of both logical resources (e.g., a virtual
-machine) and physical resources (e.g., a computing server). Cloud
-systems often possess an abundance of redundant components,
-providing the ability of fault tolerance and self-healing (e.g., load
-balancing, availability zones). Consequently, the majority of service
-breakdowns tend to manifest themselves as performance anomalies
-first instead of fail-stop failures [
+We propose a new kind of recursive neural network called
+Code-RNN to encapsulate the critical structural informa-
+tion of the source code. Code-RNN is an arbitrary tree form
+while other recursive neural nets used in NLP are typically
+binary trees. Fig. 3 shows an example of Code-RNN for a
+small piece of Java code.
+In Code-RNN, every parse tree of a program is encoded
+into a neural network, where the structure of the network
+is exactly the parse tree itself and each syntactic node in
+the parse tree is represented by a vector representation.
  
-14
+2
+One unique internal node “CombineName” indicates a com-
+pound identifier that is the concatenation of several primi-
+tive words, for example, “allFound” can be split into “all”
+and “found”. More on the semantics of identifier will be dis-
+cussed later in this section.
+There are two models for the Code-RNN, namely
+ 
+Sum
+Model
+ 
+and
+ 
+Average Model
+:
+1. Sum Model
+
+V
+ 
+=
+ 
+V
+node
+ 
++
+ 
+f
+ 
+(
+W
+ 
+×
+ 
+∑
+
+c
+∈
+C
+
+V
+c
+ 
++
+ 
+b
+)
+ 
+(1)
+2. Average Model
+
+V
+ 
+=
+ 
+V
+node
+ 
++
+ 
+f
+ 
+(
+W
+ 
+×
+ 
+1
+
+n
+
+∑
+
+c
+∈
+C
+
+V
+c
+ 
++
+ 
+b
+)
+ 
+(2)
+Here
+ 
+V
+ 
+is the vector representation of sub-tree rooted at
+ 
+N
+ 
+;
+
+V
+node
+ 
+is the vector that represents the syntactic type of
+ 
+N
+
+itself, e.g.,
+ 
+IfStatement
+;
+ 
+C
+ 
+is the set of all child nodes of
+ 
+N
+ 
+;
+
+V
+c
+ 
+is the vector that represents a subtree rooted at
+ 
+c
+, one of
+
+N
+ 
+’s children. During the training,
+ 
+W
+ 
+and
+ 
+b
+ 
+are tuned.
+ 
+V
  
 ,
- 
-20
-]. We observe when perfor-
-mance anomalies of similar types happen, their impacts tend to
-trigger similar reactions/symptoms on the metric time series, which
-we refer to as metric patterns. For example, a level shift up on Inter-
-face Throughput may indicate slow service response, which could
-be caused by a load balancing failure; a level shift down on it may
-suggest service unavailability, and the culprit could be performance
-bugs (e.g., memory leak bugs). Similar observations have been made
-in [
- 
-8
-,
- 
-22
- 
-]. The rationale behind such a phenomenon is twofold. First,
-the design of the metrics is sophisticated and fine-grained, each of
-which is dedicated to monitoring a specific problem, e.g., request
-timeout, high API error rate. Second, cloud systems widely employ
-the microservices architecture, where cloud applications employ
-lightweight container deployment, e.g., cloud-native applications,
-serverless computing. With this architecture, each microservice is
-designated for well-defined and modularized jobs, e.g., user login,
-location service. Thus, they tend to develop individual and stable
-patterns, which can manifest through their monitoring metrics.
 
-2.2
+V
+node
  
-Metric Pattern Mining
+and
+ 
+V
+c
+ 
+are calculated based on the structure of neural
+network.
+ 
+f
+ 
+is
+ 
+RELU
+ 
+activation function.
+These
+ 
+equations
+ 
+are
+ 
+applied
+ 
+recursively,
+ 
+bottom-up
+through the Code-RNN at every internal node, to obtain the
+vector representation of the root node, which is also the vec-
+tor of the entire code piece.
 
-Metric patterns (i.e., time-series subsequences describing the misbe-
-having moments of metrics) can be leveraged to sketch the perfor-
-mance issues for anomaly detection. This is essentially profiling the
-mode of recurrent anomalies. For example, hardware failures often
-come with a sudden drop in the corresponding metrics, and the
-value remains zero for some time. If anomalies come into existence,
-they can be immediately identified by matching the established
-patterns. Such metric patterns can also facilitate problem mitiga-
-tion. For example, when low service throughput and high CPU
-usage are detected, engineers can scale up the microservice (by
-adding local cores) to increase its capacity. The key challenge is
-how to automatically discover what anomalous patterns a metric
+Identifier Semantics
+ 
+In this work, we adopt two ways to
+extract the semantics from the identifiers. One is to split all
+the long forms to multiple words and the other one is to re-
+cover the full words from abbreviations.
+Table 2 shows some example identifiers and the results
+of splitting. Many identifiers in the source code are combi-
+nation of English words, with the first letter of the word in
+upper case, or joined together using underscores. We thus
+define simple rules to extract the original English words ac-
+cordingly. These words are further connected by the “Com-
+bineName” node in the code-RNN.
+Table 3 shows some abbreviations and their intended
+meaning. We can infer the full-versions by looking for
+2
+ 
+We
+ 
+use
+ 
+JavaParser
+ 
+from
+ 
+https://github.com/javaparser/
+javaparser to generate parse tree for Java code in this paper.
+
+5230
 
 page No: 3 
 ===============
-Adaptive Performance Anomaly Detection for Online Service Systems via Pattern Sketching
+if
  
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
-Adaptive Pattern
-
-Learning
-
-Anomaly-free metric
-
-Metric for anomaly
-
-detection
-
-Metric Pattern
-
-Discovery
-
-New metrics
-
-in online scenarios
-
-Normal
-
-Patterns
-
-Abnormal
-
-Patterns
-
-O
-ffl
-ine Phase
-Online Phase
-
-Offline Prediction
-
-Online
-
-Prediction
-
-Figure 2: The Overall Framework of ADSketch
-
-time series has experienced. For each identified pattern, engineers
-can label the typical performance issues it often associates with.
-In online scenarios, if a metric encounters any known anomalous
-patterns, the underlying performance issues can be recommended.
-Pattern sketching therefore provides a means to accumulate and
-utilize engineers’ knowledge.
-In real-world scenarios, the patterns exhibited in metrics are
-extremely complicated and can have numerous variants in terms
-of scale, length, and combination. Particularly, we have identified
-the following challenges for metric pattern discovery, which are
-illustrated in Fig. 1. Each metric time series records around one
-week of monitoring data, whose anomalies are shown in red.
-
-Background noise
-. Although a large amount of metric time
-series is generated, a significant portion of them is trivial, which
-only records plain system runtime behaviors. Moreover, due to
-the dynamics of online services, some metrics may experience
-concept drift [
-11
+(!found){
+allFound =
+false;
+}
+if
  
-]. For example, the Application CPU Usage in Fig. 1
-drops abruptly, which could be caused by a role switch (e.g., from a
-primary node to a backup node) or user behavior change. How to
-distinguish anomalous patterns from normal ones is non-trivial.
+(allFound){
+return true;
+}
 
-Pattern variety
-. A metric curve can possess multiple distinct
-patterns simultaneously. For example, in Fig. 1, the Interface Through-
-put has two anomaly patterns, i.e., spike up and spike down. Also,
-the patterns can have different scales, as indicated by the two spikes
-in the Request Timeout Number. We need to consider the context
-of each metric for pattern extraction.
+source code
 
-Varying anomaly duration
-. Different performance issues may
-vary in duration. The first two anomalies in the Interface Through-
-put constitute such an example. Particularly, how long an anomaly
-lasts is also an important factor that engineers rely on to understand
-a service’s health state. When characterizing the issues, such a fact
-should be properly considered.
+ƌŽŽƚ
+/Ĩ^ƚĂƚĞŵĞŶƚ
+ 
+/Ĩ^ƚĂƚĞŵĞŶƚ
 
-2.3
+/ĨdŽŬĞŶ
  
-Problem Statement
+KƉĞŶWĂƌĞŶdŽŬĞŶ
+ 
+ůŽƐĞWĂƌĞŶdŽŬĞŶ
+ 
+dŚĞŶ^ƚŵƚ
+ŽŶĚŝƚŝŽŶ
 
-The goal of this work is to detect performance anomalies for mod-
-ern software systems, especially online service systems, based on
-monitoring metrics. To facilitate issue understanding and prob-
-lem mitigation, we intend to improve the interpretability of the
-detection results. To this end, we propose to sketch performance
-issues with metrics based on our observation that similar issues
-often exhibit alike patterns. By extracting such anomalous metric
+EĂŵĞdžƉƌ
 
-Table 1: Summary of Variables
-Variable
- 
-Meaning
+Ăůů
+ŽŵďŝŶĞEĂŵĞ
 
-T
-𝑛
- 
-An anomaly-free metric time series
+ĨŽƵŶĚ
 
-T
-𝑎
+ŝĨ
  
-An input metric time series for anomaly detection
+;
+ 
+Ϳ
 
-𝑡
- 
-A subsequence of metric time series
+ZĞƚƵƌŶ^ƚŵƚ
 
-𝑚
- 
-The length of the metric subsequence
- 
-𝑡
-𝑝
- 
-The percentile threshold to find deviated subseqs
+ZĞƚƵƌŶdŽŬĞŶ
 
-P
-𝑛
- 
-The index set of normal metric patterns
+ƌĞƚƵƌŶ
+ŽŽůĞĂŶ>ŝƚĞƌĂůdžƉƌ
 
-P
-𝑎
- 
-The index set of anomalous metric patterns
+ƚƌƵĞ
 
-𝜇
-𝐶
- 
-The vector of cluster mean vectors
+ůŽĐŬ^ƚŵƚ
 
-S
-𝐶
- 
-The vector of cluster sizes
+ůŽĐŬŶĚdŽŬĞŶ
+΃
+΂
+ůŽĐŬĞŐŝŶdŽŬĞŶ
 
-R
-𝐶
- 
-The vector of cluster radii
-patterns, we can conduct performance anomaly detection by exam-
-ining whether the incoming metric subsequences match the known
-patterns. Moreover, by associating the extracted metric patterns to
-specific performance issues, we can obtain a quick understanding
-of the ongoing issues in online scenarios. Additionally, as online
-services are continuously evolving, unprecedented metric patterns
-may emerge. Thus, our algorithm should be adaptive to the new
-patterns. The problem can be formally defined as follows.
-The input of a metric time series can be represented as
- 
-T
- 
-∈
-
-R
-𝑙
- 
-=
- 
-[
-𝑡
-1
-, 𝑡
-2
-, ..., 𝑡
-𝑙
- 
-]
-, where
- 
-𝑙
- 
-is the number of observations.
- 
-𝑡
-𝑚
-𝑖
- 
-=
-
-[
-𝑡
-𝑖
- 
-, ..., 𝑡
-𝑖
-+
-𝑚
-−
-1
-]
- 
-is a consecutive subsequence of
- 
-T
- 
-starting from
- 
-𝑡
-𝑖
-
-with length
- 
-𝑚
-, where
- 
-𝑖
- 
-∈ [
-0
-, 𝑙
- 
-−
- 
-𝑚
-]
-. The objective of performance
-anomaly detection is to determine whether or not a given
- 
-𝑡
-𝑚
-𝑖
- 
+Code-RNN
+Figure 3: Code-RNN Example
+longer forms in the context of the identifier in the code.
+Specifically, we compare the identifier with the word list
+generated from the context of the identifier to see whether
+the identifier’s name is a substring of some word from the
+list, or is the combination of the initial of the words in the
+list. If the list contains only one word, we just check if the
+identifier is part of that word. If so, we conclude that the
+identifier is the abbreviation of that word with higher prob-
+ability. If the list contains multiple words, we can collect all
+the initials of the words in the list to see whether the iden-
+tifier is part of this collection. Suppose the code fragment
 is
-anomalous, i.e., whether there are performance issues happening
-from timestamp
+
+Matrix dm =
  
-𝑖
+new
  
-to
+DoubleMatrix(confusionMatrix);
+
+We search for the original words of “dm” as follows. Since
+“dm” is not the substring of any word in the context, we col-
+lect the initials of the contextual words in a list: “m” “dm”
+and “cm”. Therefore, “dm” is an abbreviation of “Dou-
+bleMatrix”.
+Table 2: Example of Split Identifiers
+Identifier
  
-𝑖
+Words
+contextInitialize
+ 
+context, initialize
+apiSettings
+ 
+api, settings
+buildDataDictionary
+ 
+build, data, dictionary
+add result
+ 
+add, result
+Table 3: Example of Abbreviation
+Abbreviation
+ 
+Origin
+ 
+Context
+val
+ 
+value
+ 
+key.value()
+cm
+ 
+confusion, matrix
+ 
+new ConfusionMatrix()
+conf
+ 
+configuration
+ 
+context.getConfiguration()
+rnd
+ 
+random
+ 
+RandomUtils.getRandom()
+
+Training
+ 
+Each source code block in the training data has
+a class label. Our objective function is:
+
+arg min
+ 
+CrossEntropy
+(
+sof tmax
+(
+W
+s
+V
+m
  
 +
  
-𝑚
+b
+s
+)
+, V
+label
+)
  
-−
+(3)
+where
  
-1
-. Particularly, we also try to explain
-the type of performance issues associated with
+V
+m
  
-𝑡
-𝑚
-𝑖
+is the representation vector of source code,
  
-. The anomalous
-subsequences will be used to construct abnormal metric patterns,
-while the benign ones will be regarded as normal patterns. Both
-the normal and abnormal metric patterns will be updated as the
-anomaly detection proceeds.
+V
+label
 
-3
+is an one-hot vector to represent the class label.
  
-METHODOLOGY
-3.1
- 
-Overview
-
-In online service systems, performance anomalies often serve as
-the (early) signals for critical failures, which should be detected
-effectively. However, accuracy alone is far from satisfactory, as
-it will be labor-intensive to manually investigate the problematic
-metrics for issue understanding. ADSketch facilitates this process
-by providing prompt anomaly alerts with explanations.
-The overall framework of ADSketch is shown in Fig. 2, which
-consists of two phases, namely,
- 
-offline anomaly detection
+W
+s
  
 and
  
-online
-anomaly detection
-. In the offline phase, ADSketch takes as input a
-pair of metric time series. One metric time series is anomaly-free,
-which serves as the basis to detect anomalies in the other metric (if
-any). In this process, a set of metric patterns will be automatically
-learned. A metric pattern is essentially the mean of a set of similar
-metric subsequences representing similar service behaviors. The
-identified metric patterns are divided into two types, i.e., normal
-and abnormal. The abnormal patterns often characterize some par-
-ticular types of performance issues, as discussed in Sec. 2.1. Thus,
+b
+s
+
+are parameters for softmax function and will be tuned during
+training. We use AdaGrad (Duchi, Hazan, and Singer 2011)
+to apply unique learning rate to each parameter.
+
+2.2
+ 
+Comment Generation
+
+Existing work (Elman 1990; Sutskever, Martens, and Hin-
+ton 2011; Mikolov et al. 2010) has used Recurrent Neural
+Network to generate sentences. However, one challenge to
+utilize the code block representation vector in Recurrent NN
+is that we can not feed the code block representation vector
+to the Recurrent NN cell directly. We thus propose a vari-
+ation of the GRU based RNN. Fig. 4 shows our comment
+generation process.
+
+Ā
+ 
+āĀ
+ 
+ā
+Ā
+ 
+āĀ
+ 
+ā
+
+ܹ
+݄
+݅
+
+
+
+ܹ
+݄
+݄
+
+
+
+ܹ
+݄݋
+ܹ
+݄
+ݔ
+ 
+
+
+ݔ
+ݐ
+ 
+
+
+ݕ
+ݐ
+ 
+
+
+Figure 4: Comment Generation
+We use pre-trained model Code-RNN to get the represen-
+tation vector of the input code block
+ 
+V
+m
+. This vector
+ 
+V
+m
+
+is fixed during training of comment generation model. Then
+we feed code block vector into the RNN (Recurrent Neural
+Network) model at every step. For example in Fig. 4, we in-
+put the START token as the initial input of model and feed
+the code block vector into the hidden layer. After calculating
+the output of this step, we do the back-propagation. Then at
+step two, we input the word “gets” and feed the code block
+vector
+ 
+V
+m
+ 
+into hidden layer again, and receive the
+ 
+h
+t
+−
+1
+ 
+from
+the step one. We repeat the above process to tune all param-
+eters. The equations of comment generation model are listed
+below.
+
+5231
 
 page No: 4 
 ===============
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
+z
+t
  
-Zhuangbin Chen, Jinyang Liu, Yuxin Su, Hongyu Zhang, Xiao Ling, Yongqiang Yang, and Michael R. Lyu
-Anomaly
--
-free metric time series
+=
  
-!
-!
-
-Metric time series for anomaly detection
+σ
+(
+W
+z
  
-!
-"
-
-Break due to percentile
-
-threshold unfulfillment
-
-Apply self
--
-union and cross
--
-union STAMP
-
-to get the most similar subsequences
-
-Apply Affinity
-
-Propagation
+·
  
-to
-
-the mean of each
-
-subgraph
-
-The mean of each cluster
-
-Metric patterns, and
-
-is the only abnormal pattern
-
-Apply Affinity Propagation to get globally similar
-
-subsequences and calculate the metric patterns
-
-Construct a graph
+[
+h
+t
+−
+1
+, x
+t
+])
  
-G
- 
-based on subsequences’
+(4)
 
-similarity and find the connected subgraphs
+r
+t
+ 
+=
+ 
+σ
+(
+W
+r
+ 
+·
+ 
+[
+h
+t
+−
+1
+, x
+t
+])
+ 
+(5)
 
-Isolated subgraphs,
+c
+t
+ 
+=
+ 
+σ
+(
+W
+c
+ 
+·
+ 
+[
+h
+t
+−
+1
+, x
+t
+])
+ 
+(6)
 
-also the anomaly
+ ̃
+h
+t
+ 
+=
+ 
+tanh
+(
+W
+ 
+·
+ 
+[
+r
+t
+ 
+∗
+ 
+h
+t
+−
+1
+, c
+t
+ 
+∗
+ 
+V
+m
+, x
+t
+])
+ 
+(7)
 
-candidates
-
-Metric subsequences
+h
+t
  
-The most similar subsequence
-A group of similar subsequences
- 
-Subsequence graph link
-
-"
-#
-
-#
- 
-$
-
-#
- 
-%
-
-Figure 3: The Algorithm of Performance Anomaly Pattern Discovery
-0
- 
-2000
- 
-4000
- 
-6000
- 
-8000
- 
-10000
-
-Time
-
-0.0
-0.5
-1.0
-
-Interface Throughput
-
-0
- 
-2000
- 
-4000
- 
-6000
- 
-8000
- 
-10000
-
-Metric subsequence index
-
-0.0
-0.5
-1.0
- 
-SPW Distance
-
-Figure 4: The SPW distance of different metric subsequences
-
-by investing manual efforts to link them to the corresponding is-
-sues, a clearer picture of the underlying problems can be easily
-obtained if similar patterns are encountered again. In the online
-phase, we leverage the metric patterns built in the offline phase
-to conduct anomaly detection in online scenarios, where metrics
-arrive in streams. Particularly, in production environments, un-
-precedented patterns could appear. Thus, we design an adaptive
-learning algorithm to capture the new patterns continuously.
-Before formally introducing our algorithms, we have summa-
-rized the variables involved in Table 1.
-
-3.2
- 
-Offline Anomaly Detection
-
-3.2.1
- 
-Metric Pattern Discovery.
- 
-The idea for discovering the abnor-
-mal patterns follows the basic definition of an anomaly: if a metric
-subsequence deviates significantly from those collected during a
-service’s normal executions, it is likely that the subsequence cap-
-tures some misbehaving moments of the service. To measure how
-deviated a metric subsequence is, we calculate its distance to other
-subsequences and search for the smallest distance score. Intuitively,
-metric subsequences which have large scores to others tend to be
-anomalous. The function for distance measure is customizable, and
-we adopt Euclidean distance in this paper.
-Given a metric time series with
- 
-𝑙
- 
-observations, the number of all
-possible subsequences is
- 
-𝑙
+= (1
  
 −
  
-𝑚
+z
+t
+)
+ 
+∗
+ 
+h
+t
+−
+1
  
 +
  
-1
-, where
+z
+t
  
-𝑚
+∗
  
-is the length of its sub-
-sequences. A naïve solution for calculating the smallest pair-wise
-distance (which we refer to as
+ ̃
+h
+t
  
-SPW distance
- 
-hereafter) would be
-brute force searching. However, this algorithm owns a quadratic
-time complexity, which is practically infeasible for large time se-
-ries. Fortunately, some novel scalable algorithms [
-35
- 
-,
- 
-36
- 
-,
- 
-38
- 
-] have
-been proposed in the literature to attack such all-pairs-similarity-
-search problems for time series subsequences. Particularly, Yeh et
-al. [
- 
-36
-] proposed STAMP, which has achieved orders of magnitude
-faster compared to state-of-the-art methods. For exceptionally large
-datasets, an ultra-fast approximate solution is also provided. An
-illustrating example is provided in Fig. 4, where we can see the
-misbehaving metric subsequences have larger SPW distances. In
-particular, the original STAMP algorithm adopts z-normalization
-for data preprocessing. However, we found min-max normalization
-yields more meaningful results in our scenario. For a subsequence
+(8)
 
-𝑡
-𝑚
-𝑖
+y
+t
  
-in a metric time series
+=
  
-T
- 
-, we record the index and distance score
-of another subsequence having the SPW distance to it. Such index
-and score of all subsequences, i.e.,
- 
-𝑡
-𝑚
-𝑖
- 
+sof tmax
 (
-𝑖
+W
+oh
+h
+t
  
-∈ [
-0
-, 𝑙
++
  
+b
+o
+)
+ 
+(9)
+where
+ 
+V
+m
+ 
+is the code block representation vector,
+ 
+h
+t
 −
-𝑚
-])
-, constitute two
-vectors
+1
  
-I
+is
+the previous state and
  
-and
+x
+t
  
-S
-. In particular, for
+is the input word of this step.
+To better use the code block vectors, our model differs
+from existing RNNs, particularly in the definition of
  
-𝑡
-𝑚
-𝑖
+c
+t
  
-, its closest subsequence can
-either come from the same time series (i.e., self-union) or another
-time series (i.e., cross-union). In the first case, a trivial match region
-around
+in
+the Equation 6 and 7. The new RNN cell, illustrated in Fig.
+5, aims to strengthen the effect of code block vectors. This
+modified GRU is hereinafter called
  
-𝑡
-𝑚
-𝑖
- 
-will be excluded to avoid self matches [36].
-The proposed algorithm for metric pattern discovery is presented
-in Algorithm 1, which is illustrated in Fig. 3. Algorithm 1 takes as
-input two metric time series, i.e.,
- 
-T
-𝑛
- 
-and
- 
-T
-𝑎
- 
-(
-T
-𝑛
- 
-is anomaly-free
-and
- 
-T
-𝑎
- 
-may contain anomalies to be detected), and two hyper-
-parameters, i.e.,
- 
-𝑚
- 
-and
- 
-𝑝
- 
-(
-𝑚
- 
-is the length of subsequences and
- 
-𝑝
+Code-GRU
+. Code block
+vector contains all information of code block but not all in-
+formation is useful at all steps. Therefore, we add a new gate
+called choose gate to determine which dimension of code
+block vector would work in Code-GRU. In Fig 5, the left
+gate is the choose gate, and the other two gates are the same
+as the original GRU.
 
-is the percentile threshold to find the deviated subsequences). As
-production service systems are mostly running in normal status [
-6
- 
-],
-the anomaly-free input is easily obtainable (we discuss how we
-address the violating cases in Sec. 5.3). In line 1 of Algorithm 1,
-we apply STAMP to
- 
-T
-𝑛
- 
-with
- 
-self-union
- 
-(i.e., similar subsequences
-come from
- 
-T
-𝑛
- 
-), and obtain the index and score vectors
- 
-I
-𝑛𝑛
- 
-and
+X
+X
 
-S
-𝑛𝑛
- 
-. In line 2, we search similar subsequences for
- 
-T
-𝑎
- 
-from
- 
-T
-𝑛
- 
-,
-i.e.,
- 
-cross-union
-, and get
- 
-I
-𝑛𝑎
- 
-and
- 
-S
-𝑛𝑎
- 
-. Intuitively, given the fact
-that
- 
-T
-𝑛
- 
-is anomaly-free, subsequences in
- 
-T
-𝑎
- 
-having large SPW
-distances to their closest peers in
- 
-T
-𝑛
- 
-are suspected to be anomalous.
-Interestingly, we later learn that Mercer et al. [
-23
- 
-] proposed a similar
-idea concurrently. We introduce a percentile threshold (i.e.,
- 
-𝑝
-) on
+ܐܖ܉ܜ
+࣌
+࣌
+࣌
 
-S
-𝑛𝑎
+X
+X
++
+
+࢞
+࢚
+ࢎ
+࢚
+ି
  
-to find such deviated subsequences. In particular,
+૚
+ࢂ
  
-𝑝
+࢓
+ࢎ
+࢚
+ࢂ
  
-is loosely
-set to avoid missing anomalies, i.e., false negatives. Such a setting
-will inevitably produce false positives. We next discuss how we
-alleviate this issue.
+࢓
+
+Figure 5: Structure of Code-GRU
+During test time, we input the “START” token at first and
+choose the most probable word as the output. Then from
+the second step the input words of every step are the output
+words of previous one step until the output is “END” token.
+So that we can get an automatically generated comment for
+code blocks in our model.
+To gain better results, we also apply the beam search
+while testing. We adopt a variant of beam search with a
+length penalty described in (Wu et al. 2016). In this beam
+search model, there are two parameters: beam size and
+weight for the length penalty. We tune these two parame-
+ters on the validation set to determine which values to use.
+Our tuning ranges are:
+
+•
+ 
+beam size: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+•
+ 
+weight for the length penalty: [0, 0.1, 0.2, 0.3, 0.4, 0.5,
+0.6, 0.7, 0.8, 0.9, 1.0]
+
+3
+ 
+Evaluation
+
+Our evaluation comes in two parts. In the first part, we eval-
+uate Code-RNN model’s ability to classify different source
+code blocks into
+ 
+k
+ 
+known categories. In the second part, we
+show the effectiveness of our comment generation model
+by comparing with several state-of-the-art approaches in
+both quantitative and qualitative assessments. The source
+code of our approach as well as all data set is available at
+https://adapt.seiee.sjtu.edu.cn/CodeComment/.
+
+3.1
+ 
+Source Code Classification
+Data Set
+ 
+The goal is to classify a given Java method (we
+only use the body block without name and parameters) into
+a predefined set of classes depending on its functionality.
+Our data set comes from the Google Code Jam contest
+(2008
+∼
+2016), which there are multiple problems, each as-
+sociated with a number of correct solutions contributed by
+programmers.
+ 
+3
+ 
+Each solution is a Java method. The set of
+solutions for the same problem are considered to function
+identically and belong to the same class in this work. We
+use the solutions (10,724 methods) of 6 problems as training
+set and the solutions (30 methods) of the other 6 problems
+as the test set. Notice that the problems in the training data
+and the ones in the test data do not overlap. We specifically
+design the data set this way because, many methods for the
+same problem tend to use the same or similar set of identi-
+fiers, which is not true in real world application. The details
+of training set and test set are shown in Table 4.
+Table 4: Data Sets for Source Code Clustering
+Problem
+ 
+Year
+ 
+# of methods
+Training Set
+Cookie Clicker Alpha
+ 
+2014
+ 
+1639
+Counting Sheep
+ 
+2016
+ 
+1722
+Magic Trick
+ 
+2014
+ 
+2234
+Revenge of the Pancakes
+ 
+2016
+ 
+1214
+Speaking in Tongues
+ 
+2012
+ 
+1689
+Standing Ovation
+ 
+2015
+ 
+2226
+Test Set
+All Your Base
+ 
+2009
+ 
+5
+Consonants
+ 
+2013
+ 
+5
+Dijkstra
+ 
+2015
+ 
+5
+GoroSort
+ 
+2011
+ 
+5
+Osmos
+ 
+2013
+ 
+5
+Part Elf
+ 
+2014
+ 
+5
+
+Baselines
+ 
+We compare Code-RNN with two baseline ap-
+proaches. The first one is called language embedding (
+LE
+)
+and only treats the source code as a sequence of words, mi-
+nus the special symbols (e.g., “$”, “(”, “+”,
+ 
+· · ·
+ 
+). All con-
+catenated words are preprocessed into primitive words as
+previously discussed. Then the whole code can be repre-
+sented by either the sum (
+LES
+) or the average (
+LEA
+) of word
+vectors of this sequence, trained in this model.This approach
+basically focuses on the word semantics only and ignores the
+structural information from the source code.
+The second baseline is a variant of Code-RNN, which
+preprocesses the code parse tree by consistently replacing
+the identifier names with placeholders before computing the
+overall representation of the tree. This variant focuses on the
+structural properties only and ignores the word semantics.
+3
+ 
+All solutions are available at http://www.go-hero.net/jam/16.
+
+5232
 
 page No: 5 
 ===============
-Adaptive Performance Anomaly Detection for Online Service Systems via Pattern Sketching
+Result of Classification
  
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
+At test time, when a method is
+classified into a class label, we need to determine which test
+problem this class label refers to. To that end, we compute
+the accuracy of classification for all possible class label as-
+signment and use the highest accuracy as the one given by a
+model.
+Table 5 shows the purity of the produced classes, the F1
+and accuracy of the 6-class classification problem by differ-
+ent methods. It is clear that Code-RNN (avg) perform better
+uniformly than the baselines that use only word semantics
+or only structural information. Therefore, in the rest of this
+section, we will use Code-RNN(avg) model to create vector
+representation for a given method to be used for comment
+generation. The F1 score for each individual problem is also
+included in Table 6.
+Table 5: Purity, Average F1 and Accuracy
+Purity
+ 
+F1
+ 
+Accuracy
+LEA
+ 
+0.400
+ 
+0.3515
+ 
+0.3667
+LES
+ 
+0.3667
+ 
+0.2846
+ 
+0.3667
+CRA(ni)
+ 
+0.4667
+ 
+0.4167
+ 
+0.4667
+CRS(ni)
+ 
+0.4667
+ 
+0.4187
+ 
+0.4667
+CRA
+ 
+0.533
+ 
+0.4774
+ 
+0.5
 
-Algorithm 1:
+CRS
  
-Performance Anomaly Pattern Discovery
+0.4667
+ 
+0.3945
+ 
+0.4333
+LEA = Language Embedding Average model; LES = Language Embedding Sum
+model; CRA = Code-RNN Average model; CRS = Code-RNN Sum model; (ni) =
+no identifier.
+Table 6: F1 scores of individual problems
+Dijkstra
+ 
+Part Elf
+ 
+All Your Base
+ 
+GoroSort
+ 
+Consonants
+ 
+Osmos
+LEA
+ 
+0.25
+ 
+0.33
+ 
+0.43
+ 
+0.33
+ 
+0.4
+ 
+0.36
+LES
+ 
+0.33
+ 
+0
+ 
+0.53
+ 
+0
+ 
+0.53
+ 
+0.31
+CRA(ni)
+ 
+0.6
+ 
+0
+ 
+0.44
+ 
+0.40
+ 
+0.56
+ 
+0.5
+CRS(ni)
+ 
+0.62
+ 
+0.29
+ 
+0.67
+ 
+0.5
+ 
+0.44
+ 
+0
+CRA
+ 
+0.67
+ 
+0
+ 
+0.6
+ 
+0.57
+ 
+0.53
+ 
+0.52
+CRS
+ 
+0.73
+ 
+0
+ 
+0.44
+ 
+0.55
+ 
+0.4
+ 
+0.25
 
-Input:
+3.2
  
-T
-𝑛
+Comment Generation Model
+Data Set
  
-,
- 
-T
-𝑎
- 
-,
- 
-𝑚
-, and
- 
-𝑝
+We use ten open-source Java code repositories
+from GitHub for this experiment (see Table 1). In each of
+these repositories we extract descriptive comment and the
+corresponding method pairs. Constructor methods are ex-
+cluded from this exercise. These pairs are then used for train-
+ing and test. Notice that all the method names and parame-
+ters are excluded from training and test.
 
-Output:
+Baselines
  
-Two disjoint sets of
- 
-P
-𝑛
- 
-and
- 
-P
-𝑎
+We compare our approach with four baseline
+methods.
 
-1
+•
  
-I
-𝑛𝑛
-,
- 
-S
-𝑛𝑛
- 
-←
- 
-STAMP
-(T
-𝑛
-,
- 
-T
-𝑛
-, 𝑚
-)
-
-2
- 
-I
-𝑛𝑎
-,
- 
-S
-𝑛𝑎
- 
-←
- 
-STAMP
-(T
-𝑛
-,
- 
-T
-𝑎
-, 𝑚
-)
-
-3
- 
-𝐺
- 
-←
- 
-ConnectedSubgraphs
-(I
-𝑛𝑛
- 
-+ I
-𝑛𝑎
-,
- 
-S
-𝑛𝑎
-, 𝑝
-)
-
+Moses
 4
  
-𝑁
-𝑖
- 
-←
- 
-IsolatedNodes
-(
-𝐺
-)
+is a statistical machine translation system. We re-
+gard the source codes as the source language and the com-
+ments as the target, and use Moses to translate from the
+source to the target.
 
-5
+•
  
-𝜇
-𝐺
+CODE-NN
  
-←
- 
-GraphWiseMean
-(
-𝐺
-)
-
-6
- 
-𝐶
- 
-←
- 
-AffinityPropagation
-(
-𝜇
-G
-)
-
-7
- 
-𝜇
-𝐶
- 
-←
- 
-ClusterWiseMean
-(
-𝐶
-)
-
-8
- 
-P
-𝑛
- 
-←
- 
-EmptyArray
-,
- 
-P
-𝑎
- 
-←
- 
-EmptyArray
-
-9
- 
-for
- 
-𝑒𝑎𝑐ℎ 𝑖𝑑𝑥 𝑖𝑛
- 
-1 : Size
-(
-𝐶
-)
- 
-do
-
-//
- 
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
-: all subsequences in the cluster
-
-10
- 
-if
- 
-𝐶
- 
-[
-𝑖𝑑𝑥
-] ⊂
- 
-𝑁
-𝑖
- 
-then
-
-11
- 
-P
-𝑎
- 
-←
- 
-Append
- 
-P
-𝑎
- 
-with
- 
-𝑖𝑑𝑥
-
-12
- 
-else
-
-13
- 
-P
-𝑛
- 
-←
- 
-Append
- 
-P
-𝑛
- 
-with
- 
-𝑖𝑑𝑥
-
-14
- 
-end
-
-15
- 
-end
-Algorithm 2:
- 
-Performance Anomaly Detection
-
-Input:
- 
-𝑡
-,
- 
-P
-𝑎
- 
-, and
- 
-𝜇
-𝐶
-
-Output:
- 
-Anomaly detection result for
- 
-𝑡
-
-1
- 
-D
-𝑡
- 
-←
- 
-PairWiseDistance
-(
-𝑡, 𝜇
-𝐶
- 
-)
-
-2
- 
-𝑖𝑑𝑥
- 
-←
- 
-MinIndex
-(D
-𝑡
- 
-)
-
-3
- 
-if
- 
-𝑖𝑑𝑥
- 
-∈ P
-𝑎
- 
-then
-
+(Iyer et al. 2016) is the first model to use neu-
+ral network to create sentences for source code. In this
+model author used LSTM and attention mechanism to
 4
  
-return True
-
+Home page of Moses is http://www.statmt.org/moses/.
+generate sentences. The original data set for CODE-NN
+are StackOverFlow thread title and code snippet pairs.
+ 
 5
  
-else
+.
+In this experiment, we use the comment-code pair data in
+place of the title-snippet data.
 
-6
+•
  
-return False
+We apply the
+ 
+sequence-to-sequence (seq2seq)
+ 
+model used
+in machine translation (Britz et al. 2017) and treat the
+code as a sequence of words and the comment as another
+sequence.
 
-7
+•
  
-end
+A. Karpathy and L. Fei-Fei (Karpathy and Fei-Fei 2015)
+proposed a meaningful method to generate image de-
+scriptions. It also used Recurrent NN and representation
+vector, so we apply this method to comment generation
+model. The main equations are:
 
-A metric pattern is defined as the mean of a group of similar sub-
-sequences, which represents some typical behaviors of the metric
-time series. To mine similar subsequences, we propose to leverage
-their similarity connections. Specifically, in line 3, we construct a
-graph
+b
+v
  
-𝐺
+=
  
-whose nodes correspond to the subsequences. Two nodes
-will be linked if any one of them is deemed as the most similar
-subsequence to the other, as indicated by
+W
+hi
+V
+m
  
-I
-𝑛𝑛
- 
-and
- 
-I
-𝑛𝑎
- 
-. Note such
-a relationship is not mutual, i.e.,
- 
-𝑡
-𝑚
-𝑖
- 
-is the most similar to
- 
-𝑡
-𝑚
-𝑗
- 
-does
-not necessarily imply the opposite case. We break the edges whose
-distance score fails to meet the threshold requirement
- 
-𝑝
-. The above
-operations are depicted in the first part of Fig. 3. Next, we find
-the connected subgraphs of
- 
-𝐺
-, each of which is composed of sub-
-sequences resembling each other. Particularly, there will be some
-isolated nodes, i.e., subgraphs with a single node, which are col-
-lected at line 4. Such deviated subsequences constitute a set of
-anomaly candidates, i.e.,
- 
-𝑁
-𝑖
- 
-. The second part of Fig. 3 illustrates
-this process.
-Up to this point, we have divided the subsequences of
- 
-T
-𝑛
- 
-and
+(10)
 
-T
-𝑎
+h
+t
  
-into different parts, each of which is represented as a subgraph.
-However, each subgraph cannot be directly regarded as a metric
-pattern because: 1) the graph construction criteria can be too strict
-(i.e., only the most similar pairs are connected), so some subgraphs
-might still be similar; 2) the loosely set percentile threshold
+=
  
-𝑝
+f
  
-may
-flag some normal subsequences as abnormal (i.e., false positives).
-To further combine the similar subsequences, we apply the Affinity
-Propagation algorithm [
-10
-] to cluster the mean vector of each sub-
-group (line 5-6). We choose this algorithm because of its superior
-performance and efficiency, and it requires no pre-defined cluster
-number. As a result, similar normal subgraphs can be merged to-
-gether, and abnormal subgraphs have a chance to embrace their
-normal communities. Thus, each cluster will contain all similar
-subsequences across the two time-series inputs and different clus-
-ters represent distinct patterns. The mean of clusters (i.e.,
+(
+W
+hx
+x
+t
  
-𝜇
-𝐶
++
  
-) will
-form the set of metric patterns (line 7). For each cluster, we check
-whether or not all its members come from the set of anomaly candi-
-dates
+W
+hh
+h
+t
+−
+1
  
-𝑁
-𝑖
++
  
-(line 9-15). If yes, the mean of the cluster will be regarded
-as an abnormal metric pattern and otherwise normal, indexed by
+b
+h
+ 
++
+ 
+b
+v
+ 
+)
+ 
+(11)
 
-P
-𝑎
+y
+t
  
-and
+=
  
-P
-𝑛
+sof tmax
+(
+W
+oh
+h
+t
  
-, respectively. The third part of Fig. 3 presents the above
-operations. Finally, all subsequences in the anomalous clusters will
-be predicted as an anomaly to be the output of this phase.
-
-3.2.2
++
  
-Metric Pattern Interpretability.
+b
+o
+)
  
-In this section, we expound
-on how to label the performance issues that each metric pattern
-represents. By allowing metric patterns to have semantics, the un-
-derstanding and mitigation of service problems can be greatly accel-
-erated. Given the fact that the duration of different performance is-
-sues may vary, our fixed-length metric patterns may over-represent
-(i.e., the metric pattern is much larger than the issue’s duration) or
-under-represent (i.e., the metric pattern is only an excerpt of the
-issue) the corresponding issues. To alleviate the first problem, we
-select a relatively small
+(12)
+where
  
-𝑚
-, which turns out to be aligned with the
-goal of better performance. For the second problem, we adopt the
-following strategy to group clusters which are actually describing
-a common issue. For each pair of clusters, we check whether they
-have some subsequences that share some parts in common. All
-clusters sharing such overlaps together can recover the complete
-picture of the issue. Thus, we regard them as describing an identical
-issue. Finally, for each metric pattern, domain engineers will label
-the type of performance issue that triggers it. Particularly, one pat-
-tern can have multiple labels simultaneously. The metric patterns
-with overlaps will share the same set of performance issue labels.
-
-3.3
- 
-Online Anomaly Detection
-
-3.3.1
- 
-Anomaly Detection on the Fly.
- 
-Based on the metric patterns
-identified in Algorithm 1, we now describe our algorithm (Algo-
-rithm 2) for anomaly detection in online scenarios. The idea is
-straightforward: given a new metric subsequence
- 
-𝑡
- 
-with length
- 
-𝑚
+W
+hi
 ,
-we search for its most similar metric pattern (line 1-2) and check
-which pattern pool it comes from. If
  
-𝑡
+W
+hx
+,
  
-is more similar to an abnormal
-pattern, it will be predicted as anomalous; otherwise, normal (line
-3-7). In real-world systems where monitoring metrics are generated
-in a stream manner, this process is continuously running for all
-coming subsequences. When an anomaly is identified, we would
-like to provide more interpretation about it, e.g., what kinds of
-performance issues have happened. This is done by simply recom-
-mending the issues associated with the most similar metric pattern
-for all involved metrics. Particularly, in Algorithm 1, each cluster
-(i.e.,
+W
+hh
+,
  
-𝐶
+W
+oh
+,
  
-at line 6) contains all subsequences that are deemed as simi-
-lar. The design of our online anomaly detection only requires the
+x
+i
+ 
+and
+ 
+b
+h
+,
+ 
+b
+o
+ 
+are parameters
+to be learned, and
+ 
+V
+m
+ 
+is the method vector. We call this
+model
+ 
+Basic RNN
+.
+Moses and CODE-NN has its own terminate condition.
+Seq2Seq, Basic RNN and our model run 800 epochs during
+training time. For one project, we separate the commented
+methods into three parts: training set, validation set and test
+set. We tune the hyper parameter on the validation set. The
+results of ten repositories are shown in Table 7.
+
+Evaluation Metric
+ 
+We evaluate the quality of comment
+generation by the Rouge method(Lin 2004). Rouge model
+counts the number of overlapping units between generated
+sentence and target sentence. We choose Rouge-2 score in
+this paper where word based 2-grams are used as the unit,
+as it is the most commonly used in evaluating automatic text
+generation such as summarization.
+Table 7: Rouge-2 Values for Different Methods
+neo4j cocos2d jersey aima-
+java
+guava Smack Activiti spring-
+batch
+libgdx rhino
+MOSES
+0.076
+ 
+0.147
+ 
+0.081 0.1440.134
+ 
+0.145
+ 
+0.104
+ 
+0.147 0.212
+ 
+0.082
+CODE-
+NN
+0.077
+ 
+0.136
+ 
+0.105 0.1240.153
+ 
+0.135
+ 
+0.103
+ 
+0.184 0.208
+ 
+0.171
+
+Seq2seq
+0.039
+ 
+0.115
+ 
+0.183 0.1080.152
+ 
+0.109
+ 
+0.158
+ 
+0.171
+ 
+0.247
+ 
+0.169
+Basic
+RNN*
+0.133
+ 
+0.152
+ 
+0.214 0.2070.156
+ 
+0.150
+ 
+0.203
+ 
+0.237
+ 
+0.218
+ 
+0.163
+Code-
+GRU*
+
+0.141
+ 
+0.158
+ 
+0.230 0.2090.164
+ 
+0.162
+ 
+0.200
+ 
+0.213 0.233
+ 
+0.165
+*: both models use the method representation vector from
+Code-RNN.
+
+Examples of Generated Comment
+ 
+Fig. 6 shows the com-
+ments generated by the competing methods for three exam-
+ple Java methods coming from different repositories. Be-
+cause we delete all punctuation from the training data, the
+generated comments are without punctuation. Nonetheless,
+we can see that comments by our Code-GRU model are gen-
+erally more readable and meaningful.
+5
+ 
+Data comes from https://stackoverflow.com/. Source code of
+CODE-NN is available from https://github.com/sriniiyer/codenn.
+
+5233
 
 page No: 6 
 ===============
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
+Project: jersey
+public long
  
-Zhuangbin Chen, Jinyang Liu, Yuxin Su, Hongyu Zhang, Xiao Ling, Yongqiang Yang, and Michael R. Lyu
-
-Algorithm 3:
+tryConvertToReadLock(long stamp)
  
-Adaptive Pattern Learning
-
-Input:
+{
+long
  
-𝑡
-,
+a = stamp
  
-P
-𝑛
+&
  
-,
+ABITS,
  
-P
-𝑎
+m,
  
-,
+s,
  
-𝜇
-𝐶
+next;
  
-,
+WNode
  
-S
-𝐶
+h;
+while
  
-, and
+(((s =
  
-R
-𝐶
-
-Output:
+state)
  
-Updated variables:
+&
  
-P
-𝑛
+SBITS)
  
-,
+==
  
-P
-𝑎
+(stamp
  
-,
+&
  
-𝜇
-𝐶
- 
-,
- 
-S
-𝐶
- 
-, and
- 
-R
-𝐶
-
-1
- 
-D
-𝑡
- 
-←
- 
-PairWiseDistance
-(
-𝑡, 𝜇
-𝐶
- 
-)
-
-2
- 
-𝑖𝑑𝑥
- 
-←
- 
-MinIndex
-(D
-𝑡
- 
-)
-
-3
- 
-𝜇
-′
-
-← (
-𝜇
-𝐺
- 
-[
-𝑖𝑑𝑥
-] × S
-𝐶
- 
-[
-𝑖𝑑𝑥
-] +
- 
-𝑡
-)/(S
-𝐶
- 
-[
-𝑖𝑑𝑥
-] +
- 
-1
-)
-
-4
- 
-𝑑
-𝑤
- 
-←
- 
-Distance
-(
-𝜇
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
-, 𝜇
-′
-
-) + R
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
-
-5
- 
-𝑑
-𝑡
- 
-←
- 
-Distance
-(
-𝑡, 𝜇
-′
-
-)
-
-6
- 
-𝑑
-′
-
-←
- 
-Max
-(
-𝑑
-𝑡
- 
-, 𝑑
-𝑤
- 
-)
-
-7
- 
-𝑑
-𝑛
-, 𝑑
-𝑎
- 
-←
- 
-Max
-(R
-𝐶
- 
-[P
-𝑛
- 
-])
-,
- 
-Max
-(R
-𝐶
- 
-[P
-𝑎
- 
-])
-
-8
- 
+SBITS)) {
 if
  
-𝑖𝑑𝑥
+((m
  
-∈ P
-𝑎
+= s
  
-then
+&
  
-𝑑
+ABITS)
  
-←
+==
  
-𝑑
-𝑎
+0L)
  
-else
- 
-𝑑
- 
-←
- 
-𝑑
-𝑛
- 
-end
-
-9
- 
+{
 if
  
-D
-𝑡
+(a
  
-[
-𝑖𝑑𝑥
-]
+!=
+ 
+0L)
+ 
+break;
+else if
+ 
+(m
  
 <
  
-𝑑
+RFULL)
  
-then
-
-// add
- 
-𝑡
- 
-to the most similar cluster
-
-10
- 
-𝜇
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
-,
- 
-S
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
-,
- 
-R
-𝐶
- 
-[
-𝑖𝑑𝑥
-] ←
- 
-𝜇
-′
-
-,
- 
-S
-𝐶
- 
-[
-𝑖𝑑𝑥
-] +
- 
-1
-, 𝑑
-′
-
-11
- 
+{
 if
  
-S
-𝐶
+(U.compareAndSwapLong(this,
  
-[
-𝑖𝑑𝑥
-]
+STATE, s,
+next
  
->
+=
  
-Max
-(S
-𝐶
+s
  
-[P
-𝑎
++ RUNIT))
+return next;}
+else if
  
-])
+((next
  
-and
+=
  
-𝑖𝑑𝑥 𝑖𝑠 𝑎 𝑛𝑒𝑤 𝑐𝑙𝑢𝑠𝑡𝑒𝑟
-
-then
-
-12
+tryIncReaderOverflow(s)) !=
+0L)
  
-P
-𝑛
+return next;}
+else if
  
-←
+(m
  
-Append
+==
  
-P
-𝑛
+WBIT)
  
-with
+{
+if
  
-𝑖𝑑𝑥
-
-13
+(a
  
-P
-𝑎
+!=
  
-←
+m)
  
-Remove
+break;
+state
  
-𝑖𝑑𝑥
+=
  
-from
+next
  
-P
-𝑎
-
-14
+=
  
-else
-
-15
+s
  
-𝑑
- 
-←
- 
-Max
-(
-𝑑, 𝑑
-′
-
-)
- 
-//
- 
-𝑑
- 
-will be assigned to
- 
-𝑑
-𝑛
-
-or
- 
-𝑑
-𝑎
- 
-accordingly
-
-16
- 
-end
-
-17
- 
-else
-
-// create a new anomalous cluster for
- 
-𝑡
-
-18
- 
-P
-𝑎
- 
-←
- 
-Append
- 
-P
-𝑎
- 
-with Length
-(
-𝜇
-C
-) +
- 
-1
-
-19
- 
-𝜇
-𝐺
- 
-←
- 
-Append
- 
-𝜇
-𝐺
- 
-with
- 
-𝑡
-
-20
- 
-R
-𝐶
- 
-←
- 
-Append
- 
-R
-𝐶
- 
-with 0
-
-21
- 
-S
-𝐶
- 
-←
- 
-Append
- 
-S
-𝐶
- 
-with 1
-
-22
- 
-end
-
-mean vector of each cluster, i.e.,
- 
-𝜇
-𝐶
- 
-. Thus, instead of keeping all its
-members (which is storage-intensive), the clusters can be simply
-represented by their mean vectors.
-Note that the offline and online anomaly detection can work
-collaboratively as a performance anomaly detector without the
-interpretability component, which requires human intervention.
-So far the metric patterns for anomaly detection are discovered
-based on historical data. However, due to the dynamics of online
-service systems (e.g., software upgrade, customer behavior change),
-the metrics may experience concept drift [
- 
-11
-,
- 
-12
- 
-], which produces
-brand-new patterns. Thus, an adaptive learning mechanism is desir-
-able to help adapt to such unprecedented patterns and update the
-metric patterns accordingly. In the next section, we will introduce
-the algorithm to this end called adaptive pattern learning.
-
-3.3.2
- 
-Adaptive Pattern Learning.
- 
-The algorithm of adaptive pat-
-tern learning is presented in Algorithm 3, which automatically
-updates metric patterns during streaming anomaly detection. To
-start with, for each cluster, we calculate its size and the maximum
-distance between its mean vector and all members (which we refer
-to as
- 
-radius
-), denoted as
- 
-S
-𝐶
- 
-and
- 
-R
-𝐶
- 
-, respectively. In particular, the
-size and radius of clusters with only a single member are one and
-zero. For adaptive pattern learning, all clusters can be sufficiently
-!
- 
-!
-
-!
-!
- 
-[
-#$%
-]
-
-"
-
-#
-"
-
-#
-#
-
-ℛ
- 
-!
- 
-[
-#$%
-]
-
-metric subsequence
- 
-mean vector
-
-!
- 
-!
-
-!
-!
- 
-[
-#$%
-]
-
-"
-
-#
-"
-
-#
-#
-
-ℛ
- 
-!
- 
-[
-#$%
-]
-
-tangent
-
-normal
-
-tangent
-
-!
- 
-!
-
-!
-!
- 
-[
-#$%
-]
-
-"
-
-#
-"
-
-#
-#
-
-ℛ
- 
-!
- 
-[
-#$%
-]
-
-normal
-
-"
-$
- 
-"
-$
-
-Figure 5: The update of the radius of a cluster
-
-represented with the following properties:
- 
-𝜇
-𝐶
- 
-,
- 
-S
-𝐶
- 
-, and
- 
-R
-𝐶
- 
-. All
-subsequences can be discarded.
-The main idea is that given a new subsequence
- 
-𝑡
-, we determine
-whether it possesses a known metric pattern carried by an exist-
-ing cluster. If yes, the cluster will absorb
- 
-𝑡
- 
-as a new member and
-update its properties; otherwise, a brand-new anomalous cluster
-with only
- 
-𝑡
- 
-itself will be created, representing an unseen metric
-pattern. Specifically, we first search for the closest pattern of
- 
-𝑡
-
-(line 1-2). Then, we determine whether
- 
-𝑡
- 
-should become a new
-member to the corresponding cluster by checking if the distance
-
-D
-𝑡
- 
-[
-𝑖𝑑𝑥
-]
- 
-is smaller than the largest radius recorded in all clusters,
-i.e.,
- 
-D
-𝑡
- 
-[
-𝑖𝑑𝑥
-] ≤
- 
-Max
-(R
-𝐶
- 
-)
-. If it is the case,
- 
-𝑡
- 
-should be considered
-as an old pattern; otherwise, it should be expressing a new pattern.
-When a cluster accepts a new member (line 9-16), we need to up-
-date its mean vector
- 
-𝜇
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
- 
-(i.e., the metric pattern), size
- 
-S
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
-,
-and radius
- 
-R
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
-. For
- 
-𝜇
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
-, it can be precisely updated by
-the equation at line 3 (i.e.,
- 
-𝜇
-′
-
-).
- 
-S
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
- 
-can be trivially updated by
-increasing itself by one. The update of the radius
- 
-R
-𝐶
- 
-[
-𝑖𝑑𝑥
-]
- 
-is a bit
-problematic. We cannot directly calculate the new radius as the
-original subsequences are not available. To address this problem,
-we employ the worst-case distance for approximation. As shown
-in Fig. 5, the new radius reaches its maximum value when
- 
-𝑡
- 
-lies in
-the (inward-pointing) normal of the tangent space at the member
-yielding the radius (denoted as
- 
-𝑡
-𝑟
- 
-) [
- 
-3
- 
-], which can be calculated by
-the equation at line 4. We omit the proof, which is standard. Two
-cases are possible. The first (the left subfigure) is that
- 
-𝑡
-𝑟
- 
-contin-
-ues to be the farthest member from the new mean
- 
-𝜇
-′
-
-. The second
-(the right subfigure) is that
- 
-𝑡
- 
-takes the place of
- 
-𝑡
-𝑟
- 
-and becomes the
-farthest one. Therefore, besides
- 
-𝑑
-𝑤
- 
-, we also compute the distance
-between
- 
-𝑡
- 
-and
- 
-𝜇
-′
-
-, i.e.,
- 
-𝑑
-𝑡
- 
-, and compare them (line 4-6). The bigger
-one will be the new radius (line 10). Recall we need to check if
-
-D
-𝑡
- 
-[
-𝑖𝑑𝑥
-] ≤
- 
-Max
-(R
-𝐶
- 
-)
- 
-to decide whether or not
- 
-𝑡
- 
-should be taken
-as a new member. Considering the high imbalance between normal
-and abnormal clusters, we maintain two maximum radii for them,
-denoted as
- 
-𝑑
-𝑛
- 
-and
- 
-𝑑
-𝑎
- 
-, respectively (line 7). Once a cluster alters
-its radius, we reset the maximum radius of its kind (
-𝑑
-𝑛
- 
-or
- 
-𝑑
-𝑎
- 
-as
-determined by line 8) if it is exceeded by
- 
-𝑑
-′
-
-(line 15). On the other
-hand, if the cluster rejects
- 
-𝑡
-, we form a new anomalous cluster
-containing only
- 
-𝑡
- 
-by properly setting its properties (line 18-21).
-An issue with this strategy is that false positives will accumulate
-in
- 
-P
-𝑎
- 
-as the unseen patterns can also be normal. We alleviate it
-
-page No: 7 
-===============
-Adaptive Performance Anomaly Detection for Online Service Systems via Pattern Sketching
- 
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
-
-by setting a threshold to the size of the newly-formed anomalous
-clusters (line 11). The role of the cluster will be switched from
-abnormal to normal if its size exceeds the threshold (line 12-13).
-The rationale is that performance anomalies are generally rare
-events. A large anomalous cluster would mean the particular type
-of issue it represents occurs too often. However, a pattern with a
-large frequency tends to be the metric’s normal behavior. In this
-paper, we simply set the default threshold as the largest size of the
-anomalous clusters identified in the offline stage, i.e.,
- 
-Max
-(S
-𝐶
- 
-[P
-𝑎
- 
-])
-.
-Nevertheless, more sophisticated strategies can be applied by, for
-example, considering the distribution of clusters’ sizes.
-
-3.4
- 
-Time and Space Complexity
-
-3.4.1
- 
-Time Complexity.
- 
-For Algorithm 1, the theoretical time com-
-plexity of operation STAMP is
- 
-O (
-𝑛
-2
-)
-. Thus, line 1-2 require
- 
-O (
-𝑙
-2
-
-𝑛
- 
-)
-
-and
- 
-O (
-𝑙
-2
-
-𝑎
- 
-)
-, respectively, where
- 
-𝑙
-𝑛
- 
-and
- 
-𝑙
-𝑎
- 
-are the length of
- 
-T
-𝑛
- 
-and
-
-T
-𝑎
- 
-. Another operation with an interesting time complexity is the
-affinity propagation algorithm (line 7), whose complexity is qua-
-dratic in the number of clusters (which is often small), i.e.,
- 
-O (|
-𝐶
- 
-|
-2
-)
-.
-Other operations are of trivial linear time complexity, which is
-also the case for Algorithm 2 and Algorithm 3. Overall, ADSketch
-owns a time complexity of
- 
-O (
-𝑛
-2
-)
- 
-(
-O (
-𝑙
-2
-
-𝑛
++ (WBIT
  
 +
  
-𝑙
-2
+RUNIT);
+if
+ 
+((h
+ 
+=
+ 
+whead)
+ 
+!= null &&
+ 
+h.status
+ 
+!= 0)
+release(h);
+return
+ 
+next;}
+else if
+ 
+(a
+ 
+!=
+ 
+0L
+ 
+&&
+ 
+a
+ 
+<
+ 
+WBIT)
+ 
+return stamp;
+else break;}
+return
+ 
+0L;}
 
-𝑎
+Gold
  
-+ |
-𝐶
+if the lock state matches the given stamp performs one of the fol-
+lowing actions if the stamp represents holding a write lock re-
+leases it and UNK a read lock or if a read lock returns it or if
+an optimistic read acquires a read lock and returns a read stamp
+only if immediately available this method returns zero in all other
+cases
+MOSES
  
-|
-2
-)
-). Fortunately,
-unlike other models such as deep neural networks, STAMP can
-be embarrassingly parallelized by distributing its unit operation
-(SPW distance calculation) to multi-core processors [
+if the lock state matches the given if the lock state matches the
+given gets of processing sbits state matches the given sbits string
+of the lock hold abits l l break component of rfull that runs sets
+of processing of runit or create a new pattern if this inc reader
+overflow l create a human readable description of component of
+wbit break if the lock of processing of wbit runit h whead by the
+given status release the given action if the sum associated with
+the given component l lock state matches the given action wbit
+get returns break l
+CODE-NN
  
-36
+returns code true if the lock is not a link org glassfish jersey server
+mvc
+Seq2Seq
  
-]. Moreover,
-STAMP has an ultra-fast approximation to generate results in an
-anytime fashion.
+UNK a new item to the list of superclass timeout version
+Basic RNN*
+ 
+get a UNK to a link javax ws rs core UNK
+Code-GRU*
+ 
+if the lock state matches the given stamp performs one of the fol-
+lowing actions if the stamp represents holding a write lock returns
+it or if a read lock if the write lock is available releases the read
+lock and returns a write stamp or if an optimistic read returns
 
-3.4.2
+project: cocos2d
+public static float
  
-Space Complexity.
+ccpDot(final CGPoint
  
-As described in Sec. 3.3.2, pattern clusters
-have a lightweight representation, i.e.,
+v1,
  
-𝜇
-𝐶
+final
+CGPoint v2)
  
-,
+{
+return
  
-S
-𝐶
+v1.x * v2.x
  
-, and
++
  
-R
-𝐶
+v1.y * v2.y;
  
-. We also need
+}
 
-P
-𝑛
+Gold
  
-and
+Calculates dot product of two points
+MOSES
  
-P
-𝑎
+subtract another subtract another the given vector
+CODE-NN
  
-to distinguish anomalous patterns from the normal ones.
-Besides
+rotates two points
+Seq2Seq
  
-𝜇
-𝐶
+returns the closest long to the specified value
+Basic RNN*
  
-whose space complexity is
+calculates cross product of two points
+Code-GRU*
  
-O (
-𝑚
+calculates cross product of two points
+
+project: libgdx
+public static
  
-× |
-𝐶
+IntBuffer
  
-|)
-, other vectors
-are of
+allocate
  
-O (|
-𝐶
+(int
  
-|)
-. Therefore, the dominant term of space complexity
-is
+capacity) {
+if
  
-O (
-𝑚
+(capacity
  
-× |
-𝐶
+<
  
-|)
-. Since both
+0)
  
-𝑚
+{
+throw
  
-and
+new IllegalArgumentException();
+}
+return
  
-|
-𝐶
+BufferFactory.newIntBuffer(capacity);}
+
+Gold
  
-|
+creates an int buffer based on a newly allocated int array
+MOSES
  
-are usually small, the space
-overhead of ADSketch can be considered trivial.
+based on the creates a new backing buffer
+CODE-NN
+ 
+creates a byte buffer based on a newly allocated char array
+Seq2Seq
+ 
+creates a float buffer based on a newly allocated float array
+Basic RNN*
+ 
+creates a char buffer based on a newly allocated char array
+Code-GRU*
+ 
+creates a long buffer based on a newly allocated long array
+Figure 6: Examples of generated comments and corresponding code snippets
+In the first example, we can see that CODE-NN, Seq2Seq
+and Basic RNN’s results are poor and have almost nothing
+to do with the Gold comment. Even though both MOSES
+produces a sequence of words that look similar to the Gold
+in the beginning, the rest of the result is less readable and
+does not have any useful information. For example, “if the
+lock state matches the given” is output repeatedly. MOSES
+also produces strange terms such as “wbit” and “runit” just
+because they appeared in the source code. In the contrast,
+Code-GRU’s result is more readable and meaningful.
+In the second example, there is not any useful word in
+the method body so the results of MOSES, CODE-NN and
+Seq2Seq are bad. Code-RNN can extract the structural in-
+formation of source code and embed it into a vector, so both
+models that use this vector, namely Basic RNN and Code-
+GRU, can generate the relevant comments.
+In the third example, although all results change the type
+of the value, that is, Basic RNN changes “int” to “char”
+while Code-GRU changes to “long”. “long” and “int” are
+both numerical types while “char” is not. Thus Code-GRU is
+better than Basic RNN. For the result of Seq2Seq, although
+“float” is also a numerical type, it is for real numbers, and
+not integers.
 
 4
  
-EXPERIMENTS
+Related Work
 
-In this section, we evaluate ADSketch using both public data and
-real-world metric data collected from the industry. Particularly, we
-aim at answering the following research questions.
+Mining of source code repositories becomes increasingly
+popular in recent years. Existing work in source code min-
+ing include code search, clone detection, software evolution,
+models of software development processes, bug localization,
+software bug prediction, code summarization and so on. Our
+work can be categorized as code summarization and com-
+ment generation.
+Sridhara et al. (Sridhara et al. 2010) proposed an au-
+tomatic comment generator that identifies the content for
 
-RQ1
-: How effective is ADSketch’s offline anomaly detection?
+5234
 
-RQ2
-: How effective is ADSketch’s online anomaly detection?
-
-RQ3
-: How effective is ADSketch’s adaptive pattern learning?
-The evaluation process of much existing work, e.g., [
- 
-29
- 
-,
- 
-32
- 
-],
-essentially corresponds to the process adopted in RQ1 (i.e., the
-offline anomaly detection phase), because the threshold they select
-for anomaly alerting is determined by iterating the full range of
-its possible values. The best results achieved during the iteration
-process are reported. To fully examine the performance of different
-methods in online scenarios, we fix models’ data and parameters
-(including the threshold learned in offline mode) as if they are
-deployed in production systems, i.e., RQ2. The online adaptability
-of ADSketch will be evaluated in RQ3.
-
-4.1
- 
-Experiment Setting
-
-4.1.1
- 
-Dataset.
- 
-To evaluate the effectiveness of ADSketch in perfor-
-mance anomaly detection, we conduct experiments on two publicly
-
-Table 2: Dataset Statistics
-Dataset
- 
-#Curves
- 
-#Points
- 
-Anomaly Ratio
-
-Yahoo
- 
-67
- 
-94,866
- 
-1.8%
-AIOps18
- 
-58
- 
-5,922,913
- 
-2.26%
-Industry
- 
-436
- 
-4,394,880
- 
-1.07%
-available datasets. Moreover, to confirm its practical significance,
-we collect a production dataset from a large-scale online service of
-Huawei Cloud. Table 2 summarizes the statistics of the datasets.
-
-Public dataset
-. The public datasets for experiments are Ya-
-hoo [
-30
- 
-] and AIOps18 [
- 
-2
- 
-,
- 
-29
- 
-]. Particularly, we do not conduct online
-anomaly detection on Yahoo due to its limited number of anomalies.
-
-•
- 
-Yahoo
-. Yahoo released by Yahoo! Research [
- 
-30
- 
-] is a bench-
-mark dataset for time series anomaly detection. Part of the
-dataset is synthetic (which is simulated by algorithmically
-injecting anomalies), and part of the dataset is collected from
-the real traffic of Yahoo services. The anomalies in the real
-dataset are manually labeled. All time series are sampled ev-
-ery hour. In particular, as our goal is detecting performance
-anomalies for online services, we only use the real dataset,
-which reflects the real-world service performance issues. For
-each time series, we select the first 300 data points as the
-anomaly-free input (any anomalies are ignored), while the
-remaining part as the input for offline anomaly detection.
-
-•
- 
-AIOps18
-. AIOps18 dataset was released by an international
-AIOps competition held in 2018 [
-1
- 
-]. The dataset is composed
-of multiple metric time series collected from the web services
-of large-scale IT companies. Particularly, the dataset contains
-two types of metrics, i.e., service metrics and machine met-
-rics. The service metrics record the scale and performance
-of the web services, including response time, traffic, con-
-nection errors; while the machine metrics reflect the health
-states of physical machines, including CPU usage, network
-throughput. Some metric time series has a sampling interval
-of one minute, while that of others is five minutes. Each
-metric has a training and a testing time series. Thanks to its
-large quantity, we follow the following procedure to separate
-the data for ADSketch offline and online anomaly detection.
-First, we extract a small part of the training time series that is
-anomaly-free, which often contains thousands of data points.
-Then, we use the remainder of the training time series for
-offline anomaly detection. Finally, the whole testing time
-series will be employed for online anomaly detection. We
-also compare the performance of online anomaly detection
-with and without the adaptive learning component.
-
-Industrial dataset
-. To evaluate ADSketch in production sce-
-narios, we collect various metrics (e.g., Application CPU Usage,
-Interface Throughput, Request Timeout Number, Round-trip De-
-lay) from a large-scale online service (we conceal the name for
-privacy concern) of Huawei Cloud. The system under study pro-
-duces millions of metric time series, which contain an abundance
-of different metric patterns. The number of metric curves collected
-is 436, which come from multiple instances of virtual machines,
-
-page No: 8 
+page No: 7 
 ===============
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
- 
-Zhuangbin Chen, Jinyang Liu, Yuxin Su, Hongyu Zhang, Xiao Ling, Yongqiang Yang, and Michael R. Lyu
-
-containers, and applications of the selected service system. For each
-metric, we collect one week of data with a sampling interval of one
-minute, resulting in more than four million data points in total. The
-anomalies representing the performance issues of the service are
-labeled by experienced domain engineers. From Table 2, we can
-see that the anomaly ratio is very low. Particularly, we use the first
-day as the anomaly-free input, whose anomalies (if any) are simply
-ignored. The next three days are used for offline anomaly detection.
-Finally, we conduct online anomaly detection on the remaining
-three days, where we also evaluate the adaptability of different
-approaches to unseen anomaly patterns.
-
-4.1.2
- 
-Evaluation Metrics.
- 
-As anomaly detection is essentially a
-binary classification problem, i.e., normal and abnormal, we employ
-
-precision
-,
- 
-recall
-, and
- 
-F1 score
- 
-for evaluation. They can gauge the per-
-formance of an anomaly detection algorithm at a fine-grained level.
-A satisfactory algorithm should be able to quickly and precisely
-detect both the occurrence and duration of performance anomalies.
-Specifically, precision measures the percentage of anomalous met-
-ric points that are successfully identified as anomalies over all the
-metric points that are predicted as anomalous:
- 
-𝑝𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛
- 
-=
- 
-𝑇 𝑃
-𝑇 𝑃
- 
-+
-𝐹 𝑃
- 
-.
-Recall calculates the portion of anomalous metric points that are
-successfully identified by ADSketch over all the actual anomalous
-points:
- 
-𝑟𝑒𝑐𝑎𝑙𝑙
- 
-=
- 
-𝑇 𝑃
-𝑇 𝑃
- 
-+
-𝐹 𝑁
- 
-. Finally, the F1 score is the harmonic mean
-of precision and recall:
- 
-𝐹
- 
-1
- 
-𝑆𝑐𝑜𝑟𝑒
- 
-=
- 
-2
-×
-𝑝𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛
-×
-𝑟𝑒𝑐𝑎𝑙𝑙
-𝑝𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛
-+
-𝑟𝑒𝑐𝑎𝑙𝑙
- 
-.
- 
-𝑇 𝑃
- 
-is the
-number of anomalous metric points that are correctly discovered
-by ADSketch;
- 
-𝐹 𝑃
- 
-is the number of normal metric points that are
-wrongly predicted as an anomaly by ADSketch;
- 
-𝐹 𝑁
- 
-is the number
-of anomalous metric points that ADSketch fails to notice. Since
-there are multiple metrics in each dataset, we report their average
-weighted by the size of each metric time series.
-
-4.1.3
- 
-Comparative Methods.
- 
-The following methods are selected
-for comparative evaluation of ADSketch. As all baselines have
-open-sourced their code, we directly borrow the implementations
-and follow the procedure of model training and parameter tuning
-introduced in each method.
-
-•
- 
-LSTM
- 
-[
-15
- 
-,
- 
-37
- 
-]. This method employs Long Short-Term Mem-
-ory (LSTM) network to capture the normal behaviors of met-
-rics in a forecasting-based manner. Specifically, it predicts
-the next values of a metric based on its past observations. The
-predicted values are then compared with the actual values.
-Anomaly warnings will be raised if the differences exceed
-the pre-defined thresholds.
-
-•
- 
-Donut
- 
-[
-34
- 
-]. Donut adopts the Variational Autoencoder (VAE)
-framework to properly reconstruct the normal metric subse-
-quences. The trained model will have a large reconstruction
-loss when it meets anomalous instances, which serves as the
-signal to alert anomalies.
-
-•
- 
-LSTM-VAE
- 
-[
-25
- 
-]. Similar to Donut, this work detects anom-
-alies based on metric subsequence reconstruction. It com-
-bines LSTM and VAE in the model design.
-
-•
- 
-LODA
- 
-[
- 
-26
- 
-]. LODA is an online anomaly detector based on
-the ensemble of a series of one-dimensional histograms. Each
-histogram approximates the probability density of input data
-projected onto a single projection vector. LODA calculates
-the likelihood of an anomaly based on the joint probability
-of the projections.
-
-•
- 
-iForest
- 
-[
- 
-19
- 
-]. Isolation Forest (iForest) is composed of a col-
-lection of isolation trees, which isolates anomalies based
-on random subsets of the input features. The height of an
-input sample, averaged over the trees, is a measure of its
-normality. Samples with noticeably shorter heights are likely
-to be anomalies. We use metric subsequences as the input
-samples.
-
-•
- 
-DAGMM
- 
-[
- 
-39
-]. DAGMM utilizes a deep autoencoder to gen-
-erate a low-dimensional representation for each input data
-point, which is further fed into a Gaussian Mixture Model
-to estimate the anomaly score.
-
-•
- 
-SR-CNN
- 
-[
-29
- 
-]. SR-CNN first applies Spectral Residual to high-
-light the most important regions for seasonal metric data
-where anomalies often reside. It then trains a Convolutional
-Neural Network (CNN) through synthetic anomalies to de-
-tect the real anomalies.
-
-4.2
- 
-Experimental Results
-
-4.2.1
- 
-RQ1
- 
-The Effectiveness of ADSketch’s Offline Anomaly Detec-
-tion.
- 
-To answer this research question, we compare ADSketch with
-the baselines in the offline setting. The results are shown in Table 3,
-where we can see the average F1 score of ADSketch outperforms
-all baseline methods in all datasets. In AIOps18 and Industry, the
-improvement achieved by ADSketch is more significant. In partic-
-ular, the patterns of anomalies in Yahoo are relatively simple. By
-iterating over all possible values of the anomaly threshold, the base-
-lines can find the best setting for the dataset under study. Among
-them, LSTM [
- 
-15
-,
- 
-37
- 
-] and Donut [
- 
-34
- 
-] achieve comparable perfor-
-mance compared to that of ADSketch (i.e., 0.541), whose average
-F1 scores are 0.53 and 0.524, respectively. Moreover, LSTM [
- 
-15
- 
-,
- 
-37
- 
-]
-has the best recall (i.e., 0.706), while the best precision (i.e., 0.754)
-goes to LODA [
-26
- 
-]. DAGMM and SR-CNN turn out to be the worst
-methods in this dataset. In terms of AIOps18 and Industry datasets,
-we can see ADSketch surpasses the baselines by a larger margin.
-Specifically, the average F1 score of ADSketch in AIOps18 is 0.677,
-while that of the second-best method (i.e., LSTM-VAE) is 0.537.
-ADSketch also attains the best precision and recall. In AIOps18, the
-anomaly patterns are much more complicated. Baselines tend to
-predict more data points as anomalous, leading to a lower precision.
-Different from them, ADSketch is able to precisely capture them
-and outperforms other methods. The situation is similar in Indus-
-try. Particularly, this dataset is collected from online services, and
-many of its metric curves possess more perceivable and regular pat-
-terns. Thus, all methods perform better in this dataset than in the
-other two. The average F1 scores of ADSketch and the second-best
-method (i.e., LSTM) are 0.740 and 0.632, respectively.
-In Table 3, we can see among all comparative methods, LSTM and
-LSTM-VAE have better overall performance, which are forecasting-
-based and reconstruction-based methods, respectively. They both
-try to model the normal patterns of a metric time series and alert
-anomalies once the metric significantly deviates from the learned
-patterns. The difference is that a forecasting-based method aims to
-predict the next metric values and a reconstruction-based method
-tries to encode and regenerate metric subsequences. We can see
-
-page No: 9 
-===============
-Adaptive Performance Anomaly Detection for Online Service Systems via Pattern Sketching
- 
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
-
-Table 3: Experimental Results of Offline Anomaly Detection
-
-Yahoo
- 
-AIOps18
- 
-Industry
-
-Method
- 
-precision
- 
-recall
- 
-F1 score
- 
-precision
- 
-recall
- 
-F1 score
- 
-precision
- 
-recall
- 
-F1 score
-
-LSTM
- 
-0.598
- 
-0.706
- 
-0.530
- 
-0.499
- 
-0.531
- 
-0.518
- 
-0.704
- 
-0.656
- 
-0.632
-LSTM-VAE
- 
-0.622
- 
-0.634
- 
-0.484
- 
-0.510
- 
-0.625
- 
-0.537
- 
-0.717
- 
-0.639
- 
-0.622
-Donut
- 
-0.530
- 
-0.658
- 
-0.524
- 
-0.405
- 
-0.527
- 
-0.382
- 
-0.693
- 
-0.628
- 
-0.604
-LODA
- 
-0.754
- 
-0.583
- 
-0.428
- 
-0.553
- 
-0.429
- 
-0.401
- 
-0.583
- 
-0.498
- 
-0.529
-iForest
- 
-0.713
- 
-0.597
- 
-0.437
- 
-0.555
- 
-0.439
- 
-0.413
- 
-0.616
- 
-0.567
- 
-0.538
-DAGMM
- 
-0.643
- 
-0.517
- 
-0.401
- 
-0.590
- 
-0.477
- 
-0.461
- 
-0.597
- 
-0.542
- 
-0.530
-SR-CNN
- 
-0.433
- 
-0.618
- 
-0.307
- 
-0.424
- 
-0.387
- 
-0.363
- 
-0.519
- 
-0.471
- 
-0.434
-ADSketch
- 
-0.511
- 
-0.673
- 
-0.541
- 
-0.744
- 
-0.670
- 
-0.677
- 
-0.811
- 
-0.813
- 
-0.740
-Table 4: Experimental Results of Online Anomaly Detection
-
-AIOps18
- 
-Industry
-
-Method
- 
-prec.
- 
-rec.
- 
-F1
- 
-prec.
- 
-rec.
- 
-F1
-
-LSTM
- 
-0.425
- 
-0.462
- 
-0.408
- 
-0.612
- 
-0.606
- 
-0.592
-LSTM-VAE
- 
-0.336
- 
-0.521
- 
-0.389
- 
-0.624
- 
-0.598
- 
-0.601
-Donut
- 
-0.431
- 
-0.326
- 
-0.376
- 
-0.662
- 
-0.581
- 
-0.590
-LODA
- 
-0.407
- 
-0.397
- 
-0.355
- 
-0.653
- 
-0.526
- 
-0.503
-iForest
- 
-0.397
- 
-0.334
- 
-0.322
- 
-0.576
- 
-0.507
- 
-0.487
-DAGMM
- 
-0.392
- 
-0.367
- 
-0.378
- 
-0.557
- 
-0.538
- 
-0.502
-SR-CNN
- 
-0.329
- 
-0.288
- 
-0.307
- 
-0.438
- 
-0.422
- 
-0.410
-ADSketch
- 
-0.543
- 
-0.575
- 
-0.507
- 
-0.705
- 
-0.603
- 
-0.606
-Table 5: Experimental Results of Adaptive Pattern Learning
-
-AIOps18
- 
-Industry
-
-Method
- 
-prec.
- 
-rec.
- 
-F1
- 
-prec.
- 
-rec.
- 
-F1
-
-LODA
- 
-0.424
- 
-0.405
- 
-0.387
- 
-0.623
- 
-0.512
- 
-0.548
-ADSketch
- 
-0.594
- 
-0.557
- 
-0.548
- 
-0.882
- 
-0.856
- 
-0.832
-
-except for LSTM-VAE in Yahoo, these two methods attain the best
-results compared to other baseline counterparts in the other two
-datasets. However, LSTM lacks the ability to explicitly detect anom-
-alies in the level of subsequence. Many anomalies are composed
-of a collection of anomalous points corresponding to the period
-of performance issues. LSTM-VAE does not take into account the
-relationship among subsequences. Many suspicious subsequences
-are not necessarily anomalies if they often occur in the history
-of the service systems. Compared to them, ADSketch is able to
-simultaneously learn the subsequence-level features and consider
-the context of metric time series.
-
-4.2.2
- 
-RQ2
- 
-The Effectiveness of ADSketch’s Online Anomaly De-
-tection.
- 
-We also compare ADSketch against the selected methods
-for online anomaly detection. Table 4 presents the experimental
-results. Except for Donut in AIOps18, all models and algorithms
-encounter an obvious performance degradation in both datasets.
-Nevertheless, ADSketch manages to maintain the best ranking
-(0.507 in AIOps18 and 0.606 in Industry), which is followed by
-LSTM (0.408 in AIOps18) and LSTM-VAE (0.601 in Industry). Partic-
-ularly, in AIOps18, the average F1 score of different methods drops
-by 11%-27%. This observation demonstrates the existence of un-
-precedented metric patterns in online scenarios. By relying on the
-"outdated" data and parameters (e.g., ADSketch’s metric patterns
-and baselines’ anomaly thresholds) learned from the offline stage,
-the methods cannot accommodate them. In addition, by plotting
-the metric time series, we observe the emergence of concept drift
-on metrics. This can be caused by software upgrades or the integra-
-tion of new service components (e.g., virtual machines, containers).
-In the industrial dataset, the evaluation results of the baselines
-are more promising (i.e., the average F1 score drops by less than
-10%). This is because the anomalies are triggered by real-world
-performance issues. The issues have a more natural distribution,
-and the collected metrics exhibit relatively stable patterns. ADS-
-ketch presents a significant performance degradation. We found it
-is because in some cases, the two metric time series fed to the of-
-fline stage are often both anomaly-free. Consequently, no abnormal
-patterns will be learned, disabling ADSketch to detect anomalies in
-the online stage. Therefore, when designing an anomaly detection
-algorithm, adaptability is indispensable.
-
-4.2.3
- 
-RQ3
- 
-The Effectiveness of ADSketch’s Adaptive Pattern Learn-
-ing.
- 
-This research question looks into the issue of online adaptabil-
-ity. Particularly, we only compare ADSketch with LODA, which is
-the only baseline method with the design of online learning. Similar
-to RQ2, we only conduct experiments with AIOps18 and Industry
-datasets. Table 5 shows the experimental results, where we can see
-ADSketch’s adaptive pattern learning indeed brings performance
-gains. With more anomalous patterns identified, ADSketch is able
-to detect anomalies more accurately, i.e., a better precision (0.594 in
-AIOps18 and 0.882 in Industry). The average F1 score also enjoys
-some improvements, i.e., 0.548 in AIOps18 and 0.832 in Industry.
-Particularly, in the industrial case, adaptive ADSketch achieves
-a performance of over 0.8 in all evaluation metrics (even in some
-cases without any abnormal patterns learned from the offline stage).
-Such an achievement indicates its potential to meet the industrial
-requirements of performance anomaly detection. On the other hand,
-the online version of LODA does not show much performance im-
-provement (i.e., an average F1 score of 0.387 in AIOps18 and 0.548
-
-page No: 10 
-===============
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
- 
-Zhuangbin Chen, Jinyang Liu, Yuxin Su, Hongyu Zhang, Xiao Ling, Yongqiang Yang, and Michael R. Lyu
-8
- 
-10
- 
-12
- 
-14
- 
-16
- 
-18
- 
-20
- 
-22
-
-Pattern Length (m)
-
-0.4
-0.5
-0.6
-0.7
-0.8
-0.9
-
-Avg. F1 Score
-
-97.0
- 
-97.5
- 
-98.0
- 
-98.5
- 
-99.0
- 
-99.5
- 
-100.0
-
-Percentile Threshold (p)
-
-0.4
-0.5
-0.6
-0.7
-0.8
-0.9
-
-Offline
- 
-Online
- 
-Adaptive Online
-
-Figure 6: Parameter Sensitivity
-
-in Industry), which even falls behind some methods without the
-capability of online learning.
-
-4.2.4
- 
-Parameter Sensitivity.
- 
-In ADSketch, there are only two pa-
-rameters to tune (both in Algorithm 1), i.e., the pattern length
-
-𝑚
- 
-and the percentile threshold
- 
-𝑝
- 
-for identifying deviated metric
-subsequences. We evaluate the sensitivity of ADSketch to these
-two parameters by conducting experiments with different settings.
-Due to space limitations, we only show the results of the Indus-
-try dataset. The default value of
- 
-𝑚
+the summary and generates natural language text that sum-
+marizes the methods overall actions based on some tem-
+plates. Moreno et al. (Moreno et al. 2013) also proposed a
+template based method but it is used on summarizing Java
+classes. McBurney and McMillan (McBurney and McMil-
+lan 2014) presented a novel approach for automatically gen-
+erating summaries of Java methods that summarize the con-
+text surrounding a method, rather than details from the
+internals of the method. These summarization techniques
+(Murphy 1996; Sridhara, Pollock, and Vijay-Shanker 2011;
+Moreno et al. 2013; Haiduc et al. 2010) work by select-
+ing a subset of the statements and keywords from the code,
+and then including information from those statements and
+keywords in the summary. To improve them, Rodeghero et
+al. (Rodeghero et al. 2014) presented an eye-tracking study
+of programmers during source code summarization, a tool
+for selecting keywords based on the findings of the eye-
+tracking study.
+These models are invariably based on templates and care-
+ful selection of fragments of the input source code. In con-
+trast, our model is based on learning and neural network.
+There are also some models that apply learning methods to
+mine source code.
+Movshovitz-Attias and Cohen (Movshovitz-Attias and
+Cohen 2013) predicted comments using topic models and
+n-grams. Like source code summarization, Allamanis et
+al. (Allamanis et al. 2015) proposed a continuous embed-
+ding model to suggest accurate method and class names.
+Iyer et al. (Iyer et al. 2016) proposed a new model called
+CODE-NN that uses Long Short Term Memory (LSTM)
+networks with attention to produce sentences that can de-
+scribe C# code snippets and SQL queries. Iyer et al.’s work
+has strong performance on two tasks, code summarization
+and code retrieval. This work is very similar to our work, in
+that we both use the Recurrent NN to generate sentences
+for source code. What differs is that we propose a new
+type of Recurrent NN. Adrian et al. (Kuhn, Ducasse, and
+G ́
+ırba 2007) utilized the information of identifier names and
+comments to mine topic of source code repositories. Punya-
+murthula (Punyamurthula 2015) used call graphs to extract
+the metadata and dependency information from the source
+code and used this information to analyze the source code
+and get its topics.
+In other related domains of source code mining, code
+search is a popular research direction. Most search en-
+gines solve the problem by keyword extraction and signa-
+ture matching. Maarek et al. (Maarek, Berry, and Kaiser
+1991) used keywords extracted from man pages written in
+natural language and their work is an early example of ap-
+proaches based on keywords. Rollins and Wing (Rollins and
+Wing 1991) proposed an approach to find code with the sig-
+natures present in code. Mitchell (Mitchell 2008) combined
+signature matching with keyword matching. Then Garcia et
+al. (Garcia-Contreras, Morales, and Hermenegildo 2016) fo-
+cused on querying for semantic characteristics of code and
+proposed a new approach which combines semantic charac-
+teristics and keyword matching.
+Cai
+ 
+(Cai
+ 
+2016)
+ 
+proposed
+ 
+a
+ 
+method
+ 
+for
+ 
+code
+ 
+paral-
+lelization through sequential code search. That method
+can
+ 
+also
+ 
+be
+ 
+used
+ 
+for
+ 
+clone
+ 
+detection.
+ 
+Williams
+ 
+and
+Hollingsworth
+ 
+(Williams
  
 and
  
-𝑝
+Hollingsworth
  
-for the dataset is 15 and
-99.5th, respectively. We fix one parameter and employ a different
-setting for the other one. Specifically,
+2005)
  
-𝑚
- 
-ranges from 9 to 21, and
- 
-𝑝
-
-varies from 97th to 99.8th. Fig. 6 presents the results. Performance
-degradation is observed in both offline and online stages when
-the two parameters deviate from their default setting. The offline
-stage exhibits a greater sensitivity, and thus, less anomalous met-
-ric patterns are captured. Nevertheless, both the online anomaly
-detection and adaptive pattern learning algorithms achieve stable
-performance with a smaller set of abnormal patterns. This further
-confirms ADSketch’s capability of new pattern discovery.
+de-
+scribed a method to use the source code change history of
+a software project to drive and help to refine the search
+for bugs. Adhiselvam et al. (Adhiselvam, Kirubakaran, and
+Sukumar 2015) used MRTBA algorithm to localize bug to
+help programmers debug. The method proposed in this paper
+can also benefit natural language search for code fragments.
 
 5
  
-INDUSTRIAL PRACTICE
-5.1
- 
-Online Deployment
+Conclusion
 
-Since October 2020, ADSketch has been successfully incorporated
-into the performance anomaly detection system of a large-scale
-online service system in Huawei Cloud. The deployment process
-can be easily done by leveraging the existing data analytics pipeline,
-for example, data consumption by Apache Kafka [
+In this paper we introduce a new Recursive Neural Net-
+work called
  
-16
+Code-RNN
  
-], and online
-parallel execution by Apache Flink [
-9
-]. After months of usage, ADS-
-ketch has demonstrated its effectiveness on metric-based system
-troubleshooting. A lot of positive feedback has been received from
-on-site engineers. Particularly, engineers confirmed its superior-
-ity in anomaly detection over the current algorithms (e.g., fixed
-thresholding, moving average) in operation. One typical case is
-multiple benign spikes arriving suddenly and consecutively. ADS-
-ketch is able to quickly figure out that such recurrent spikes have
-happened before, which reduces the number of false alerts. In terms
-of issue understanding, engineers benefited from ADSketch by hav-
-ing readily-available descriptions about the anomaly symptoms.
-Therefore, we have initialized a project of metric pattern database
-construction. ADSketch is continuously accumulating anomalous
-patterns in the database. Moreover, engineers also expressed the
-need for metric pattern auto-correlation across different metrics.
-This is because multiple anomalies collectively could constitute a
-0
+to extract the topic or function of
+the source code. This new Recursive Neural Network is the
+parse tree of the source code and we go through all the tree
+from leaf nodes to root node to get the final representation
+vector. Then we use this vector to classify the source code
+into some classes according to the function, and classifica-
+tion results are acceptable. We further propose a new kind
+of GRU called
  
-2000
+Code-GRU
  
-4000
- 
-6000
- 
-8000
- 
-10000
-0.0
-0.5
-1.0
+to utilize the vector created from
+Code-RNN to generate comments. We apply Code-GRU to
+ten source code repositories and gain the best result in most
+projects. This frame work can also be applied to other pro-
+gramming languages as long as we have access to the parse
+tree of the input program.
+As future work, we can add call graphs into our model,
+so that Code-RNN can contain invocation information and
+extract more topics from source code.
 
-Application CPU Usage
+Acknowledgement
 
-0
+This
  
-2000
+work
  
-4000
+was
  
-6000
+supported
  
-8000
+by
  
-10000
-0.0
-0.5
-1.0
+Oracle-SJTU
+ 
+Joint
+ 
+Re-
+search Scheme, NSFC Grant No. 9164620571421002 and
+61373031, and SJTU funding project 16JCCS08. Hongfei
+Hu contributed to the identifier semantics part of the work.
 
-Interface Throughput
+References
 
-0
+Adhiselvam, A.; Kirubakaran, E.; and Sukumar, R.
  
-2000
+2015.
+An enhanced approach for software bug localization using
+map reduce technique based apriori (mrtba) algorithm.
  
-4000
+In-
+dian Journal of Science and Technology
  
-6000
+8(35).
+Allamanis, M.; Barr, E. T.; Bird, C.; and Sutton, C.
  
-8000
+2015.
+Suggesting accurate method and class names. In
  
-10000
-
-Time
-
-0.0
-0.5
-1.0
-
-Requests Per Minute
-
-Figure 7: Case Study of ADSketch
-
-stronger performance issue indicator. We leave the identification
-of such correlations to our future work.
-
-5.2
- 
-Case Study
-
-We provide some case studies of ADSketch collected from produc-
-tion systems in Fig. 7, where anomalies are indicated by the red
-lines. Due to space limitations, we only showcase three metric time
-series. Clearly, all anomalous metric patterns have been success-
-fully located regardless of shape, scale, and length. Each metric
-time series possesses at least two types of anomalous patterns, e.g.,
-level shifts and spikes. Interestingly, we found the depression in the
-second metric can help catch a similar pattern in the third metric,
-demonstrating the feasibility of cross-metric pattern sharing. More-
-over, engineers confirmed that these patterns are typical, based on
-which they can make a good guess about the ongoing issues. For
-example, the spikes often come from user request surge or network
-attack; the depressions in the second and third metrics often in-
-dicate service restart or link flap. To quantify the interpretability
-of ADSketch, we label the recurrent performance issues and em-
-ploy the learned metric patterns to identify them. As performance
-issues may contain uncertainty [
-33
- 
-], we allow one pattern to be
-associated with multiple labels simultaneously (Sec. 3.2.2). During
-the evaluation, an anomaly interpretation is considered correct if
-the predicted performance issue appears in the label set. In our
-experiments, ADSketch attains a promising F1 score of 0.825. This
-demonstrates the potentials of ADSketch in providing interpretable
-results to engineers, which can greatly accelerate the investigation
-of service performance issues.
-
-5.3
- 
-Threats to Validity
-
-We have identified the following major threats to validity.
-
-Internal threats.
- 
-The implementation and parameter selection
-are two critical internal threats to the validity. To reduce the im-
-plementation threat, we directly borrow the codes released by the
-baseline approaches. For the proposed approach, we employ peer
-code review, i.e., the authors are invited to carefully check the imple-
-mentation for mistakes. In terms of parameter selection, we conduct
-multiple comparative experiments with different parameters for all
-methods. We choose the parameter settings empirically based on
-the best results.
-
-External threats.
- 
-The selection of the service system and the
-baselines are two main external threats to validity. We choose a
-
-page No: 11 
-===============
-Adaptive Performance Anomaly Detection for Online Service Systems via Pattern Sketching
- 
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
-
-large-scale online service of Huawei Cloud, which produces millions
-of metrics with diverse patterns. Moreover, we detect anomalies by
-following the basic definition of an anomaly, i.e., the data point that
-deviates from the majority in a dataset. Thus, ADSketch is general-
-izable to other systems. For baselines, we select the representative
-ones in the literature, covering a wide spectrum of techniques.
-
-Construct threats.
- 
-The main construct threat to validity is that
-the anomaly-free input (i.e.,
- 
-T
-𝑛
- 
-) to Algorithm 1 actually contains
-anomalies. Although anomaly-free data are easily obtainable in
-reality, false negatives could happen if the data are contaminated.
-We alleviate this issue by applying percentile thresholding to
- 
-T
-𝑛
- 
-.
-Specifically, after obtaining the closest subsequence pairs in
- 
-T
-𝑛
- 
-, we
-break the connection between those having a distance above the
-percentile threshold. Thus, the set of anomaly candidates, i.e.,
- 
-𝑁
-𝑖
- 
+ESEC/FSE
 ,
-becomes larger. If
+38–49. ACM.
+Blei, D. M.; Ng, A. Y.; and Jordan, M. I.
  
-T
-𝑛
+2003.
  
-is indeed clean, this operation is harmless
-as the (isolated) normal metric subsequences can be grouped with
-other similar ones again; if not, they will stay isolated and eventually
-be recognized as anomalies. We have also conducted experiments
-on some cases where
+Latent
+dirichlet allocation.
  
-T
-𝑛
- 
-contains anomalies, and the results show
-its effectiveness.
+Journal of machine Learning research
 
-6
+3(Jan):993–1022.
+Britz, D.; Goldie, A.; Luong, T.; and Le, Q.
  
-RELATED WORK
-
-Performance anomaly detection on time series has been a hot topic.
-Monitoring metrics used to profile the runtime status of a system
-are usually denoted as multiple univariate time series. In the litera-
-ture, anomaly detection methods on time series can be categorized
-into statistical, traditional machine learning, and deep learning
-approaches. In industry, Autoregressive Moving Average Model
-(ARMA) [
-5
+2017.
  
-] remains the most popular statistical method to detect
-obvious anomalous data points from univariate time series. To cap-
-ture complex anomalous patterns, Ma et al. [
-22
-] summarized several
-type-oriented patterns from the metrics of cloud databases to diag-
-nose the performance degradation in associated online services.
-More complex pattern recognition methods utilize machine learn-
-ing based models. For example, unsupervised clustering methods
-can be used to detect anomalous points in time-series data. Similar
-to our work, Pang et al. [
-24
+Mas-
+sive Exploration of Neural Machine Translation Architec-
+tures.
  
-] proposed a clustering-based statistical
-model called LeSiNN to detect anomaly patterns from history. How-
-ever, it is not robust in real industry practices due to complicated
-parameter tuning. With the assumption that anomalous data should
-be in smaller numbers and isolated from a large number of normal
-observations, Isolation Forest (iForest) [
-19
- 
-] employs multiple binary
-trees to distinguish anomalies in non-linear space. Extreme Value
-Theory (EVT) [
- 
-31
- 
-] learns the hidden state of a random variable
-around the tails of its distribution to adaptively enhance the perfor-
-mance of many statistical and machine learning methods. However,
-EVT heavily relies on hyperparameter tuning.
-In recent years, there has been an explosion of interest in apply-
-ing neural networks to conduct anomaly detection on time-series
-data. For example, Zong et al. [
-39
-] proposed a deep autoencoding
-Gaussian mixture model (DAGMM) to detect anomalous data points
-from each observed data without considering the temporal depen-
-dencies in time series. To detect complex anomalies in spacecraft
-monitoring systems, LSTM-NDT [
-15
-] leverages Long Short-Term
-Memory (LSTM) networks with nonparametric dynamic thresh-
-olding to pursue interpretability throughout the systems. Zhao et
-al. [
- 
-37
-] and Lin et al. [
- 
-17
-] also employed LSTM to predict perfor-
-mance anomalies in software systems. Inspired by the Spectral
-Residual algorithm in other domains, Ren et al. [
- 
-29
- 
-] proposed SR-
-CNN to detect anomalies from seasonal metric data for large-scale
-cloud services, which contain the periodic recurrence of fluctua-
-tions. DONUT [
- 
-34
-] designs an unsupervised anomaly detection
-method based on the Variational Auto-Encoder (VAE) framework
-to detect anomalies from low-qualified seasonal metric time series
-with various patterns. DONUT provides a theoretical explanation
-compared to other deep learning methods. LSTM-VAE [
-25
- 
-] com-
-bines LSTM networks and the VAE framework to reconstruct the
-probability distribution of observed data in time series. However,
-LSTM-VAE ignores the temporal dependencies in time series. Omni-
-Anomaly [
-32
-] learns the normal patterns using a large collection of
-historical data. The anomalous patterns are located from the large
-margin of reconstruction loss to the normal patterns. However,
-the aforementioned deep learning-based methods usually follow
-an end-to-end style and play as a black box inside. Due to poor
-interpretability, the detection results cannot provide engineers with
-actionable suggestions for fault diagnosis. Furthermore, all these
-methods have difficulties handling unseen metric patterns brought
-by the frequent updates of online services.
-
-7
- 
-CONCLUSION
-
-In this paper, we propose ADSketch, a performance anomaly detec-
-tion approach based on pattern sketching. By extracting normal and
-abnormal patterns from metric time series, anomalies can be quickly
-detected through a comparison with the identified patterns. By asso-
-ciating metric patterns with typical performance issues, ADSketch
-can provide interpretable results when any known patterns appear
-again. Moreover, we design an adaptive learning algorithm to help
-ADSketch embrace unprecedented metric patterns during online
-anomaly detection. We have conducted experiments on two public
-datasets and one production dataset collected from a representative
-online service system of Huawei Cloud. For offline anomaly detec-
-tion where models’ parameters are still being tuned, ADSketch has
-achieved the highest F1 score, outperforming the existing meth-
-ods by a significant margin. For online anomaly detection where
-models are fixed, ADSketch safeguards its best rankings. Finally,
-the adaptive pattern learning brings noticeable performance gains,
-especially in the industrial dataset. From our industrial practice, we
-have witnessed it shedding light on accurate and interpretable per-
-formance anomaly detection, which confirms its practical benefits
-conveyed to Huawei Cloud. We believe ADSketch is able to assist
-engineers in service failure understanding and diagnosis.
-For future work, we will extend our algorithms to multivariate
-metric time series. We will also try to provide more detailed in-
-formation about failures by exploring the correlations among the
-metric patterns.
-
-ACKNOWLEDGMENTS
-
-The work was supported by the Guangdong Key Research Program
-(No. 2020B010165002), the Research Grants Council of the Hong
-Kong Special Administrative Region, China (CUHK 14210920), and
-Australian Research Council (ARC) Discovery Projects (DP200102940
-and DP220103044).
-
-page No: 12 
-===============
-ICSE ’22, May 21–29, 2022, Pittsburgh, PA, USA
- 
-Zhuangbin Chen, Jinyang Liu, Yuxin Su, Hongyu Zhang, Xiao Ling, Yongqiang Yang, and Michael R. Lyu
-
-REFERENCES
-
-[1]
- 
-2018. KPI Anomaly Detection Competition.
- 
-Retrieved April, 2021 from http:
-//iops.ai/competition_detail/?competition_id=5&flag=1
-[2]
- 
-2018. KPI Anomaly Detection Dataset.
- 
-Retrieved April, 2021 from http://iops.ai/
-dataset_detail/?id=10
-[3]
- 
-Stephen Boyd, Stephen P Boyd, and Lieven Vandenberghe. 2004.
- 
-Convex opti-
-mization
-. Cambridge university press.
-[4]
- 
-Álvaro Brandón, Marc Solé, Alberto Huélamo, David Solans, María S Pérez,
-and Victor Muntés-Mulero. 2020. Graph-based root cause analysis for service-
-oriented and microservice architectures.
- 
-Journal of Systems and Software
- 
-159
-(2020), 110432.
-[5]
- 
-Marcus J Chambers and Michael A Thornton. 2012. Discrete time representation
-of continuous time ARMA processes.
- 
-Econometric Theory
- 
-(2012), 219–238.
-[6]
- 
-Zhuangbin Chen, Yu Kang, Liqun Li, Xu Zhang, Hongyu Zhang, Hui Xu, Yangfan
-Zhou, Li Yang, Jeffrey Sun, Zhangwei Xu, et al
- 
+ArXiv e-prints
 .
+Cai, B. 2016. Code parallelization through sequential code
+search. In
  
-2020. Towards intelligent incident
-management: why we need it and how we make it. In
+ICSE-C
+, 695–697. ACM.
+Cho, K.; Van Merri ̈
+enboer, B.; Bahdanau, D.; and Ben-
+gio, Y.
  
-Proceedings of the 28th
-ACM Joint Meeting on European Software Engineering Conference and Symposium
-on the Foundations of Software Engineering
-. 1487–1497.
-[7]
+2014.
  
-Yingnong Dang, Qingwei Lin, and Peng Huang. 2019. AIOps: real-world chal-
-lenges and research innovations. In
+On the properties of neural machine
+translation: Encoder-decoder approaches.
  
-2019 IEEE/ACM 41st International Conference
-on Software Engineering: Companion Proceedings (ICSE-Companion)
-. IEEE, 4–5.
-[8]
+arXiv preprint
+arXiv:1409.1259
+.
+Duchi, J.; Hazan, E.; and Singer, Y. 2011. Adaptive subgra-
+dient methods for online learning and stochastic optimiza-
+
+5235
+
+page No: 8 
+===============
+tion.
  
-Mostafa Farshchi, Jean-Guy Schneider, Ingo Weber, and John Grundy. 2015.
-Experience report: Anomaly detection of cloud application operations using log
-and cloud metric correlation analysis. In
+Journal of Machine Learning Research
  
-2015 IEEE 26th international symposium
-on software reliability engineering (ISSRE)
-. IEEE, 24–34.
-[9] Apache Flink. 2011. [Online]. https://flink.apache.org/.
-[10]
+12(Jul):2121–
+2159.
+Elman, J. L.
  
-Brendan J Frey and Delbert Dueck. 2007. Clustering by passing messages between
-data points.
+1990.
  
+Finding structure in time.
+ 
+Cognitive
 science
  
-315, 5814 (2007), 972–976.
-[11]
+14(2):179–211.
+Garcia-Contreras, I.; Morales, J. F.; and Hermenegildo,
+M. V.
  
-João Gama, Indr
+2016.
  
- ̇
-e Žliobait
+Semantic code browsing.
  
- ̇
-e, Albert Bifet, Mykola Pechenizkiy, and Abdelhamid
-Bouchachia. 2014. A survey on concept drift adaptation.
- 
-ACM computing surveys
-(CSUR)
- 
-46, 4 (2014), 1–37.
-[12]
- 
-Shujie Han, Patrick PC Lee, Zhirong Shen, Cheng He, Yi Liu, and Tao Huang.
-2020. Toward adaptive disk failure prediction via stream mining. In
- 
-Proceedings
-of IEEE ICDCS
+arXiv preprint
+arXiv:1608.02565
 .
-[13]
+Haiduc, S.; Aponte, J.; Moreno, L.; and Marcus, A. 2010.
+On the use of automated text summarization techniques for
+summarizing source code. In
  
-Shilin He, Qingwei Lin, Jian-Guang Lou, Hongyu Zhang, Michael R Lyu, and
-Dongmei Zhang. 2018. Identifying impactful service system problems via log
-analysis. In
- 
-Proceedings of the 2018 26th ACM Joint Meeting on European Software
-Engineering Conference and Symposium on the Foundations of Software Engineering
-.
-60–70.
-[14]
- 
-Peng Huang, Chuanxiong Guo, Lidong Zhou, Jacob R Lorch, Yingnong Dang,
-Murali Chintalapati, and Randolph Yao. 2017. Gray failure: The achilles’ heel
-of cloud-scale systems. In
- 
-Proceedings of the 16th Workshop on Hot Topics in
-Operating Systems
-. 150–155.
-[15]
- 
-Kyle Hundman, Valentino Constantinou, Christopher Laporte, Ian Colwell, and
-Tom Soderstrom. 2018. Detecting spacecraft anomalies using lstms and nonpara-
-metric dynamic thresholding. In
- 
-Proceedings of the 24th ACM SIGKDD interna-
-tional conference on knowledge discovery & data mining
-. 387–395.
-[16] Apache Kafka. 2011. [Online]. https://kafka.apache.org/.
-[17]
- 
-Qingwei Lin, Ken Hsieh, Yingnong Dang, Hongyu Zhang, Kaixin Sui, Yong
-Xu, Jian-Guang Lou, Chenggang Li, Youjiang Wu, Randolph Yao, et al
-.
- 
-2018.
-Predicting node failure in cloud service systems. In
- 
-Proceedings of the 2018 26th
-ACM Joint Meeting on European Software Engineering Conference and Symposium
-on the Foundations of Software Engineering
-. 480–490.
-[18]
- 
-Qingwei Lin, Hongyu Zhang, Jian-Guang Lou, Yu Zhang, and Xuewei Chen.
-2016. Log clustering based problem identification for online service systems. In
+WCRE
+, 35–44. IEEE.
+Iyer, S.; Konstas, I.; Cheung, A.; and Zettlemoyer, L. 2016.
+Summarizing source code using a neural attention model. In
 
-2016 IEEE/ACM 38th International Conference on Software Engineering Companion
-(ICSE-C)
-. IEEE, 102–111.
-[19]
+ACL
+, 2073–2083.
+Karpathy, A., and Fei-Fei, L. 2015. Deep visual-semantic
+alignments for generating image descriptions. In
  
-Fei Tony Liu, Kai Ming Ting, and Zhi-Hua Zhou. 2008. Isolation forest. In
+Proceed-
+ings of the IEEE Conference on Computer Vision and Pat-
+tern Recognition
+, 3128–3137.
+Kuhn, A.; Ducasse, S.; and G ́
+ırba, T. 2007. Semantic clus-
+tering: Identifying topics in source code.
  
-2008
-eighth ieee international conference on data mining
-. IEEE, 413–422.
-[20]
+Information and
+Software Technology
  
-Chang Lou, Peng Huang, and Scott Smith. 2020. Understanding, detecting and
-localizing partial failures in large system software. In
+49(3):230–243.
+Lin, C.-Y.
  
-17th USENIX Symposium
-on Networked Systems Design and Implementation (NSDI 20)
-. 559–574.
-[21]
+2004.
  
-Jian-Guang Lou, Qingwei Lin, Rui Ding, Qiang Fu, Dongmei Zhang, and Tao
-Xie. 2013. Software analytics for incident management of online services: An
-experience report. In
+Rouge: A package for automatic evalu-
+ation of summaries.
  
-2013 28th IEEE/ACM International Conference on Automated
-Software Engineering (ASE)
-. IEEE, 475–485.
-[22]
+In
  
-Minghua Ma, Zheng Yin, Shenglin Zhang, Sheng Wang, Christopher Zheng, Xin-
-hao Jiang, Hanwen Hu, Cheng Luo, Yilin Li, Nengjun Qiu, et al
+Text summarization branches out:
+Proceedings of the ACL-04 workshop
+, volume 8. Barcelona,
+Spain.
+Maarek, Y. S.; Berry, D. M.; and Kaiser, G. E. 1991. An in-
+formation retrieval approach for automatically constructing
+software libraries.
  
-.
+IEEE Transactions on software Engineer-
+ing
  
-2020. Diagnosing
-root causes of intermittent slow queries in cloud databases.
+17(8):800–813.
+McBurney, P. W., and McMillan, C. 2014. Automatic doc-
+umentation generation via source code summarization of
+method context. In
  
-Proceedings of the
-VLDB Endowment
+ICPC
+, 279–290. ACM.
+Mikolov, T.; Karafi ́
+at, M.; Burget, L.; Cernock`
+y, J.; and Khu-
+danpur, S. 2010. Recurrent neural network based language
+model. In
  
-13, 10 (2020), 1176–1189.
-[23]
+Interspeech
+, volume 2, 3.
+Mikolov, T.; Sutskever, I.; Chen, K.; Corrado, G. S.; and
+Dean, J.
  
-Ryan Mercer, Sara Alaee, Alireza Abdoli, Shailendra Singh, Amy Murillo, and
-Eamonn Keogh. 2021.
+2013.
  
-Matrix Profile XXIII: Contrast Profile: A Novel Time
-Series Primitive that Allows Real World Classification. In
+Distributed representations of words and
+phrases and their compositionality.
  
-The IEEE International
-Conference on Data Mining
-.
-[24]
+In
  
-Guansong Pang, Kai Ming Ting, and David W. Albrecht. 2015. LeSiNN: Detecting
-Anomalies by Identifying Least Similar Nearest Neighbours. In
+Advances in neural
+information processing systems
+, 3111–3119.
+Mitchell, N. 2008. Hoogle overview.
  
-IEEE Interna-
-tional Conference on Data Mining Workshop, ICDMW 2015, Atlantic City, NJ, USA,
-November 14-17, 2015
-. IEEE Computer Society, 623–630.
-[25]
- 
-Daehyung Park, Yuuna Hoshi, and Charles C Kemp. 2018. A multimodal anomaly
-detector for robot-assisted feeding using an lstm-based variational autoencoder.
+The Monad. Reader
 
-IEEE Robotics and Automation Letters
+12:27–35.
+Moreno, L.; Aponte, J.; Sridhara, G.; Marcus, A.; Pollock,
+L.; and Vijay-Shanker, K.
  
-3, 3 (2018), 1544–1551.
-[26]
+2013.
  
-Tomáš Pevn
+Automatic generation of
+natural language summaries for java classes. In
  
-`
-y. 2016. Loda: Lightweight on-line detector of anomalies.
+ICPC
+, 23–
+32. IEEE.
+Movshovitz-Attias, D., and Cohen, W. W.
  
-Machine
-Learning
+2013.
  
-102, 2 (2016), 275–304.
-[27]
+Natural
+language models for predicting programming comments.
+Murphy, G. C. 1996.
  
-Andy Podgurski, David Leon, Patrick Francis, Wes Masri, Melinda Minch, Jiayang
-Sun, and Bin Wang. 2003. Automated support for classifying software failure
-reports. In
+Lightweight structural summarization
+as an aid to software evolution
+. Ph.D. Dissertation.
+Punyamurthula, S.
  
-25th International Conference on Software Engineering, 2003. Proceedings.
-
-IEEE, 465–475.
-[28]
+2015.
  
-Thanawin Rakthanmanon and Eamonn Keogh. 2013. Fast shapelets: A scalable
-algorithm for discovering time series shapelets. In
- 
-proceedings of the 2013 SIAM
-International Conference on Data Mining
-. SIAM, 668–676.
-[29]
- 
-Hansheng Ren, Bixiong Xu, Yujing Wang, Chao Yi, Congrui Huang, Xiaoyu Kou,
-Tony Xing, Mao Yang, Jie Tong, and Qi Zhang. 2019. Time-series anomaly detec-
-tion service at microsoft. In
- 
-Proceedings of the 25th ACM SIGKDD International
-Conference on Knowledge Discovery & Data Mining
-. 3009–3017.
-[30]
- 
-Yahoo! Research. 2015.
- 
-A Benchmark Dataset for Time Series Anomaly De-
-tection.
- 
-Retrieved August, 2021 from https://yahooresearch.tumblr.com/post/
-114590420346/a-benchmark-dataset-for-time-series-anomaly
-[31]
- 
-Alban Siffer, Pierre-Alain Fouque, Alexandre Termier, and Christine Largouët.
-2017. Anomaly Detection in Streams with Extreme Value Theory. In
- 
-Proceedings
-of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and
-Data Mining, Halifax, NS, Canada, August 13 - 17, 2017
-. ACM, 1067–1075.
-[32]
- 
-Ya Su, Youjian Zhao, Chenhao Niu, Rong Liu, Wei Sun, and Dan Pei. 2019. Robust
-anomaly detection for multivariate time series through stochastic recurrent
-neural network. In
- 
-Proceedings of the 25th ACM SIGKDD International Conference
-on Knowledge Discovery & Data Mining
-. 2828–2837.
-[33]
- 
-Catia Trubiani, Pooyan Jamshidi, Jurgen Cito, Weiyi Shang, Zhen Ming Jiang,
-and Markus Borg. 2018. Performance issues? Hey DevOps, mind the uncertainty.
-
-IEEE Software
- 
-36, 2 (2018), 110–117.
-[34]
- 
-Haowen Xu, Wenxiao Chen, Nengwen Zhao, Zeyan Li, Jiahao Bu, Zhihan Li,
-Ying Liu, Youjian Zhao, Dan Pei, Yang Feng, et al
- 
+Dynamic model generation and
+semantic search for open source projects using big data an-
+alytics
 .
  
-2018. Unsupervised anomaly
-detection via variational auto-encoder for seasonal kpis in web applications. In
+Ph.D. Dissertation, Faculty of the University Of
+Missouri-Kansas City in partial fulfillment Of the require-
+ments for the degree MASTER OF SCIENCE By SRAVANI
+PUNYAMURTHULA B. Tech, Jawaharlal Nehru Techno-
+logical University.
+Rodeghero, P.; McMillan, C.; McBurney, P. W.; Bosch, N.;
+and D’Mello, S.
+ 
+2014.
+ 
+Improving automated source code
+summarization via an eye-tracking study of programmers.
+In
+ 
+ICSE
+, 390–401. ACM.
+Rollins, E. J., and Wing, J. M. 1991. Specifications as search
+keys for software libraries. In
+ 
+ICLP
+, 173–187. Citeseer.
+Socher, R.; Lin, C. C.; Manning, C.; and Ng, A. Y. 2011a.
+Parsing natural scenes and natural language with recursive
+neural networks. In
+ 
+ICML
+, 129–136.
+Socher, R.; Pennington, J.; Huang, E. H.; Ng, A. Y.; and
+Manning, C. D. 2011b. Semi-supervised recursive autoen-
+coders for predicting sentiment distributions.
+ 
+In
+ 
+EMNLP
+,
+151–161. Association for Computational Linguistics.
+Sridhara, G.; Hill, E.; Muppaneni, D.; Pollock, L.; and
+Vijay-Shanker, K.
+ 
+2010.
+ 
+Towards automatically generat-
+ing summary comments for java methods. In
+ 
+ASE
+, 43–52.
+ACM.
+Sridhara, G.; Pollock, L.; and Vijay-Shanker, K. 2011. Gen-
+erating parameter comments and integrating with method
+summaries. In
+ 
+ICPC
+, 71–80. IEEE.
+Sutskever, I.; Martens, J.; and Hinton, G. E. 2011. Gener-
+ating text with recurrent neural networks. In
+ 
+ICML
+, 1017–
+1024.
+Williams, C. C., and Hollingsworth, J. K. 2005. Automatic
+mining of source code repositories to improve bug finding
+techniques.
+ 
+IEEE Transactions on Software Engineering
 
-Proceedings of the 2018 World Wide Web Conference
-. 187–196.
-[35]
+31(6):466–480.
+Wu, Y.; Schuster, M.; Chen, Z.; Le, Q. V.; Norouzi, M.;
+Macherey, W.; Krikun, M.; Cao, Y.; Gao, Q.; Macherey, K.;
+et al.
  
-Dragomir Yankov, Eamonn Keogh, and Umaa Rebbapragada. 2008. Disk aware dis-
-cord discovery: Finding unusual time series in terabyte sized datasets.
+2016.
  
-Knowledge
-and Information Systems
- 
-17, 2 (2008), 241–262.
-[36]
- 
-Chin-Chia Michael Yeh, Yan Zhu, Liudmila Ulanova, Nurjahan Begum, Yifei Ding,
-Hoang Anh Dau, Diego Furtado Silva, Abdullah Mueen, and Eamonn Keogh. 2016.
-Matrix profile I: all pairs similarity joins for time series: a unifying view that
-includes motifs, discords and shapelets. In
- 
-2016 IEEE 16th international conference
-on data mining (ICDM)
-. IEEE, 1317–1322.
-[37]
- 
-Guoliang Zhao, Safwat Hassan, Ying Zou, Derek Truong, and Toby Corbin. 2021.
-Predicting Performance Anomalies in Software Systems at Run-time.
- 
-ACM
-Transactions on Software Engineering and Methodology (TOSEM)
- 
-30, 3 (2021),
-1–33.
-[38]
- 
-Yan Zhu, Chin-Chia Michael Yeh, Zachary Zimmerman, Kaveh Kamgar, and
-Eamonn Keogh. 2018. Matrix profile XI: SCRIMP++: time series motif discovery
-at interactive speeds. In
- 
-2018 IEEE International Conference on Data Mining (ICDM)
+Google’s neural machine translation system:
+Bridging the gap between human and machine translation.
+
+arXiv preprint arXiv:1609.08144
 .
-IEEE, 837–846.
-[39]
- 
-Bo Zong, Qi Song, Martin Renqiang Min, Wei Cheng, Cristian Lumezanu, Daeki
-Cho, and Haifeng Chen. 2018.
- 
-Deep autoencoding gaussian mixture model
-for unsupervised anomaly detection. In
- 
-International Conference on Learning
-Representations
-.
+
+5236
 

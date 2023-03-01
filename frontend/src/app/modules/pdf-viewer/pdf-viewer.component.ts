@@ -28,7 +28,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.pdfPath = this.pdfShareService.getFile();
     //console.log(this.pdfPath);
 
-    // this.pdfPath = '../../../assets/icse22_toxicity.pdf';
+    this.pdfPath = '../../../assets/sample4.pdf';
 
     this.summarizerOn = false;
 
@@ -68,7 +68,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     //console.log('(page-rendered)', e);
     // Select page container
     let spans = e.source.textLayer.textDivs;
-    this.highlightSummary(e.pageNumber, spans, Array.from(HL));
+    // this.highlightSummary(e.pageNumber, spans, Array.from(HL));
     this.highlightReference(e.pageChange, spans, Array.from(refs));
   }
 
@@ -89,16 +89,75 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       span.innerHTML = textToBeWrapped;
     });
   }
+
   /**
-   *
+   * mathc patterns: Fig, fig, figure, Figure, Table, table, tab
    * @param pageNo current page no
    * @param spans text spans for current page
    * @param AllRefs All reference objects
    */
   highlightReference(pageNo, spans, AllRefs) {
-    let referenceSegments = this.filterDataSegmentsForAPage(AllRefs, pageNo);
-    // console.log(AllRefs);
-    // console.log(referenceSegments);
+    spans.map((span) => {
+      let spanText = span.innerHTML;
+      // console.log(spanText);
+
+      // referencing figure
+      let restOfTheString = '';
+      let startingIndex = spanText.toLowerCase().indexOf('fig');
+      let finalIndex = -1;
+
+      if (startingIndex > -1) {
+        for (let i = startingIndex; i < spanText.length; i++)
+          restOfTheString += spanText[i];
+        let remainingWords = restOfTheString.split(/[ .]/);
+        if (
+          !remainingWords[0].toLocaleLowerCase().localeCompare('fig') ||
+          !remainingWords[0].toLocaleLowerCase().localeCompare('figure')
+        ) {
+          console.log(remainingWords);
+          for (let k = 1; k < remainingWords.length; k++) {
+            if (remainingWords[k].length > 0) {
+              let wordWithNo = remainingWords[k];
+              if (
+                wordWithNo.charCodeAt(0) >= '0'.charCodeAt(0) &&
+                wordWithNo.charCodeAt(0) <= '9'.charCodeAt(0)
+              ) {
+                console.log('id:', remainingWords[k], 'index:', k);
+                break;
+              }
+            }
+          }
+          return;
+        }
+      }
+
+      startingIndex = spanText.toLocaleLowerCase().indexOf('table');
+      if (startingIndex > -1) {
+        restOfTheString = '';
+        for (let i = startingIndex; i < spanText.length; i++)
+          restOfTheString += spanText[i];
+        let remainingWords = restOfTheString.split(/[ .]/);
+        if (
+          !remainingWords[0].toLocaleLowerCase().localeCompare('tab') ||
+          !remainingWords[0].toLocaleLowerCase().localeCompare('table')
+        ) {
+          console.log(remainingWords);
+          for (let k = 1; k < remainingWords.length; k++) {
+            if (remainingWords[k].length > 0) {
+              let wordWithNo = remainingWords[k];
+              if (
+                wordWithNo.charCodeAt(0) >= '0'.charCodeAt(0) &&
+                wordWithNo.charCodeAt(0) <= '9'.charCodeAt(0)
+              ) {
+                console.log('id:', remainingWords[k], 'index:', k);
+                break;
+              }
+            }
+          }
+          return;
+        }
+      }
+    });
   }
 
   // Helpers for sumary highlighting
