@@ -99,7 +99,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   highlightReference(pageNo, spans, AllRefs) {
     spans.map((span) => {
       let spanText = span.innerHTML;
-      // console.log(spanText);
 
       // referencing figure
       let restOfTheString = '';
@@ -130,32 +129,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
             finalIndex
           );
           console.log(startingIndex, restOfTheString, finalIndex);
-
-          // console.log(remainingWords);
-          // let refDatas = AllRefs.filter((ref) => ref.str.includes('figure'));
-          // for (let k = 1; k < remainingWords.length; k++) {
-          //   if (remainingWords[k].length > 0) {
-          //     let wordWithNo = remainingWords[k];
-          //     if (
-          //       wordWithNo.charCodeAt(0) >= '0'.charCodeAt(0) &&
-          //       wordWithNo.charCodeAt(0) <= '9'.charCodeAt(0)
-          //     ) {
-          //       let data = {};
-          //       let key = remainingWords[k][0];
-          //       console.log('id:', key, 'index:', k);
-          //       for (let r = 0; r < refDatas.length; r++) {
-          //         if (refDatas[r].str.includes(key)) {
-          //           data = refDatas[r];
-          //           break;
-          //         }
-          //       }
-          //       console.log({ ...data, requireManualAnnotaion: true });
-
-          //       break;
-          //     }
-          //   }
-          // }
-          // return;
         }
       }
 
@@ -185,29 +158,14 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
             finalIndex
           );
           console.log(startingIndex, restOfTheString, finalIndex);
-
-          // let refDatas = AllRefs.filter((ref) => ref.str.includes('table'));
-          // console.log(remainingWords);
-          // for (let k = 1; k < remainingWords.length; k++) {
-          //   if (remainingWords[k].length > 0) {
-          //     let wordWithNo = remainingWords[k];
-          //     if (
-          //       wordWithNo.charCodeAt(0) >= '0'.charCodeAt(0) &&
-          //       wordWithNo.charCodeAt(0) <= '9'.charCodeAt(0)
-          //     ) {
-          //       console.log('id:', remainingWords[k], 'index:', k);
-
-          //       break;
-          //     }
-          //   }
-          // }
-          // return;
         }
       }
     });
+
+    this.addEventHandler();
   }
 
-  // Helpers for sumary highlighting
+  // Helpers for highlighting
 
   filterDataSegmentsForAPage(dataSegments, pageNo) {
     let segmentsForAPage = [];
@@ -224,12 +182,22 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   placeWrappingTagForRefrence(spanStr, startingIndex, finalIndex) {
     let finalStr = '';
     for (let i = 0; i < startingIndex; i++) finalStr += spanStr[i];
-    finalStr += `<a class="reference-text">`;
+    finalStr += `<a href="https://www.google.com" class="reference-text" style="backgournd-color: yellow !important;">`;
     for (let i = startingIndex; i <= finalIndex; i++) finalStr += spanStr[i];
     finalStr += `</a>`;
     for (let i = finalIndex + 1; i < spanStr.length; i++)
       finalStr += spanStr[i];
     return finalStr;
+  }
+
+  addEventHandler() {
+    let refTextAnchors = document.querySelectorAll('.reference-text');
+    refTextAnchors.forEach((anchor) => {
+      anchor.addEventListener('mouseenter', (event) => {
+        event.preventDefault();
+        console.log(event);
+      });
+    });
   }
 
   addWrappingTagForSummaryHighlight(
