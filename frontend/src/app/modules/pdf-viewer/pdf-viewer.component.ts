@@ -156,6 +156,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     if(e.show){
       this.previewPageNum = e.page;
       this.reference = e.refDestination;
+      this.reference.requireManualAnnotation = false;
       let entireScreenHeight = this.convertVHToPx(90);
       let entireScreenWidth = this.convertREMToPx(50);
       console.log(entireScreenHeight, entireScreenWidth);
