@@ -38,9 +38,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     private http: HttpClient,
     public tokenStorage: TokenStorageService,
     private router: Router
-  ) {
-
-  }
+  ) {}
   previewPageNum: number;
   reference: any;
   showPreview: boolean;
@@ -57,7 +55,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.pdfPath = this.pdfShareService.getFile();
 
     if (this.pdfPath == null) {
-      if(this.tokenStorage.getPaperId() == null){
+      if (this.tokenStorage.getPaperId() == null) {
         this.pdfPath = './assets/SCORE_intro.pdf';
       }
     }
@@ -223,21 +221,21 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     reader.readAsArrayBuffer(this.file);
   }
 
-  sendFile(){
-    if(!this.pdfShareService.getSearched()){
-    const formData: FormData = new FormData();
-    formData.append('paper', this.pdfShareService.getRawFile());
-    formData.append('title', this.pdfShareService.getTitle());
-    console.log('formdata: ',formData.get('title'), formData.get('paper'))
-    this.pdfShareService.sendFiletoServer(formData).subscribe(
-      (data) => {
-        console.log(data);
-        this.pdfShareService.setPaperId(data.id);
-      },
-      (err) => {
-        console.log("File sending failed");
-      }
-    )
+  sendFile() {
+    if (!this.pdfShareService.getSearched()) {
+      const formData: FormData = new FormData();
+      formData.append('paper', this.pdfShareService.getRawFile());
+      formData.append('title', this.pdfShareService.getTitle());
+      console.log('formdata: ', formData.get('title'), formData.get('paper'));
+      this.pdfShareService.sendFiletoServer(formData).subscribe(
+        (data) => {
+          console.log(data);
+          this.pdfShareService.setPaperId(data.paper_id);
+        },
+        (err) => {
+          console.log('File sending failed');
+        }
+      );
     }
   }
 
@@ -275,13 +273,13 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       let entireScreenHeight = this.convertVHToPx(90);
       let entireScreenWidth = this.convertREMToPx(50);
       this.topCSS = -1 * (entireScreenHeight - e.clienY) - 100;
-      
-      if((this.topCSS + e.height) > 0) {
+
+      if (this.topCSS + e.height > 0) {
         this.topCSS -= e.height;
       }
       this.leftCSS = e.clientX;
-      if((this.leftCSS + e.width) > entireScreenWidth) {
-        this.leftCSS -= e.width/2;
+      if (this.leftCSS + e.width > entireScreenWidth) {
+        this.leftCSS -= e.width / 2;
       }
       this.topCSSstr = this.topCSS + 'px';
       this.leftCSSstr = this.leftCSS + 'px';
@@ -290,7 +288,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     }
   }
 
-  goToHome(){
+  goToHome() {
     this.router.navigate(['home']);
   }
 }

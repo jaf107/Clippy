@@ -4,25 +4,22 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PdfShareService } from '../shared/pdf-share.service';
 
-
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from 'src/app/user.service';
 import { TokenStorageService } from 'src/app/token-storage.service';
 
 interface history {
-  openedAt: string,
-  paper_id: string,
-  title: string,
-  _id: string
+  openedAt: string;
+  paper_id: string;
+  title: string;
+  _id: string;
 }
-
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-
 export class HomeComponent implements OnInit {
   constructor(
     private toastr: ToastrService,
@@ -30,7 +27,7 @@ export class HomeComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private tokenStorage: TokenStorageService
-  ) { }
+  ) {}
 
   private file: File | null;
   private url: any;
@@ -48,18 +45,14 @@ export class HomeComponent implements OnInit {
   userName = '';
 
   ngOnInit() {
-
     this.userName = this.tokenStorage.getUser().username;
     if (this.userName == null) {
       this.isGuest = true;
-    }
-    else {
-      this.pdfShareService.getHistory().subscribe(
-        (data) => {
-          this.historyList = data.history;
-          this.historyList = this.historyList.slice(0, 2);
-        }
-      )
+    } else {
+      this.pdfShareService.getHistory().subscribe((data) => {
+        this.historyList = data.history;
+        this.historyList = this.historyList.slice(0, 2);
+      });
     }
   }
 
@@ -73,7 +66,6 @@ export class HomeComponent implements OnInit {
     if (this.file.type != 'application/pdf') {
       this.errorsmsg();
     } else {
-
       this.visitedFiles.push({ name: this.file.name, lastVisited: new Date() });
 
       const reader = new FileReader();
@@ -100,9 +92,11 @@ export class HomeComponent implements OnInit {
     if (this.searchBy == 'Title') {
       this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
         (data) => {
-          this.pdfShareService.searchPaperbyId(data.data[0].paperId).subscribe(
-            (data) => {
+          this.pdfShareService
+            .searchPaperbyId(data.data[0].paperId)
+            .subscribe((data) => {
               console.log(data);
+              this.pdfShareService.setPaperId(data.paper_id);
               this.pdfShareService.getPaperFromSearch(data.url).subscribe(
                 (data) => {
                   this.pdfShareService.sendFile(data);
@@ -111,19 +105,18 @@ export class HomeComponent implements OnInit {
                 (err) => {
                   console.log(err);
                 }
-              )
-            }
-          )
+              );
+            });
         },
         (err) => {
           this.toastr.error(err.error);
         }
-      )
-    }
-    else if (this.searchBy == 'DOI') {
+      );
+    } else if (this.searchBy == 'DOI') {
       this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
         (data) => {
           console.log(data);
+          this.pdfShareService.setPaperId(data.paper_id);
           this.pdfShareService.getPaperFromSearch(data.url).subscribe(
             (data) => {
               this.pdfShareService.sendFile(data);
@@ -132,14 +125,13 @@ export class HomeComponent implements OnInit {
             (err) => {
               console.log(err);
             }
-          )
+          );
         },
         (err) => {
           this.toastr.error(err.error);
         }
-      )
-    }
-    else {
+      );
+    } else {
       this.toastr.error('Select Search Type');
     }
   }
@@ -147,5 +139,4 @@ export class HomeComponent implements OnInit {
   searchPaperToggle(searchType: string) {
     this.searchBy = searchType;
   }
-
 }

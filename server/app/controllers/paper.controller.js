@@ -173,10 +173,13 @@ exports.searchPaperByTitle = async (req, res) => {
 };
 
 exports.getPdf = async (req, res) => {
-  axios.get(req.body.url, { responseType: "arraybuffer" }).then((response) => {
-    console.log(response);
-    res.status(200).send(JSON.stringify(response.data));
-  }).catch(err => res.status(404).send(err));
+  axios
+    .get(req.body.url, { responseType: "arraybuffer" })
+    .then((response) => {
+      console.log(response);
+      res.status(200).send(JSON.stringify(response.data));
+    })
+    .catch((err) => res.status(404).send(err));
 };
 
 exports.uploadPaperById = async (req, res) => {
@@ -256,7 +259,7 @@ exports.getExtractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
   if (paper) {
     if (paper.extractive_summary !== "") {
-      res.status(200).send(paper.extractive_summary);
+      res.status(200).send(JSON.stringify(paper.extractive_summary));
     } else {
       await DownloadPdf(paper.paper_id, paper.url);
       ExtractSummary("./uploads/" + paper.paper_id + ".pdf").then(

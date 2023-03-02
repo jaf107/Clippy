@@ -6,18 +6,19 @@ import { PdfShareService } from './pdf-share.service';
 
 const API_URL = 'http://localhost:8080/api/paper/';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FeaturesService {
-
-  
   public summarizerType: string = '';
-
+  public summary: any;
   public fileurl: string = '';
 
-  constructor(private http : HttpClient, public tokenStorage: TokenStorageService, public pdfShareService: PdfShareService) { 
+  constructor(
+    private http: HttpClient,
+    public tokenStorage: TokenStorageService,
+    public pdfShareService: PdfShareService
+  ) {
     this.summarizerOnCheck.next(false);
   }
 
@@ -28,18 +29,18 @@ export class FeaturesService {
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
     'x-access-token': JSON.stringify(this.tokenStorage.getToken()),
   });
-  
+
   knowledgeGraphOnCheck: Subject<boolean> = new Subject<boolean>();
 
   summarizerOnCheck: Subject<boolean> = new Subject<boolean>();
   summarizerTypeCheck: Subject<string> = new Subject<string>();
 
-  setSummarizerOn(type: string, onOff : boolean) {
-      this.summarizerOnCheck.next(onOff);
-      this.summarizerTypeCheck.next(type);
+  setSummarizerOn(type: string, onOff: boolean) {
+    this.summarizerOnCheck.next(onOff);
+    this.summarizerTypeCheck.next(type);
   }
 
-  setSummarizerOff(onOff : boolean){
+  setSummarizerOff(onOff: boolean) {
     this.summarizerOnCheck.next(onOff);
   }
 
@@ -51,26 +52,39 @@ export class FeaturesService {
     return this.summarizerTypeCheck.asObservable();
   }
 
-  setKnowledgeGraphOn(onOff : boolean){
+  setKnowledgeGraphOn(onOff: boolean) {
     this.knowledgeGraphOnCheck.next(onOff);
-    console.log("knowledge graph turned on");
+    console.log('knowledge graph turned on');
+  }
+
+  storeSummary(summary: any) {
+    this.summary = summary;
+  }
+  getSummary() {
+    return this.summary;
   }
 
   getKnowledgeGraphStatus(): Observable<boolean> {
     return this.knowledgeGraphOnCheck.asObservable();
   }
 
-  getCitationGraph(_id : string): Observable<any> {
-    return this.http.get(API_URL + _id + '/citations', { headers : this.headers, responseType: 'text' });
+  getCitationGraph(_id: string): Observable<any> {
+    return this.http.get(API_URL + _id + '/citations', {
+      headers: this.headers,
+      responseType: 'text',
+    });
     // '?fields=citations'
   }
 
   getExtractiveSummary(_id: string): Observable<any> {
-    return this.http.post(API_URL + _id + 'extractiveSummary', { headers : this.headers });
+    return this.http.post(API_URL + _id + '/extractiveSummary', {
+      headers: this.headers,
+    });
   }
 
   getAbstractiveSummary(_id: string): Observable<any> {
-    return this.http.post(API_URL + _id + 'abstractiveSummary', { headers : this.headers });
+    return this.http.post(API_URL + _id + '/abstractiveSummary', {
+      headers: this.headers,
+    });
   }
-
 }
