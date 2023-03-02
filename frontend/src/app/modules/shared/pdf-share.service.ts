@@ -15,7 +15,7 @@ export class PdfShareService {
   public rawFile : any;
   public title: string;
 
-  public paper_id = '649def34f8be52c8b66281af98ae884c09aef38b';
+  public paper_id = '';
 
   constructor(
     public http: HttpClient,
@@ -44,6 +44,14 @@ export class PdfShareService {
 
   getRawFile(): any{
     return this.rawFile;
+  }
+
+  setPaperId(paperId: string){
+    this.paper_id = paperId;
+  }
+
+  getPaperId(): string{
+    return this.paper_id;
   }
 
   setTitle(title: string) {

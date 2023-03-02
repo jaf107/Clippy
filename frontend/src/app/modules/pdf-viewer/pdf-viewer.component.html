@@ -16,7 +16,7 @@
           />
           <span style="color: white"> ({{ page }} of {{ totalPages }})</span>
         </div>
-        <div class="col-4"></div>
+        <div class="col-3"></div>
         <div class="col">
           <button (click)="zoomIn()" title="Zoom in">
             <h5 style="color: white">+</h5>
@@ -135,7 +135,6 @@
       [zoom]="zoom"
       [rotation]="rotation"
       [fit-to-page]="false"
-      [stick-to-page]="true"
       [page]="page"
       [show-all]="true"
       (after-load-complete)="loadComplete($event)"
@@ -145,7 +144,7 @@
       (pageChange)="pageChange($event)"
       [render-text]="true"
       [original-size]="false"
-      style="width: 96vw; height: 90vh; margin: 0 auto; overflow: visible"
+      style="width: 96vw; height: 90vh; margin: 0 auto; overflow: visible; z-index: 100"
       (references)="getReferences($event)"
       (hover)="createPreview($event)"
     ></pdf-viewer>
@@ -172,6 +171,7 @@
   <div
     class="middle"
     *ngIf="summarizerOn"
+    style="z-index: 100"
     [ngStyle]="{ width: summarizerOn == true ? '27%' : '0%' }"
   >
     <app-summarizer></app-summarizer>
