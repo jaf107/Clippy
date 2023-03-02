@@ -281,9 +281,14 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       let entireScreenHeight = this.convertVHToPx(90);
       let entireScreenWidth = this.convertREMToPx(50);
       //console.log(e);
-      this.topCSS = -1 * (entireScreenHeight - e.clienY);
-      //console.log(e.clienY);
+      this.topCSS = -1 * (entireScreenHeight - e.clienY) - 100;
+      
+      if((this.topCSS + e.height) > 0) {
+        this.topCSS -= e.height;
+      }
       this.leftCSS = e.clientX;
+      console.log('left: ', this.leftCSS, ' e width: ', e.width, ' entire: ', entireScreenWidth);
+      
       this.topCSSstr = this.topCSS + 'px';
       this.leftCSSstr = this.leftCSS + 'px';
       this.heightStr = e.height + 'px';
