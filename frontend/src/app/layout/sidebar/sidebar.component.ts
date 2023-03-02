@@ -47,12 +47,6 @@ export class SidebarComponent {
       if(this.extractiveOn == false){
         this.extractiveOn = true;
         this.abstractiveOn = false;
-
-        this.featureService.getExtractiveSummary(this.pdfShareService.paper_id).subscribe(
-          (data) => {
-            console.log(data);
-          }
-        )
       }
       else{
         this.extractiveOn = false;

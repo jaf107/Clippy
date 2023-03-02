@@ -30,10 +30,10 @@ router
 router.route("/:id/citations").get(controller.getCitation);
 router
   .route("/:id/abstractiveSummary")
-  .post(upload.single("paper"), controller.getAbstractSummary);
+  .post(controller.getAbstractSummary);
 router
   .route("/:id/extractiveSummary")
-  .post(upload.single("paper"), controller.getExtractSummary);
+  .post(controller.getExtractSummary);
 router.route("/searchByTitle").post(controller.searchPaperByTitle);
 router.route("/getPdf").post(controller.getPdf);
 router.route("/:id").get(authJwt.checkToken, controller.getPaperDetails);

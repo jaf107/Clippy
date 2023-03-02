@@ -22,19 +22,41 @@ export class SummarizerComponent implements OnInit{
 
   constructor(
     private featureService: FeaturesService,
+    private pdfShareService: PdfShareService,
     private toastr: ToastrService, 
   ){}
 
-  public summary : any = (extractiveSummary as any).default;
+  public summary : chunk[] = [];
 
   public currentChunkSummary : string = "Click any of the title to view its content summary";
   public currentChunkTitle : string = "Select a Title";
 
+  public summarizerType = '';
+
   ngOnInit(){
     // this.summary = extractiveSummary;
-    console.log(extractiveSummary);
+    // console.log(extractiveSummary);
 
-    
+    this.featureService.getSummarizerType().subscribe((value)=>{
+      this.summarizerType = value;
+
+      if(this.summarizerType == 'Extractive'){
+        this.featureService.getExtractiveSummary(this.pdfShareService.paper_id).subscribe(
+          (data) => {
+            console.log(data.paragraphs);
+            this.summary = JSON.parse(data.paragraphs);
+          }
+        )
+      }
+      else{
+        this.featureService.getAbstractiveSummary(this.pdfShareService.paper_id).subscribe(
+          (data) => {
+            console.log(data.paragraphs);
+            this.summary = JSON.parse(data.paragraphs);
+          }
+        )
+      }
+    })
     
   }
 

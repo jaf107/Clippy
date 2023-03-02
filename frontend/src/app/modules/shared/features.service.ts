@@ -66,7 +66,11 @@ export class FeaturesService {
   }
 
   getExtractiveSummary(_id: string): Observable<any> {
-    return this.http.post(API_URL + _id + '/extractiveSummary', { headers : this.headers });
+    return this.http.post(API_URL + _id + 'extractiveSummary', { headers : this.headers });
+  }
+
+  getAbstractiveSummary(_id: string): Observable<any> {
+    return this.http.post(API_URL + _id + 'abstractiveSummary', { headers : this.headers });
   }
 
 }
