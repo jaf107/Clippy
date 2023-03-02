@@ -75,7 +75,7 @@ export class PdfShareService {
   }
 
   searchPaperByTitle(searchedTerm: any): Observable<any> {
-    return this.http.get(API_URL + 'searchByTitle', { headers : this.headers });
+    return this.http.post(API_URL + 'searchByTitle', { title: searchedTerm }, { headers : this.headers });
   }
 
   searchPaperbyId(searchedTerm: any): Observable<any> {

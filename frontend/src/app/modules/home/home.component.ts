@@ -99,6 +99,9 @@ export class HomeComponent implements OnInit{
       this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
         (data) => {
           console.log(data);
+        },
+        (err) => {
+          this.toastr.error(err.error);
         }
       )
     }
@@ -108,6 +111,9 @@ export class HomeComponent implements OnInit{
           console.log(data);
           this.pdfShareService.sendFile(data.url);
           this.router.navigate(['pdfviewer']);
+        },
+        (err) => {
+          this.toastr.error(err.error);
         }
       )
     }

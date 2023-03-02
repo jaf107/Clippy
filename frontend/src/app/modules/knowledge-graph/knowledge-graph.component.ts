@@ -55,6 +55,8 @@ export class KnowledgeGraphComponent implements OnInit {
         this.featureService.getCitationGraph(this.pdfShareService.paper_id).subscribe(
           (data) =>{
             this.graphData = JSON.parse(data);
+            this.graphEdges = [];
+            this.graphNodes = [];
             this.addDataToGraph();
             console.log(JSON.parse(data));
 
