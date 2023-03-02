@@ -22,7 +22,6 @@ export class PdfShareService {
   ) { }
 
   headers = new HttpHeaders({
-    'Content-Type': 'multipart/form-data, text',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, Content-Type, x-access-token',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',

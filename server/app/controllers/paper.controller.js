@@ -73,7 +73,9 @@ exports.getPaperDetailsfromSemanticScholar = async (req, res) => {
 };
 
 exports.uploadPaper = async (req, res) => {
-  if (!req.body.title || !req.file) {
+  console.log(req.body.title);
+  console.log(req.file);
+  if (!req.body.title) {
     res.status(404).send("File and Title are required");
   } else {
     const paper_data = await axios
@@ -127,7 +129,7 @@ exports.uploadPaper = async (req, res) => {
         res.status(200).send(ppr);
       } else {
         var uuid = Math.random().toString(36).substr(2, 9);
-        fs.rename(req.file.path, "/uploads/" + uuid + ".pdf", (err) => {
+        fs.rename(req.file.path, "./uploads/" + uuid + ".pdf", (err) => {
           if (err) throw err;
           console.log("File renamed successfully");
         });
