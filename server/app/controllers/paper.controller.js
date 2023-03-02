@@ -78,19 +78,22 @@ exports.uploadPaper = async (req, res) => {
   if (!req.body.title) {
     res.status(404).send("File and Title are required");
   } else {
-    const paper_data = await axios
-      .get(
-        SEMANTIC_SCHOLAR_API +
-          `search?query=${req.body.title}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
-      )
-      .catch((err) => res.status(404).send(err));
+    const paper_data = await axios.get(
+      SEMANTIC_SCHOLAR_API +
+        `search?query=${encodeURIComponent(
+          req.body.title
+        )}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
+    );
+    // if (paper_data.err) {
+    //   res.status(404).send("Too many requests");
+    // }
     if (paper_data && paper_data.data) {
       const data = paper_data.data.data[0];
       const ppr = await Paper.findOne({ paper_id: data.paperId });
       if (ppr) {
         await fs.unlink(req.file.path, (err) => {
           if (err) throw err;
-          console.log("successfully deleted");
+          console.log("successfully deleted - paper found in db");
         });
         res.status(200).send(ppr);
       } else {
@@ -109,7 +112,7 @@ exports.uploadPaper = async (req, res) => {
         await Paper.create(paper);
         await fs.unlink(req.file.path, (err) => {
           if (err) throw err;
-          console.log("successfully deleted");
+          console.log("successfully deleted - paper found in scholar");
         });
         if (req.userId) {
           updateHistory(req.userId, paper.paper_id, paper.title);
@@ -167,12 +170,6 @@ exports.searchPaperByTitle = async (req, res) => {
     .catch((err) => {
       res.status(404).send(err);
     });
-
-  // if (paper_data) {
-  //   res.status(200).send(JSON.stringify(paper_data.data));
-  // } else {
-  //   res.status(404).send("Paper not found");
-  // }
 };
 
 exports.getPdf = async (req, res) => {
@@ -227,29 +224,28 @@ exports.getAbstractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
   if (paper) {
     if (paper.abstractive_summary !== "") {
-      fs.unlink(req.file.path, (err) => {
-        if (err) throw err;
-        console.log("successfully deleted");
-        res.status(200).send(paper.abstractive_summary);
-      });
+      res.status(200).send(paper.abstractive_summary);
     } else {
       await DownloadPdf(paper.paper_id, paper.url);
-      AbstractSummary("./uploads/" + paper.paper_id + ".pdf").then(
-        (paragraphs) => {
+      AbstractSummary("./uploads/" + paper.paper_id + ".pdf")
+        .then((paragraphs) => {
           const result = Paper.updateOne(
             { paper_id: req.params.id },
             { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
             { upsert: true }
-          ).catch((err) => res.status(200).send(err));
+          )
+            .then((result) => {
+              fs.unlink("./uploads/" + paper.paper_id + ".pdf", (err) => {
+                if (err) throw err;
+                console.log("successfully deleted");
+                res.status(200).send(JSON.stringify(paragraphs));
+              });
+            })
+            .catch((err) => res.status(404).send(err));
           if (result) {
-            fs.unlink("./uploads/" + paper.paper_id + ".pdf", (err) => {
-              if (err) throw err;
-              console.log("successfully deleted");
-              res.status(200).send(JSON.stringify(paragraphs));
-            });
           }
-        }
-      );
+        })
+        .catch((err) => res.status(404).send(err));
     }
   } else {
     res.status(404).send("Paper not found");
@@ -260,11 +256,7 @@ exports.getExtractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
   if (paper) {
     if (paper.extractive_summary !== "") {
-      fs.unlink(req.file.path, (err) => {
-        if (err) throw err;
-        console.log("successfully deleted");
-        res.status(200).send(paper.extractive_summary);
-      });
+      res.status(200).send(paper.extractive_summary);
     } else {
       await DownloadPdf(paper.paper_id, paper.url);
       ExtractSummary("./uploads/" + paper.paper_id + ".pdf").then(
@@ -320,6 +312,7 @@ exports.getCitation = async (req, res) => {
 };
 
 async function AbstractSummary(filepath) {
+  console.log(filepath);
   let paragraphs = await createJsonObjectFromPdf(filepath);
   if (paragraphs.length > 0) {
     let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
