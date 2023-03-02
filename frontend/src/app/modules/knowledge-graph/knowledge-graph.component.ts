@@ -38,7 +38,8 @@ export class KnowledgeGraphComponent implements OnInit {
   public graphNodes : nodes[] = [];
 
   constructor(
-    private featureService: FeaturesService
+    private featureService: FeaturesService,
+    private pdfShareService: PdfShareService
     ){}
 
     public graphOn: boolean;
@@ -51,7 +52,7 @@ export class KnowledgeGraphComponent implements OnInit {
       this.graphOn = value;
       if(this.graphOn){
         console.log("Hello from knowledge graph component");
-        this.featureService.getCitationGraph('dad7810836060b8e6364e070ac3d0054644d17e7').subscribe(
+        this.featureService.getCitationGraph(this.pdfShareService.paper_id).subscribe(
           (data) =>{
             this.graphData = JSON.parse(data);
             this.addDataToGraph();

@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 
 import * as HL from '../../../assets/highlight.json';
 import * as refs from '../../../assets/reference.json';
+import { TokenStorageService } from 'src/app/token-storage.service';
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -33,7 +34,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     private toastr: ToastrService,
     private pdfShareService: PdfShareService,
     public featureService: FeaturesService,
-    private http: HttpClient
+    private http: HttpClient,
+    public tokenStorage: TokenStorageService
   ) {
     /* More likely than not you don't need to tweak the pdfDefaultOptions.
        They are a collecton of less frequently used options.
@@ -59,7 +61,9 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     //console.log(this.pdfPath);
 
     if (this.pdfPath == null) {
-      this.pdfPath = './assets/SCORE_intro.pdf';
+      if(this.tokenStorage.getPaperId() == null){
+        this.pdfPath = './assets/SCORE_intro.pdf';
+      }
     }
 
     this.summarizerOn = false;
