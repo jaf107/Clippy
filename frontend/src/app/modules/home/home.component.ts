@@ -81,9 +81,6 @@ export class HomeComponent implements OnInit{
       this.errorsmsg();
     } else {
 
-      //send form to server
-      this.sendFile();
-
       this.visitedFiles.push({ name: this.file.name, lastVisited: new Date() });
       console.log(this.visitedFiles);
 
@@ -92,7 +89,6 @@ export class HomeComponent implements OnInit{
         this.url = reader.result;
         console.log(this.url);
         this.pdfShareService.sendFile(this.url);
-
         this.router.navigate(['pdfviewer']);
       };
       reader.readAsArrayBuffer(this.file);
@@ -127,21 +123,6 @@ export class HomeComponent implements OnInit{
     else{
       this.toastr.error('Select Search Type');
     }
-  }
-
-  sendFile(){
-    const formData: FormData = new FormData();
-    formData.append('paper', this.file);
-    formData.append('title', this.pdfShareService.getTitle());
-    //console.log('formdata: ',formData)
-    this.pdfShareService.sendFiletoServer(formData).subscribe(
-      (data) => {
-        
-      },
-      (err) => {
-        console.log("File sending failed");
-      }
-    )
   }
 
   searchPaperToggle(searchType : string){
