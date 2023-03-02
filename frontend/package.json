@@ -30,7 +30,6 @@
     "cytoscape": "^3.23.0",
     "cytoscape-dagre": "^2.5.0",
     "file-saver": "^2.0.5",
-    "ng2-tooltip-directive": "^2.10.3",
     "ngx-toastr": "^16.0.2",
     "pdfjs-dist": "~2.14.305",
     "rxjs": "~7.5.0",
