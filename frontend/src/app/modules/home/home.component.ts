@@ -89,6 +89,8 @@ export class HomeComponent implements OnInit{
         this.url = reader.result;
         console.log(this.url);
         this.pdfShareService.sendFile(this.url);
+        this.pdfShareService.sendRawFile(this.file);
+
         this.router.navigate(['pdfviewer']);
       };
       reader.readAsArrayBuffer(this.file);

@@ -3,11 +3,12 @@
     padding: 1.5rem;
     text-align: center;
     margin: auto;
-    background-color: white;
+    background-color: #c6c6c6;
     overflow-wrap: wrap;
     word-wrap: break-word;
     overflow-y: auto;
     height: 40rem;
+    z-index: 1000;
 }
 
 p{
