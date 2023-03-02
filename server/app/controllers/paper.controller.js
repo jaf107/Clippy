@@ -32,7 +32,7 @@ class Paragraph {
 }
 
 async function DownloadPdf(paperId, url) {
-  const dl = new DownloaderHelper(url, "./uploads", {
+  const dl = new DownloaderHelper(url, "./temp", {
     fileName: paperId + ".pdf",
   });
   dl.on("error", (err) => console.log("Download Failed", err));
@@ -73,88 +73,107 @@ exports.getPaperDetailsfromSemanticScholar = async (req, res) => {
 };
 
 exports.uploadPaper = async (req, res) => {
-  console.log(req.body.title);
-  console.log(req.file);
-  if (!req.body.title) {
+  // console.log(req.body.title);
+  // console.log(req.file);
+  if (!req.body.title || !req.file) {
     res.status(404).send("File and Title are required");
   } else {
-    const paper_data = await axios.get(
-      SEMANTIC_SCHOLAR_API +
-        `search?query=${encodeURIComponent(
-          req.body.title
-        )}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
-    );
-    // if (paper_data.err) {
-    //   res.status(404).send("Too many requests");
-    // }
-    if (paper_data && paper_data.data) {
-      const data = paper_data.data.data[0];
-      const ppr = await Paper.findOne({ paper_id: data.paperId });
-      if (ppr) {
-        await fs.unlink(req.file.path, (err) => {
-          if (err) throw err;
-          console.log("successfully deleted - paper found in db");
-        });
-        res.status(200).send(ppr);
-      } else {
-        const paper = {
-          paper_id: data.paperId,
-          title: data.title,
-          knowledge_graph: "",
-          url: data.isOpenAccess ? data.openAccessPdf.url : "",
-          abstract: data.abstract,
-          abstractive_summary: "",
-          extractive_summary: "",
-          citationCount: data.citationCount,
-          referenceCount: data.referenceCount,
-          authors: data.authors,
-        };
-        await Paper.create(paper);
-        await fs.unlink(req.file.path, (err) => {
-          if (err) throw err;
-          console.log("successfully deleted - paper found in scholar");
-        });
-        if (req.userId) {
-          updateHistory(req.userId, paper.paper_id, paper.title);
+    axios
+      .get(
+        SEMANTIC_SCHOLAR_API +
+          `search?query=${encodeURIComponent(
+            req.body.title
+          )}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`
+      )
+      .then((paper_data) => {
+        if (paper_data.data) {
+          const data = paper_data.data.data[0];
+          Paper.findOne({ paper_id: data.paperId })
+            .then((ppr) => {
+              if (ppr) {
+                fs.unlinkSync(req.file.path);
+                console.log("successfully deleted - paper found in db");
+                res.status(200).send(ppr);
+              } else {
+                console.log("else " + ppr);
+                const paper = {
+                  paper_id: data.paperId,
+                  title: data.title,
+                  knowledge_graph: "",
+                  url: data.isOpenAccess ? data.openAccessPdf.url : "",
+                  abstract: data.abstract,
+                  abstractive_summary: "",
+                  extractive_summary: "",
+                  citationCount: data.citationCount,
+                  referenceCount: data.referenceCount,
+                  authors: data.authors,
+                };
+                Paper.create(paper)
+                  .then((r) => {
+                    fs.unlinkSync(req.file.path, (err) => {
+                      if (err) throw err;
+                      console.log(
+                        "successfully deleted - paper found in scholar"
+                      );
+                    });
+                    if (req.userId) {
+                      updateHistory(req.userId, paper.paper_id, paper.title);
+                    }
+                    res.status(200).send(paper);
+                  })
+                  .catch((err) => res.status(404).send(err.message));
+              }
+            })
+            .catch((err) => res.status(404).send(err.message));
+        } else {
+          console.log(paper_data);
+          Paper.findOne({ title: req.body.title })
+            .then((ppr) => {
+              if (ppr) {
+                fs.unlinkSync(req.file.path, (err) => {
+                  if (err) throw err;
+                  console.log("successfully deleted");
+                });
+                if (req.userId) {
+                  updateHistory(req.userId, ppr.paper_id, ppr.title);
+                }
+                res.status(200).send(ppr);
+              } else {
+                var uuid = Math.random().toString(36).substr(2, 9);
+                fs.renameSync(
+                  req.file.path,
+                  "./uploads/" + uuid + ".pdf",
+                  (err) => {
+                    if (err) throw err;
+                    console.log("File renamed successfully");
+                  }
+                );
+                const paper = {
+                  paper_id: uuid,
+                  title: req.body.title,
+                  knowledge_graph: "",
+                  url: "/uploads/" + uuid + ".pdf",
+                  abstract: "",
+                  abstractive_summary: "",
+                  extractive_summary: "",
+                  citationCount: 0,
+                  referenceCount: 0,
+                  authors: [],
+                };
+                Paper.create(paper)
+                  .then((r) => {
+                    if (req.userId) {
+                      updateHistory(req.userId, paper.paper_id, paper.title);
+                    }
+                    res.status(200).send(paper);
+                  })
+                  .catch((err) => res.status(404).send(err.message));
+              }
+            })
+            .catch((err) => res.status(404).send(err.message));
         }
-        res.status(200).send(paper);
-      }
-    } else {
-      const ppr = await Paper.findOne({ title: req.body.title });
-      if (ppr) {
-        await fs.unlink(req.file.path, (err) => {
-          if (err) throw err;
-          console.log("successfully deleted");
-        });
-        if (req.userId) {
-          updateHistory(req.userId, ppr.paper_id, ppr.title);
-        }
-        res.status(200).send(ppr);
-      } else {
-        var uuid = Math.random().toString(36).substr(2, 9);
-        fs.rename(req.file.path, "./uploads/" + uuid + ".pdf", (err) => {
-          if (err) throw err;
-          console.log("File renamed successfully");
-        });
-        const paper = {
-          paper_id: uuid,
-          title: req.body.title,
-          knowledge_graph: "",
-          url: "/uploads/" + uuid + ".pdf",
-          abstract: "",
-          abstractive_summary: "",
-          extractive_summary: "",
-          citationCount: 0,
-          referenceCount: 0,
-          authors: [],
-        };
-        await Paper.create(paper);
-        if (req.userId) {
-          updateHistory(req.userId, paper.paper_id, paper.title);
-        }
-        res.status(200).send(paper);
-      }
-    }
+      })
+      .catch((err) => res.status(404).send(err));
   }
 };
 
@@ -232,7 +251,7 @@ exports.getAbstractSummary = async (req, res) => {
       res.status(200).send(JSON.stringify(paper.abstractive_summary));
     } else {
       await DownloadPdf(paper.paper_id, paper.url);
-      AbstractSummary("./uploads/" + paper.paper_id + ".pdf")
+      AbstractSummary("./temp/" + paper.paper_id + ".pdf")
         .then((paragraphs) => {
           const result = Paper.updateOne(
             { paper_id: req.params.id },
@@ -240,7 +259,7 @@ exports.getAbstractSummary = async (req, res) => {
             { upsert: true }
           )
             .then((result) => {
-              fs.unlink("./uploads/" + paper.paper_id + ".pdf", (err) => {
+              fs.unlink("./temp/" + paper.paper_id + ".pdf", (err) => {
                 if (err) throw err;
                 console.log("successfully deleted");
                 res.status(200).send(JSON.stringify(paragraphs));
@@ -264,25 +283,23 @@ exports.getExtractSummary = async (req, res) => {
       res.status(200).send(JSON.stringify(paper.extractive_summary));
     } else {
       await DownloadPdf(paper.paper_id, paper.url);
-      ExtractSummary("./uploads/" + paper.paper_id + ".pdf").then(
-        (paragraphs) => {
-          const result = Paper.updateOne(
-            { paper_id: req.params.id },
-            { $set: { extractive_summary: JSON.stringify(paragraphs) } },
-            { upsert: true }
-          )
-            .then(() => {
-              fs.unlink("./uploads/" + paper.paper_id + ".pdf", (err) => {
-                if (err) throw err;
-                console.log("successfully deleted");
-                res.status(200).send(JSON.stringify(paragraphs));
-              });
-            })
-            .catch((err) => res.status(200).send(err));
-          // if (result) {
-          // }
-        }
-      );
+      ExtractSummary("./temp/" + paper.paper_id + ".pdf").then((paragraphs) => {
+        const result = Paper.updateOne(
+          { paper_id: req.params.id },
+          { $set: { extractive_summary: JSON.stringify(paragraphs) } },
+          { upsert: true }
+        )
+          .then(() => {
+            fs.unlink("./temp/" + paper.paper_id + ".pdf", (err) => {
+              if (err) throw err;
+              console.log("successfully deleted");
+              res.status(200).send(JSON.stringify(paragraphs));
+            });
+          })
+          .catch((err) => res.status(200).send(err));
+        // if (result) {
+        // }
+      });
     }
   } else {
     res.status(404).send("Paper not found");
@@ -295,24 +312,31 @@ exports.getCitation = async (req, res) => {
   if (paperInDB && paperInDB.knowledge_graph != "") {
     res.status(200).send(paperInDB.knowledge_graph);
   } else {
-    var citationResponse = await axios
+    var citationResponse = axios
       .get(SEMANTIC_SCHOLAR_API + `${rootPaperId}?fields=title,citations`)
-      .catch((err) => res.status(404).send(err));
-    let rootNodeTitle = citationResponse.data.title;
-    let rootCitationData = citationResponse.data.citations;
-    rootCitationData.unshift({
-      paperId: citationResponse.data.paperId,
-      title: citationResponse.data.title,
-    });
+      .then((citationResponse) => {
+        let rootCitationData = citationResponse.data.citations;
+        rootCitationData.unshift({
+          paperId: citationResponse.data.paperId,
+          title: citationResponse.data.title,
+        });
 
-    const result = await Paper.updateOne(
-      { paper_id: rootPaperId },
-      { $set: { knowledge_graph: JSON.stringify(rootCitationData) } },
-      { upsert: true }
-    ).catch((err) => res.status(200).send(err));
-    if (result) {
-      res.status(200).send(JSON.stringify(rootCitationData));
-    }
+        Paper.updateOne(
+          { paper_id: rootPaperId },
+          { $set: { knowledge_graph: JSON.stringify(rootCitationData) } },
+          { upsert: true }
+        )
+          .then((result) => {
+            res.status(200).send(JSON.stringify(rootCitationData));
+          })
+          .catch((err) => res.status(404).send(err.message));
+      })
+      .catch((err) => res.status(404).send(err.message));
+    // if (citationResponse) {
+
+    // } else {
+    //   res.status(404).send(citationResponse);
+    // }
   }
 };
 
