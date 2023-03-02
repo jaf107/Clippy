@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PdfShareService } from '../shared/pdf-share.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from 'src/app/user.service';
@@ -26,7 +27,8 @@ export class HomeComponent implements OnInit {
     public pdfShareService: PdfShareService,
     private router: Router,
     private userService: UserService,
-    private tokenStorage: TokenStorageService
+    private tokenStorage: TokenStorageService,
+    private spinner: NgxSpinnerService
   ) {}
 
   private file: File | null;
@@ -72,6 +74,7 @@ export class HomeComponent implements OnInit {
       reader.onload = () => {
         this.url = reader.result;
         this.pdfShareService.sendFile(this.url);
+        this.tokenStorage.savePaper(this.url);
         this.pdfShareService.sendRawFile(this.file);
 
         this.router.navigate(['pdfviewer']);
@@ -90,6 +93,7 @@ export class HomeComponent implements OnInit {
   searchPaper() {
     this.pdfShareService.setSearched(true);
     if (this.searchBy == 'Title') {
+      this.spinner.show();
       this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
         (data) => {
           this.pdfShareService
@@ -100,6 +104,7 @@ export class HomeComponent implements OnInit {
               this.pdfShareService.getPaperFromSearch(data.url).subscribe(
                 (data) => {
                   this.pdfShareService.sendFile(data);
+                  this.tokenStorage.savePaper(data);
                   this.router.navigate(['pdfviewer']);
                 },
                 (err) => {
@@ -107,12 +112,14 @@ export class HomeComponent implements OnInit {
                 }
               );
             });
+            this.spinner.hide();
         },
         (err) => {
           this.toastr.error(err.error);
         }
       );
     } else if (this.searchBy == 'DOI') {
+      this.spinner.show();
       this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
         (data) => {
           console.log(data);
@@ -120,7 +127,9 @@ export class HomeComponent implements OnInit {
           this.pdfShareService.getPaperFromSearch(data.url).subscribe(
             (data) => {
               this.pdfShareService.sendFile(data);
+              this.tokenStorage.savePaper(data);
               this.router.navigate(['pdfviewer']);
+              this.spinner.hide();
             },
             (err) => {
               console.log(err);

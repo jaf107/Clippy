@@ -78,6 +78,8 @@ export class KnowledgeGraphComponent implements OnInit {
     this.cy = cytoscape({
       container: document.getElementById('cy'),
 
+      wheelSensitivity: 0.4,
+
       // Graph data
       elements: {
         // nodes: [

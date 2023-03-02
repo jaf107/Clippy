@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
-const PAPER_ID = 'current-paper';
+const PAPER = 'current-paper';
 
 @Injectable({
   providedIn: 'root',
@@ -28,13 +28,13 @@ export class TokenStorageService {
     window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 
-  public savePaperId(paperId: any): void {
-    window.sessionStorage.removeItem(PAPER_ID);
-    window.sessionStorage.setItem(PAPER_ID, paperId);
+  public savePaper(paperId: any): void {
+    window.sessionStorage.removeItem(PAPER);
+    window.sessionStorage.setItem(PAPER, paperId);
   }
 
-  public getPaperId(): string | null {
-    return window.sessionStorage.getItem(PAPER_ID);
+  public getPaper(): string | null {
+    return window.sessionStorage.getItem(PAPER);
   }
 
   public getUser(): any {

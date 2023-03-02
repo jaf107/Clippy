@@ -57,11 +57,11 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.pdfPath = this.pdfShareService.getFile();
 
     if (this.pdfPath == null) {
-      if (this.tokenStorage.getPaperId() == null) {
+      if (this.tokenStorage.getPaper() == null) {
         this.pdfPath = './assets/SCORE_intro.pdf';
       }
       else{
-        this.pdfPath = this.tokenStorage.getPaperId();
+        this.pdfPath = this.tokenStorage.getPaper();
       }
     }
 

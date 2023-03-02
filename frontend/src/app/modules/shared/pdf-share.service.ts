@@ -15,7 +15,7 @@ export class PdfShareService {
   public rawFile : any;
   public title: string;
 
-  public paper_id = '';
+  public paper_id: any;
 
   public searchedbyDOIorTitle: boolean = false;
 
@@ -56,8 +56,8 @@ export class PdfShareService {
     return this.rawFile;
   }
 
-  setPaperId(paperId: string){
-    this.tokenStorage.savePaperId(paperId);
+  setPaperId(paperId: any){
+    this.tokenStorage.savePaper(paperId);
     this.paper_id = paperId;
   }
 

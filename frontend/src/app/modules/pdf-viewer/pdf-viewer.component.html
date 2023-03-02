@@ -7,6 +7,15 @@
   >
     <div class="toolbar">
       <div class="row">
+        <div class="col-1">
+          <button (click)="goToHome()" title="Home" style="color: white; padding-right: 0.5rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-house" style="margin-right: 0.3rem; margin-top: -0.3rem" viewBox="0 0 16 16">
+              <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+            </svg>
+            Home
+          </button>
+        </div>
+        |
         <div class="col-2">
           <input
             class="page"
@@ -16,8 +25,8 @@
           />
           <span style="color: white"> ({{ page }} of {{ totalPages }})</span>
         </div>
-        <div class="col-3"></div>
-        <div class="col">
+        <div class="col-2"></div>
+        <div class="col-2">
           <button (click)="zoomIn()" title="Zoom in">
             <h5 style="color: white">+</h5>
             <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
@@ -80,7 +89,7 @@
           </button>
         </div>
         <div class="col"></div>
-        <div class="col-2">
+        <div class="col-1">
           <button
             (click)="openFileDialog()"
             title="Upload pdf"
@@ -123,11 +132,6 @@
               <path
                 d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"
               />
-            </svg>
-          </button>
-          <button (click)="goToHome()" title="Home">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-house" viewBox="0 0 16 16">
-              <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
             </svg>
           </button>
         </div>
