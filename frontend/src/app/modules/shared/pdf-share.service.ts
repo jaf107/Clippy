@@ -47,7 +47,7 @@ export class PdfShareService {
   }
 
   sendFiletoServer(formData: FormData): Observable<any> {
-    return this.http.post(API_URL + '/upload', formData, { headers : this.headers });
+    return this.http.post(API_URL + 'upload', formData, { headers : this.headers });
   }
 
   getHistory(): Observable<any> {

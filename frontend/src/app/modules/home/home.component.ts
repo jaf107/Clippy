@@ -6,6 +6,8 @@ import { PdfShareService } from '../shared/pdf-share.service';
 
 
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { UserService } from 'src/app/user.service';
+import { TokenStorageService } from 'src/app/token-storage.service';
 
 interface history{
   openedAt: string,
@@ -25,7 +27,9 @@ export class HomeComponent implements OnInit{
   constructor(
     private toastr: ToastrService,
     public pdfShareService: PdfShareService,
-    private router: Router
+    private router: Router,
+    private userService: UserService,
+    private tokenStorage : TokenStorageService
   ) {}
 
   private file: File | null;
@@ -39,9 +43,20 @@ export class HomeComponent implements OnInit{
   visitedFiles = [];
 
   historyList: history[] = [];
+  isGuest = false;
+
+  userName = '';
 
   ngOnInit(){
-    this.pdfShareService.getHistory().subscribe(
+
+    this.userName = this.tokenStorage.getUser().username;
+
+    console.log(this.userName);
+    if(this.userName == null){
+      this.isGuest = true;
+    }
+    else{
+      this.pdfShareService.getHistory().subscribe(
       (data) => {
         console.log(data);
         this.historyList = data.history;
@@ -49,6 +64,7 @@ export class HomeComponent implements OnInit{
         console.log(this.historyList);
       }
     )
+    }
   }
 
   openFileDialog() {

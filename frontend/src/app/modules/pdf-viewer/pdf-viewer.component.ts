@@ -238,7 +238,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     console.log('formdata: ',formData.get('title'), formData.get('paper'))
     this.pdfShareService.sendFiletoServer(formData).subscribe(
       (data) => {
-        
+        console.log(data);
       },
       (err) => {
         console.log("File sending failed");
