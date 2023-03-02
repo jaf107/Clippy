@@ -53,6 +53,7 @@ export class HomeComponent implements OnInit {
     } else {
       this.pdfShareService.getHistory().subscribe((data) => {
         this.historyList = data.history;
+        this.historyList.reverse();
         this.historyList = this.historyList.slice(0, 2);
       });
     }
@@ -74,7 +75,7 @@ export class HomeComponent implements OnInit {
       reader.onload = () => {
         this.url = reader.result;
         this.pdfShareService.sendFile(this.url);
-        this.tokenStorage.savePaper(this.url);
+        this.tokenStorage.savePaper(JSON.stringify(this.url));
         this.pdfShareService.sendRawFile(this.file);
 
         this.router.navigate(['pdfviewer']);
@@ -104,7 +105,7 @@ export class HomeComponent implements OnInit {
               this.pdfShareService.getPaperFromSearch(data.url).subscribe(
                 (data) => {
                   this.pdfShareService.sendFile(data);
-                  this.tokenStorage.savePaper(data);
+                  this.tokenStorage.savePaper(JSON.stringify(data));
                   this.router.navigate(['pdfviewer']);
                 },
                 (err) => {
@@ -127,7 +128,7 @@ export class HomeComponent implements OnInit {
           this.pdfShareService.getPaperFromSearch(data.url).subscribe(
             (data) => {
               this.pdfShareService.sendFile(data);
-              this.tokenStorage.savePaper(data);
+              this.tokenStorage.savePaper(JSON.stringify(data));
               this.router.navigate(['pdfviewer']);
               this.spinner.hide();
             },

@@ -155,7 +155,7 @@ export class KnowledgeGraphComponent implements OnInit {
         padding: 30, // padding on fit
         circle: false, // put depths in concentric circles if true, put depths top down if false
         grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
-        spacingFactor: 1.5, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
+        spacingFactor: 1, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
         boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
         avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
         nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
