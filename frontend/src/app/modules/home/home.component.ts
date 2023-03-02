@@ -50,18 +50,14 @@ export class HomeComponent implements OnInit{
   ngOnInit(){
 
     this.userName = this.tokenStorage.getUser().username;
-
-    console.log(this.userName);
     if(this.userName == null){
       this.isGuest = true;
     }
     else{
       this.pdfShareService.getHistory().subscribe(
       (data) => {
-        console.log(data);
         this.historyList = data.history;
         this.historyList = this.historyList.slice(0,2);
-        console.log(this.historyList);
       }
     )
     }
@@ -72,22 +68,17 @@ export class HomeComponent implements OnInit{
   }
 
   handle(e) {
-    console.log('change input file');
     this.file = e.target.files[0];
-    console.log('size', this.file.name);
-
     if (this.file.type != 'application/pdf') {
       console.log('Not supported file type!');
       this.errorsmsg();
     } else {
 
       this.visitedFiles.push({ name: this.file.name, lastVisited: new Date() });
-      console.log(this.visitedFiles);
 
       const reader = new FileReader();
       reader.onload = () => {
         this.url = reader.result;
-        console.log(this.url);
         this.pdfShareService.sendFile(this.url);
         this.pdfShareService.sendRawFile(this.file);
 
@@ -105,7 +96,6 @@ export class HomeComponent implements OnInit{
   }
 
   searchPaper(){
-    console.log('Searched paper is ' + this.searchedTerm);
     if(this.searchBy == 'Title'){
       this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
         (data) => {

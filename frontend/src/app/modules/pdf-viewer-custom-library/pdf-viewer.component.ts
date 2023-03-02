@@ -897,31 +897,21 @@ export class PdfViewerComponent
     this.updateSize();
     //preview required
     if (this.startingPosition) {
-      //console.log(this.startingPosition)
       //document has annotaitons, no manual annotation creation required
       if (!this.startingPosition.requireManualAnnotaion) {
-        
-        //console.log('start pos', this.startingPosition.requireManualAnnotaion);
         this.pdfLinkService.goToDestination(this.startingPosition);
       } else {
-        //document needs manudal references created before being loaded
-        //console.log(this.startingPosition)
         let pageNum = this.startingPosition.page;
         let ref = [];
         if (pageNum != undefined) {
           this._pdf.getPage(pageNum).then((page: PDFPageProxy) => {
             const pageInfo = page._pageInfo;
-            //console.log('page info: ', pageInfo)
             const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
             ref.push(obj);
             ref.push({ name: 'XYZ' });
             ref.push(this.startingPosition.x);
             ref.push(this.startingPosition.y);
-            //ref.push(null);
-            //console.log('ref: ',ref)
             this.pdfLinkService.goToDestination(ref);
-            ////console.log('hover: ', this.hover)
-            //console.log('gotodestination')
             
             this.hover.emit(
               {
