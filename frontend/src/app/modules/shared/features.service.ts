@@ -12,6 +12,7 @@ const API_URL = 'http://localhost:8080/api/paper/';
 export class FeaturesService {
   public summarizerType: string = '';
   public summary: any;
+  public highlighted: any;
   public fileurl: string = '';
 
   constructor(
@@ -30,8 +31,12 @@ export class FeaturesService {
 
   knowledgeGraphOnCheck: Subject<boolean> = new Subject<boolean>();
 
-  extractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  abstractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  extractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(
+    false
+  );
+  abstractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(
+    false
+  );
 
   exSummaryOn: boolean;
   absSummaryOn: boolean;
@@ -56,7 +61,6 @@ export class FeaturesService {
     return this.extractiveSummarizerOnCheck.asObservable();
   }
 
- 
   setKnowledgeGraphOn(onOff: boolean) {
     this.knowledgeGraphOnCheck.next(onOff);
     console.log('knowledge graph turned on');
@@ -67,6 +71,14 @@ export class FeaturesService {
   }
   getSummary() {
     return this.summary;
+  }
+
+  getHighlightedText() {
+    console.log('inside highlighted');
+    return this.highlighted.asObservable();
+  }
+  setHighlightedText(highlighed: any) {
+    this.highlighted = highlighed;
   }
 
   getKnowledgeGraphStatus(): Observable<boolean> {

@@ -22,6 +22,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   public graphOn: boolean;
   public exSummary: boolean = false;
   public absSummary: boolean = false;
+  public highlightedText: any = [];
+  public allTextSpans: any = [];
 
   zoom = 0.5;
   page = 1;
@@ -59,8 +61,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     if (this.pdfPath == null) {
       if (this.tokenStorage.getPaper() == null) {
         this.pdfPath = './assets/SCORE_intro.pdf';
-      }
-      else{
+      } else {
         this.pdfPath = JSON.parse(this.tokenStorage.getPaper());
       }
     }
@@ -70,27 +71,29 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
       this.absSummary = value;
-      if(this.absSummary){
+      if (this.absSummary) {
         this.summarizerOn = true;
-      }
-      else if(this.absSummary == false && this.exSummary == false){
+      } else if (this.absSummary == false && this.exSummary == false) {
         this.summarizerOn = false;
       }
     });
 
     this.featureService.getExSummarizerStatus().subscribe((value) => {
       this.exSummary = value;
-      if(this.exSummary){
+      if (this.exSummary) {
         this.summarizerOn = true;
-      }
-      else if(this.absSummary == false && this.exSummary == false){
+      } else if (this.absSummary == false && this.exSummary == false) {
         this.summarizerOn = false;
       }
     });
 
-
     this.featureService.getKnowledgeGraphStatus().subscribe((value) => {
       this.graphOn = value;
+    });
+
+    this.featureService.getHighlightedText().subscribe((value) => {
+      this.highlightedText = value;
+      console.log(value, 'inside pdf viewer');
     });
   }
 
@@ -118,7 +121,17 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param e custom event
    */
   pageRendered(e: any) {
+    console.log('page rendered:', e);
+
+    let pageNum = e.pageNum;
+    let spans = e.source.textLayer.textDivs;
+
+    if (this.highlightedText.length > 0) {
+      this.highlightSummary(pageNum, spans, this.highlightedText);
+    }
+
     // Select page container
+    // this.highlightSummary()
   }
 
   highlightSummary(pgaeNo, spans, AllSegments) {
@@ -135,6 +148,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
         'summary-highlight',
         'aqua'
       );
+
+      // if(span.childer.length )
       span.innerHTML = textToBeWrapped;
     });
   }
