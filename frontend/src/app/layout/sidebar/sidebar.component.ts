@@ -28,6 +28,7 @@ export class SidebarComponent {
   public summary: chunk[] = [];
 
   public knowledgeGraphOn: boolean = false;
+  public pdfOn: boolean = true;
 
   ngOnInit(): void {
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
@@ -70,6 +71,7 @@ export class SidebarComponent {
         this.abstractiveOn = false;
         this.featureService.setExSummarizerOn(this.extractiveOn);
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);
+        this.featureService.setKnowledgeGraphOn(false);
       } else {
         this.extractiveOn = false;
         this.abstractiveOn = false;
@@ -78,13 +80,13 @@ export class SidebarComponent {
       }
 
       // this.featureService.setSummarizerOn(type, this.extractiveOn);
-
     } else {
       if (this.abstractiveOn == false) {
         this.extractiveOn = false;
         this.abstractiveOn = true;
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);
         this.featureService.setExSummarizerOn(this.extractiveOn);
+        this.featureService.setKnowledgeGraphOn(false);
       } else {
         this.extractiveOn = false;
         this.abstractiveOn = false;
@@ -97,8 +99,19 @@ export class SidebarComponent {
   showGraph() {
     if (!this.knowledgeGraphOn) {
       this.featureService.setKnowledgeGraphOn(true);
+      this.pdfOn = false;
+      this.extractiveOn = false;
+      this.abstractiveOn = false;
+      this.featureService.setAbsSummarizerOn(this.abstractiveOn);
+      this.featureService.setExSummarizerOn(this.extractiveOn);
     } else {
+      this.pdfOn = true;
       this.featureService.setKnowledgeGraphOn(false);
     }
+  }
+
+  showPdf() {
+    this.pdfOn = true;
+    this.featureService.setKnowledgeGraphOn(false);
   }
 }
