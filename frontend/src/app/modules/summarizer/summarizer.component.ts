@@ -39,13 +39,11 @@ export class SummarizerComponent implements OnInit {
   public exSummarizerOn: boolean;
 
   ngOnInit() {
-
-    console.log(this.pdfShareService.paper_id);
-
-    //need fix
     
-    this.featureService.getExSummarizerStatus().subscribe((value) => {
-      this.exSummarizerOn = value;
+      this.featureService.getExSummarizerStatus().subscribe((value) => {
+        this.exSummarizerOn = value;
+        this.currentChunkSummary = 'Click any of the title to view its content summary';
+        this.currentChunkTitle = 'Select a Title';
       if(this.exSummarizerOn){
         this.featureService.getExtractiveSummary(this.pdfShareService.paper_id).subscribe(
       (data) => {
@@ -55,16 +53,24 @@ export class SummarizerComponent implements OnInit {
         });
       }
     })
-    
-    if(this.featureService.abstractiveSummarizerOnCheck){
+
+    this.featureService.getAbsSummarizerStatus().subscribe((value) => {
+      this.absSummarizerOn = value;
+      this.currentChunkSummary = 'Click any of the title to view its content summary';
+      this.currentChunkTitle = 'Select a Title';
+
+    if(this.absSummarizerOn){
       this.featureService.getAbstractiveSummary(this.pdfShareService.paper_id).subscribe(
       (data) => {
           data = JSON.parse(data);
-          this.summary = data.paragraphs;
+          this.summary = data;
           console.log(this.summary);
         });
     }
+  })
+
   }
+  
 
   showChunkSummary(chunk: any) {
     this.currentChunkSummary = chunk.summaryText;

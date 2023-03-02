@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TokenStorageService } from 'src/app/token-storage.service';
 import { PdfShareService } from './pdf-share.service';
 
@@ -30,17 +30,22 @@ export class FeaturesService {
 
   knowledgeGraphOnCheck: Subject<boolean> = new Subject<boolean>();
 
-  extractiveSummarizerOnCheck: Subject<boolean> = new Subject<boolean>();
-  abstractiveSummarizerOnCheck: Subject<boolean> = new Subject<boolean>();
+  extractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  abstractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  exSummaryOn: boolean;
+  absSummaryOn: boolean;
 
   setAbsSummarizerOn(onOff: boolean) {
     this.abstractiveSummarizerOnCheck.next(onOff);
     console.log('Abs summary turned on');
+    this.absSummaryOn = onOff;
   }
 
   setExSummarizerOn(onOff: boolean) {
     this.extractiveSummarizerOnCheck.next(onOff);
     console.log('Ex summary turned on');
+    this.exSummaryOn = onOff;
   }
 
   getAbsSummarizerStatus(): Observable<boolean> {

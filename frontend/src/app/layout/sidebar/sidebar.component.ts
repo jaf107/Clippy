@@ -69,10 +69,12 @@ export class SidebarComponent {
         //   });
         this.abstractiveOn = false;
         this.featureService.setExSummarizerOn(this.extractiveOn);
+        this.featureService.setAbsSummarizerOn(this.abstractiveOn);
       } else {
         this.extractiveOn = false;
         this.abstractiveOn = false;
         this.featureService.setExSummarizerOn(this.extractiveOn);
+        this.featureService.setAbsSummarizerOn(this.abstractiveOn);
       }
 
       // this.featureService.setSummarizerOn(type, this.extractiveOn);
@@ -82,10 +84,12 @@ export class SidebarComponent {
         this.extractiveOn = false;
         this.abstractiveOn = true;
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);
+        this.featureService.setExSummarizerOn(this.extractiveOn);
       } else {
         this.extractiveOn = false;
         this.abstractiveOn = false;
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);
+        this.featureService.setExSummarizerOn(this.extractiveOn);
       }
     }
   }
