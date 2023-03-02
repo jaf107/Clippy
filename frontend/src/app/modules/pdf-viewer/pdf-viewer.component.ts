@@ -20,6 +20,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   pdfSrc = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
   public summarizerOn: boolean;
   public graphOn: boolean;
+  public exSummary: boolean = false;
+  public absSummary: boolean = false;
 
   zoom = 0.5;
   page = 1;
@@ -58,14 +60,34 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       if (this.tokenStorage.getPaperId() == null) {
         this.pdfPath = './assets/SCORE_intro.pdf';
       }
+      else{
+        this.pdfPath = this.tokenStorage.getPaperId();
+      }
     }
 
     this.summarizerOn = false;
     this.graphOn = false;
 
-    this.featureService.getSummarizerStatus().subscribe((value) => {
-      this.summarizerOn = value;
+    this.featureService.getAbsSummarizerStatus().subscribe((value) => {
+      this.absSummary = value;
+      if(this.absSummary){
+        this.summarizerOn = true;
+      }
+      else if(this.absSummary == false && this.exSummary == false){
+        this.summarizerOn = false;
+      }
     });
+
+    this.featureService.getExSummarizerStatus().subscribe((value) => {
+      this.exSummary = value;
+      if(this.exSummary){
+        this.summarizerOn = true;
+      }
+      else if(this.absSummary == false && this.exSummary == false){
+        this.summarizerOn = false;
+      }
+    });
+
 
     this.featureService.getKnowledgeGraphStatus().subscribe((value) => {
       this.graphOn = value;

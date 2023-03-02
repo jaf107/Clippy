@@ -227,7 +227,7 @@ exports.getAbstractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
   if (paper) {
     if (paper.abstractive_summary !== "") {
-      res.status(200).send(paper.abstractive_summary);
+      res.status(200).send(JSON.stringify(paper.abstractive_summary));
     } else {
       await DownloadPdf(paper.paper_id, paper.url);
       AbstractSummary("./uploads/" + paper.paper_id + ".pdf")

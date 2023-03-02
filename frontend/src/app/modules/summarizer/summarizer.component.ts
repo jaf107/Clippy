@@ -4,6 +4,7 @@ import { PdfShareService } from '../shared/pdf-share.service';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
 import { FeaturesService } from '../shared/features.service';
+import { Observable, Subject } from 'rxjs';
 
 interface chunk {
   title: String;
@@ -26,38 +27,43 @@ export class SummarizerComponent implements OnInit {
 
   public summary: chunk[] = [];
 
+  // public summary: Observable<chunk[]>;
+
+  public rawSummary: any;
+
   public currentChunkSummary: string =
     'Click any of the title to view its content summary';
   public currentChunkTitle: string = 'Select a Title';
 
-  public summarizerType = '';
+  public absSummarizerOn: boolean;
+  public exSummarizerOn: boolean;
 
   ngOnInit() {
-    // this.summary = extractiveSummary;
-    // console.log(extractiveSummary);
 
-    this.featureService.getSummarizerType().subscribe((value) => {
-      this.summarizerType = value;
-      console.log(this.summarizerType);
+    console.log(this.pdfShareService.paper_id);
 
-      if (this.summarizerType == 'Extractive') {
-        this.summary = this.featureService.getSummary();
-        // this.featureService
-        //   .getExtractiveSummary(this.pdfShareService.paper_id)
-        //   .subscribe((data) => {
-        //     data = JSON.parse(data);
-        //     this.summary = data.paragraphs;
-        //     console.log(this.summary);
-        //   });
-      } else {
-        this.featureService
-          .getAbstractiveSummary(this.pdfShareService.paper_id)
-          .subscribe((data) => {
-            console.log(data);
-            this.summary = data;
-          });
+    //need fix
+    
+    this.featureService.getExSummarizerStatus().subscribe((value) => {
+      this.exSummarizerOn = value;
+      if(this.exSummarizerOn){
+        this.featureService.getExtractiveSummary(this.pdfShareService.paper_id).subscribe(
+      (data) => {
+          data = JSON.parse(data);
+          this.summary = data.paragraphs;
+          console.log(this.summary);
+        });
       }
-    });
+    })
+    
+    if(this.featureService.abstractiveSummarizerOnCheck){
+      this.featureService.getAbstractiveSummary(this.pdfShareService.paper_id).subscribe(
+      (data) => {
+          data = JSON.parse(data);
+          this.summary = data.paragraphs;
+          console.log(this.summary);
+        });
+    }
   }
 
   showChunkSummary(chunk: any) {
@@ -66,7 +72,8 @@ export class SummarizerComponent implements OnInit {
   }
 
   closeSummary() {
-    this.featureService.setSummarizerOff(false);
+    this.featureService.setAbsSummarizerOn(false);
+    this.featureService.setExSummarizerOn(false);
   }
 
   onClipboardCopy(successful: boolean) {

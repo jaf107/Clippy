@@ -30,10 +30,15 @@ export class SidebarComponent {
   public knowledgeGraphOn: boolean = false;
 
   ngOnInit(): void {
-    this.featureService.getSummarizerStatus().subscribe((value) => {
+    this.featureService.getAbsSummarizerStatus().subscribe((value) => {
+      if (value == false) {
+        this.abstractiveOn = false;
+      }
+    });
+
+    this.featureService.getExSummarizerStatus().subscribe((value) => {
       if (value == false) {
         this.extractiveOn = false;
-        this.abstractiveOn = false;
       }
     });
 
@@ -53,30 +58,35 @@ export class SidebarComponent {
   toggleSummarizer(type: string) {
     if (type == 'Extractive') {
       if (this.extractiveOn == false) {
+        console.log('Extractive turned on');
         this.extractiveOn = true;
-        this.featureService.setSummarizerOn(type, this.extractiveOn);
-        this.featureService
-          .getExtractiveSummary(this.pdfShareService.paper_id)
-          .subscribe((data) => {
-            data = JSON.parse(data);
-            this.summary = data.paragraphs;
-            this.featureService.storeSummary(this.summary);
-          });
+        // this.featureService
+        //   .getExtractiveSummary(this.pdfShareService.paper_id)
+        //   .subscribe((data) => {
+        //     data = JSON.parse(data);
+        //     this.summary = data.paragraphs;
+        //     this.featureService.storeSummary(this.summary);
+        //   });
         this.abstractiveOn = false;
+        this.featureService.setExSummarizerOn(this.extractiveOn);
       } else {
         this.extractiveOn = false;
         this.abstractiveOn = false;
+        this.featureService.setExSummarizerOn(this.extractiveOn);
       }
+
+      // this.featureService.setSummarizerOn(type, this.extractiveOn);
+
     } else {
       if (this.abstractiveOn == false) {
         this.extractiveOn = false;
         this.abstractiveOn = true;
+        this.featureService.setAbsSummarizerOn(this.abstractiveOn);
       } else {
         this.extractiveOn = false;
         this.abstractiveOn = false;
+        this.featureService.setAbsSummarizerOn(this.abstractiveOn);
       }
-
-      this.featureService.setSummarizerOn(type, this.abstractiveOn);
     }
   }
 
