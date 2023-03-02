@@ -260,40 +260,7 @@ export class PdfViewerComponent
       const refDestination = await this._pdf.getDestination(referenceID);
       //console.log('siam')
       if (refDestination == null) {
-        //console.log('upore',this.startingPosition)
-        if(this.startingPosition) {
-          //console.log('niche',this.startingPosition)
-          let pageNum = this.startingPosition.page;
-          let ref = [];
-          if (pageNum != undefined) {
-            this._pdf.getPage(pageNum).then((page: PDFPageProxy) => {
-              const pageInfo = page._pageInfo;
-              //console.log('page info: ', pageInfo)
-              const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
-              ref.push(obj);
-              ref.push({ name: 'XYZ' });
-              ref.push(this.startingPosition.x);
-              ref.push(this.startingPosition.y);
-              //ref.push(null);
-              //console.log('ref: ',ref)
-              this.pdfLinkService.goToDestination(ref);
-              //console.log('hover: ', this.hover)
-              //console.log('gotodestination')
-              
-              this.hover.emit(
-                {
-                  show: true,
-                  page: pageNum,
-                  refDestination: ref,
-                  clientX: this.startingPosition.x,
-                  clienY: this.startingPosition.y,
-                  height: this.startingPosition.height,
-                  width: this.startingPosition.width,
-                }
-                )
-              });
-            }
-          }
+        
       }
       else{
         let maxHeight, maxwidth, x, y;
@@ -315,6 +282,7 @@ export class PdfViewerComponent
             clienY: event.clientY,
             height: maxHeight,
             width: maxwidth,
+            manual: false
           });
       });
 
@@ -572,7 +540,7 @@ export class PdfViewerComponent
         if(data.str== undefined){
           return;
         }
-        console.log({ ...data, requireManualAnnotaion: true });
+        console.log({ ...data, requireManualAnnotaion: true, clientX: event.clientX, clientY: event.clientY });
         var ref = [];
         this._pdf.getPage(data.page).then((page: PDFPageProxy) => {
           const pageInfo = page._pageInfo;
@@ -589,10 +557,11 @@ export class PdfViewerComponent
               show: true,
               page: data.page,
               refDestination: ref,
-              clientX: data.x,
-              clienY: data.y,
+              clientX: event.clientX,
+              clienY: event.clientY,
               height: data.height,
               width: data.width,
+              manual: true
             }
           )
         });
@@ -986,6 +955,7 @@ export class PdfViewerComponent
                 clienY: this.startingPosition.y,
                 height: this.startingPosition.height,
                 width: this.startingPosition.width,
+                manual: false
               }
             )
           });
