@@ -178,8 +178,8 @@ exports.searchPaperByTitle = async (req, res) => {
 exports.getPdf = async (req, res) => {
   axios.get(req.body.url, { responseType: "arraybuffer" }).then((response) => {
     console.log(response);
-    res.status(200).send(response.data);
-  });
+    res.status(200).send(JSON.stringify(response.data));
+  }).catch(err => res.status(404).send(err));
 };
 
 exports.uploadPaperById = async (req, res) => {

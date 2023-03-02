@@ -65,11 +65,8 @@ export class FeaturesService {
     // '?fields=citations'
   }
 
-  getExtractiveSummary(_id: string): Observable<any>{
-    const formData: FormData = new FormData();
-    console.log(this.pdfShareService.file);
-    formData.append('paper', this.pdfShareService.file);
-    return this.http.post(API_URL + _id + '/extractiveSummary', formData, { headers : this.headers, responseType: 'text' });
+  getExtractiveSummary(_id: string): Observable<any> {
+    return this.http.post(API_URL + _id + '/extractiveSummary', { headers : this.headers });
   }
 
 }

@@ -1,14 +1,26 @@
+.container{
+    width: 95%;
+    float: right;
+    z-index: 10000;
+}
+
+.navbar{
+    float: right;
+    width: 95%;
+}
+
 .content{
-    width: 100%;
+    width: 95%;
+    float: right;
     padding: 1.5rem;
     text-align: center;
     margin: auto;
-    background-color: #c6c6c6;
+    background-color: #e0e0e0;
     overflow-wrap: wrap;
     word-wrap: break-word;
     overflow-y: auto;
     height: 40rem;
-    z-index: 1000;
+    z-index: 10000;
 }
 
 p{

@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import * as HL from '../../../assets/highlight.json';
 import * as refs from '../../../assets/reference.json';
 import { TokenStorageService } from 'src/app/token-storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -35,7 +36,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     private pdfShareService: PdfShareService,
     public featureService: FeaturesService,
     private http: HttpClient,
-    public tokenStorage: TokenStorageService
+    public tokenStorage: TokenStorageService,
+    private router: Router
   ) {
 
   }
@@ -222,6 +224,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
 
   sendFile(){
+    if(!this.pdfShareService.getSearched()){
     const formData: FormData = new FormData();
     formData.append('paper', this.pdfShareService.getRawFile());
     formData.append('title', this.pdfShareService.getTitle());
@@ -235,6 +238,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
         console.log("File sending failed");
       }
     )
+    }
   }
 
   errorsmsg() {
@@ -284,5 +288,9 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       this.heightStr = e.height + 'px';
       this.widthStr = e.width + 'px';
     }
+  }
+
+  goToHome(){
+    this.router.navigate(['home']);
   }
 }

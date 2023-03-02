@@ -17,6 +17,8 @@ export class PdfShareService {
 
   public paper_id = '';
 
+  public searchedbyDOIorTitle: boolean = false;
+
   constructor(
     public http: HttpClient,
     public tokenStorage: TokenStorageService
@@ -28,6 +30,14 @@ export class PdfShareService {
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
     'x-access-token': this.tokenStorage.getToken(),
   });
+
+  setSearched(setSearched: boolean){
+    this.searchedbyDOIorTitle = setSearched;
+  }
+
+  getSearched(): boolean{
+    return this.searchedbyDOIorTitle;
+  }
 
   sendFile(uploadedOrSearchedFile: any) {
     this.file = uploadedOrSearchedFile;
@@ -80,6 +90,10 @@ export class PdfShareService {
 
   searchPaperbyId(searchedTerm: any): Observable<any> {
     return this.http.post(API_URL + 'uploadById', { paper_id: searchedTerm }, { headers : this.headers });
+  }
+
+  getPaperFromSearch(url: any): Observable<any> {
+    return this.http.post(API_URL + 'getpdf', { url : url }, { headers : this.headers });
   }
 
 

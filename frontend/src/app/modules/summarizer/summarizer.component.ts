@@ -33,6 +33,8 @@ export class SummarizerComponent implements OnInit{
   ngOnInit(){
     // this.summary = extractiveSummary;
     console.log(extractiveSummary);
+
+    
     
   }
 
