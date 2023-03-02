@@ -62,7 +62,7 @@ interface IReference {
       <div class="pdfViewer" (mouseover)="handlePopOver($event)"></div>
     </div>
   `,
-  styleUrls: ['./pdf-viewer.component.scss'],
+  styleUrls: ['./pdf-viewer-custom-lib.component.scss'],
 })
 export class PdfViewerComponent
   implements OnChanges, OnInit, OnDestroy, AfterViewChecked
@@ -205,7 +205,6 @@ export class PdfViewerComponent
   @Input('rotation')
   set rotation(value: number) {
     if (!(typeof value === 'number' && value % 90 === 0)) {
-      console.warn('Invalid pages rotation angle.');
       return;
     }
 
@@ -234,14 +233,11 @@ export class PdfViewerComponent
 
   async getMetaData() {
     let metData:any = await this._pdf.getMetadata();
-    //console.log(metData.info.Title)
     this.metadata.emit(metData.info.Title)
   }
 
   async handlePopOver(event: any) {
-    console.log('in library');
     if (event.type != 'mouseover') {
-      console.log('not mouse over')
       return;
     }
     let refParent: HTMLElement;
@@ -254,13 +250,9 @@ export class PdfViewerComponent
       const referenceID = event.target.hash.substring(1);
       refParent = event.target.parentElement;
       let refBoundingRect = refParent.getBoundingClientRect();
-      //console.log(referenceID);
-      
-      //console.log('ref rect: ', refBoundingRect)
       const refDestination = await this._pdf.getDestination(referenceID);
-      //console.log('siam')
       if (refDestination == null) {
-        
+        //do nothing, this condition is handled already
       }
       else{
         let maxHeight, maxwidth, x, y;
@@ -407,7 +399,6 @@ export class PdfViewerComponent
   return type event: {data: references[]}
   */
   public getReferences() {
-    console.log('get ref called');
     let references = [];
     this.destinations = [];
     this.annotations = [];
@@ -432,7 +423,6 @@ export class PdfViewerComponent
     this.annotations.push(linkAnnotations);
     for (let i = 0; i < linkAnnotations.length; i++) {
       if (linkAnnotations[i].dest != undefined) {
-        //console.log(linkAnnotations[i].dest)
         var x = await this._pdf.getDestination(linkAnnotations[i].dest);
         this.destinations.push(x);
       }
@@ -440,7 +430,6 @@ export class PdfViewerComponent
   }
 
   public updateSize() {
-    console.log('update size: ', this._pdf);
     from(
       this._pdf.getPage(
         this.pdfViewer.currentPageNumber
@@ -540,18 +529,15 @@ export class PdfViewerComponent
         if(data.str== undefined){
           return;
         }
-        console.log({ ...data, requireManualAnnotaion: true, clientX: event.clientX, clientY: event.clientY });
         var ref = [];
         this._pdf.getPage(data.page).then((page: PDFPageProxy) => {
           const pageInfo = page._pageInfo;
-          console.log('page info: ', pageInfo)
           const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
           ref.push(obj);
           ref.push({ name: 'XYZ' });
           ref.push(data.x);
           ref.push(data.y);
           ref.push(null);
-          console.log('ref: ',ref)
           this.hover.emit(
             {
               show: true,
@@ -566,6 +552,10 @@ export class PdfViewerComponent
           )
         });
       });
+
+      anchor.addEventListener('click', (event:any)=>{
+        event.preventDefault();
+      })
 
       anchor.addEventListener('mouseleave', (event:any)=>{
         this.hover.emit(
@@ -639,7 +629,6 @@ export class PdfViewerComponent
             startingIndex,
             finalIndex
           );
-         // console.log(startingIndex, restOfTheString, finalIndex);
         }
       }
     });
@@ -654,11 +643,7 @@ export class PdfViewerComponent
       .pipe(takeUntil(this.destroy$))
       .subscribe((event:any) => {
         setTimeout( async () => {
-          //this.getMetaData()
-          console.log(this.destinations.length)
           if(this.destinations.length==0){
-            //manual referencing start if no automatic reference found
-            
             this.refs = await getManualReferences(this.src)
             let spans = event.source.textLayer.textDivs;
             this.highlightReference(event.pageChange, spans, Array.from(this.refs));
@@ -769,8 +754,6 @@ export class PdfViewerComponent
   }
 
   private getPopOverPDFOptions(): PDFViewerOptions {
-    //console.log('pop element: ',this.pdfPopOverContainer.nativeElement)
-    //console.log('element: ', this.element.nativeElement.querySelector('div'))
     return {
       eventBus: this.popOverEventBus,
       container: this.pdfPopOverContainer.nativeElement,
@@ -869,15 +852,10 @@ export class PdfViewerComponent
         next: (pdf) => {
           this._pdf = pdf;
           this.getReferences();
-          //this._pdfClone._transport =  this._pdf._transport;
-          //this._pdfClone._pdfInfo = this._pdf._pdfInfo;
-          //this._pdfClone.
           this._pdfClone = Object.assign(
             Object.create(Object.getPrototypeOf(this._pdf)),
             this._pdf
           );
-          //console.log(this._pdf, this._pdfClone)
-
           this.lastLoaded = src;
 
           this.afterLoadComplete.emit(pdf);
@@ -899,7 +877,6 @@ export class PdfViewerComponent
   }
 
   private render() {
-    console.log('render called')
     this._page = this.getValidPageNumber(this._page);
 
     if (
@@ -920,31 +897,21 @@ export class PdfViewerComponent
     this.updateSize();
     //preview required
     if (this.startingPosition) {
-      console.log(this.startingPosition)
       //document has annotaitons, no manual annotation creation required
       if (!this.startingPosition.requireManualAnnotaion) {
-        
-        console.log('start pos', this.startingPosition.requireManualAnnotaion);
         this.pdfLinkService.goToDestination(this.startingPosition);
       } else {
-        //document needs manudal references created before being loaded
-        console.log(this.startingPosition)
         let pageNum = this.startingPosition.page;
         let ref = [];
         if (pageNum != undefined) {
           this._pdf.getPage(pageNum).then((page: PDFPageProxy) => {
             const pageInfo = page._pageInfo;
-            console.log('page info: ', pageInfo)
             const obj = { num: pageInfo.ref.num, gen: pageInfo.ref.gen };
             ref.push(obj);
             ref.push({ name: 'XYZ' });
             ref.push(this.startingPosition.x);
             ref.push(this.startingPosition.y);
-            //ref.push(null);
-            console.log('ref: ',ref)
             this.pdfLinkService.goToDestination(ref);
-            console.log('hover: ', this.hover)
-            console.log('gotodestination')
             
             this.hover.emit(
               {

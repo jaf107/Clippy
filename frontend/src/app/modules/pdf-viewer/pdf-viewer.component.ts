@@ -37,12 +37,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     private http: HttpClient,
     public tokenStorage: TokenStorageService
   ) {
-    /* More likely than not you don't need to tweak the pdfDefaultOptions.
-       They are a collecton of less frequently used options.
-       To illustrate how they're used, here are two example settings: */
-    // but most devices support much higher resolutions.
-    // Increasing this setting allows your users to use higher zoom factors,
-    // trading image quality for performance.
+
   }
   previewPageNum: number;
   reference: any;
@@ -58,7 +53,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.pdfPath = this.pdfShareService.getFile();
-    //console.log(this.pdfPath);
 
     if (this.pdfPath == null) {
       if(this.tokenStorage.getPaperId() == null){
@@ -71,7 +65,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
     this.featureService.getSummarizerStatus().subscribe((value) => {
       this.summarizerOn = value;
-      //console.log('Summary is on ' + this.summarizerOn);
     });
 
     this.featureService.getKnowledgeGraphStatus().subscribe((value) => {
@@ -103,11 +96,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param e custom event
    */
   pageRendered(e: any) {
-    //console.log('(page-rendered)', e);
     // Select page container
-    // let spans = e.source.textLayer.textDivs;
-    // this.highlightSummary(e.pageNumber, spans, Array.from(HL));
-    // this.highlightReference(e.pageChange, spans, Array.from(refs));
   }
 
   highlightSummary(pgaeNo, spans, AllSegments) {
@@ -198,8 +187,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   loadComplete(pdfData: any) {
     this.totalPages = pdfData.numPages;
-    console.log('pdfData: ',pdfData);
-    console.log('metadata: ',this.viewerRef.pdfFindController.pageContents[0].metadata);
   }
 
   openFileDialog() {
@@ -212,7 +199,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
 
   downloadPdf() {
-    console.log(this.pdfPath);
     const blob = new Blob([this.pdfPath], { type: 'application/octet-stream' });
     saveAs(blob, 'test.pdf');
   }
@@ -277,7 +263,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
 
   createPreview(e: any) {
-    console.log('event received: ', e);
     this.showPreview = e.show;
     if (e.show) {
       this.previewPageNum = e.page;
@@ -285,15 +270,15 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       this.reference.requireManualAnnotation = false;
       let entireScreenHeight = this.convertVHToPx(90);
       let entireScreenWidth = this.convertREMToPx(50);
-      //console.log(e);
       this.topCSS = -1 * (entireScreenHeight - e.clienY) - 100;
       
       if((this.topCSS + e.height) > 0) {
         this.topCSS -= e.height;
       }
       this.leftCSS = e.clientX;
-      console.log('left: ', this.leftCSS, ' e width: ', e.width, ' entire: ', entireScreenWidth);
-      
+      if((this.leftCSS + e.width) > entireScreenWidth) {
+        this.leftCSS -= e.width/2;
+      }
       this.topCSSstr = this.topCSS + 'px';
       this.leftCSSstr = this.leftCSS + 'px';
       this.heightStr = e.height + 'px';
