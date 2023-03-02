@@ -12,6 +12,7 @@ const API_USER_URL = 'http://localhost:8080/api/user/';
 export class PdfShareService {
 
   public file: any;
+  public rawFile : any;
   public title: string;
 
   public paper_id = '649def34f8be52c8b66281af98ae884c09aef38b';
@@ -32,9 +33,17 @@ export class PdfShareService {
     this.file = uploadedOrSearchedFile;
   }
 
+  sendRawFile(uploadedFile: any){
+    this.rawFile = uploadedFile;
+  }
+
   getFile(): any {
     console.log(this.file);
     return this.file;
+  }
+
+  getRawFile(): any{
+    return this.rawFile;
   }
 
   setTitle(title: string) {
