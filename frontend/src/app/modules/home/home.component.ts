@@ -94,7 +94,16 @@ export class HomeComponent implements OnInit {
   searchPaper() {
     this.pdfShareService.setSearched(true);
     if (this.searchBy == 'Title') {
-      this.spinner.show();
+      this.searchByTitle();
+    } else if (this.searchBy == 'DOI') {
+      this.searchById();
+    } else {
+      this.toastr.error('Select Search Type');
+    }
+  }
+
+  searchByTitle(){
+    this.spinner.show();
       this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
         (data) => {
           this.pdfShareService
@@ -117,10 +126,13 @@ export class HomeComponent implements OnInit {
         },
         (err) => {
           this.toastr.error(err.error);
+          this.spinner.hide();
         }
       );
-    } else if (this.searchBy == 'DOI') {
-      this.spinner.show();
+  }
+
+  searchById(){
+    this.spinner.show();
       this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
         (data) => {
           console.log(data);
@@ -134,6 +146,7 @@ export class HomeComponent implements OnInit {
             },
             (err) => {
               console.log(err);
+              this.spinner.hide();
             }
           );
         },
@@ -141,12 +154,15 @@ export class HomeComponent implements OnInit {
           this.toastr.error(err.error);
         }
       );
-    } else {
-      this.toastr.error('Select Search Type');
-    }
   }
 
   searchPaperToggle(searchType: string) {
     this.searchBy = searchType;
+  }
+
+  viewHistoryPaper(historyFile: history){
+    console.log(historyFile.paper_id);
+    this.searchedTerm = historyFile.paper_id;
+    this.searchById();
   }
 }

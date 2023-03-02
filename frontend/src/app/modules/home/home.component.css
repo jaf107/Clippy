@@ -54,7 +54,7 @@ hr {
     padding: 0;
 }
 
-h5{
+h5, a{
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis; 

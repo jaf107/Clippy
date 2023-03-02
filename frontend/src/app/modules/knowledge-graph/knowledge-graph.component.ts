@@ -5,6 +5,7 @@ import * as navigator from 'cytoscape';
 import { FeaturesService } from '../shared/features.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 
+import { NgxSpinnerService } from 'ngx-spinner';
 
 interface edges{
   data:{
@@ -39,7 +40,8 @@ export class KnowledgeGraphComponent implements OnInit {
 
   constructor(
     private featureService: FeaturesService,
-    private pdfShareService: PdfShareService
+    private pdfShareService: PdfShareService,
+    private spinner: NgxSpinnerService
     ){}
 
     public graphOn: boolean;
@@ -49,6 +51,7 @@ export class KnowledgeGraphComponent implements OnInit {
   ngOnInit() {
 
     this.featureService.getKnowledgeGraphStatus().subscribe((value)=>{
+      this.spinner.show();
       this.graphOn = value;
       if(this.graphOn){
         console.log("Hello from knowledge graph component");
@@ -61,10 +64,12 @@ export class KnowledgeGraphComponent implements OnInit {
             console.log(JSON.parse(data));
 
             this.initializeGraph();
+            this.spinner.hide();
           },
           (err) => {
             console.log("Error in graph");
             this.errorInGraph();
+            this.spinner.hide();
           }
         );
       }
