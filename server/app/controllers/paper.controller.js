@@ -12,6 +12,7 @@ const { OneAI } = require("oneai");
 var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 var FormData = require("form-data");
 const { DownloaderHelper } = require("node-downloader-helper");
+const crawler = require("crawler-request");
 
 class Paragraph {
   constructor(title, text) {
@@ -30,7 +31,25 @@ class Paragraph {
   }
 }
 
+async function DownloadPdf(paperId, url) {
+  const dl = new DownloaderHelper(url, "./uploads", {
+    fileName: paperId + ".pdf",
+  });
+  dl.on("error", (err) => console.log("Download Failed", err));
+  dl.on("end", () => {
+    console.log("Download Completed");
+    return true; // return true after download is completed
+  });
+  await dl.start(); // wait for the download to start and finish
+}
+
 exports.getPaperDetails = async (req, res) => {
+  crawler("https://www.aclweb.org/anthology/N18-3011.pdf").then(function (
+    response
+  ) {
+    // handle response
+    console.log(response);
+  });
   const ppr = await Paper.findOne({ paper_id: req.params.id });
   if (ppr) {
     if (req.userId) {
@@ -54,7 +73,9 @@ exports.getPaperDetailsfromSemanticScholar = async (req, res) => {
 };
 
 exports.uploadPaper = async (req, res) => {
-  if (!req.body.title || !req.file) {
+  console.log(req.body.title);
+  console.log(req.file);
+  if (!req.body.title) {
     res.status(404).send("File and Title are required");
   } else {
     const paper_data = await axios
@@ -108,7 +129,7 @@ exports.uploadPaper = async (req, res) => {
         res.status(200).send(ppr);
       } else {
         var uuid = Math.random().toString(36).substr(2, 9);
-        fs.rename(req.file.path, "/upload/" + uuid + ".pdf", (err) => {
+        fs.rename(req.file.path, "./uploads/" + uuid + ".pdf", (err) => {
           if (err) throw err;
           console.log("File renamed successfully");
         });
@@ -154,7 +175,14 @@ exports.searchPaperByTitle = async (req, res) => {
   // }
 };
 
-exports.searchPaperById = async (req, res) => {
+exports.getPdf = async (req, res) => {
+  axios.get(req.body.url, { responseType: "arraybuffer" }).then((response) => {
+    console.log(response);
+    res.status(200).send(response.data);
+  });
+};
+
+exports.uploadPaperById = async (req, res) => {
   const ppr = await Paper.findOne({ paper_id: req.body.paper_id });
   if (ppr) {
     if (req.userId) {
@@ -197,7 +225,6 @@ exports.searchPaperById = async (req, res) => {
 
 exports.getAbstractSummary = async (req, res) => {
   var paper = await Paper.findOne({ paper_id: req.params.id });
-  let noOfSentenceInSummary;
   if (paper) {
     if (paper.abstractive_summary !== "") {
       fs.unlink(req.file.path, (err) => {
@@ -206,20 +233,23 @@ exports.getAbstractSummary = async (req, res) => {
         res.status(200).send(paper.abstractive_summary);
       });
     } else {
-      await AbstractSummary(req.file.path).then((paragraphs) => {
-        const result = Paper.updateOne(
-          { paper_id: req.params.id },
-          { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
-          { upsert: true }
-        ).catch((err) => res.status(200).send(err));
-        if (result) {
-          fs.unlink(req.file.path, (err) => {
-            if (err) throw err;
-            console.log("successfully deleted");
-            res.status(200).send(JSON.stringify(paragraphs));
-          });
+      await DownloadPdf(paper.paper_id, paper.url);
+      AbstractSummary("./uploads/" + paper.paper_id + ".pdf").then(
+        (paragraphs) => {
+          const result = Paper.updateOne(
+            { paper_id: req.params.id },
+            { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
+            { upsert: true }
+          ).catch((err) => res.status(200).send(err));
+          if (result) {
+            fs.unlink("./uploads/" + paper.paper_id + ".pdf", (err) => {
+              if (err) throw err;
+              console.log("successfully deleted");
+              res.status(200).send(JSON.stringify(paragraphs));
+            });
+          }
         }
-      });
+      );
     }
   } else {
     res.status(404).send("Paper not found");
@@ -236,20 +266,26 @@ exports.getExtractSummary = async (req, res) => {
         res.status(200).send(paper.extractive_summary);
       });
     } else {
-      await ExtractSummary(req.file.path).then((paragraphs) => {
-        const result = Paper.updateOne(
-          { paper_id: req.params.id },
-          { $set: { extractive_summary: JSON.stringify(paragraphs) } },
-          { upsert: true }
-        ).catch((err) => res.status(200).send(err));
-        if (result) {
-          fs.unlink(req.file.path, (err) => {
-            if (err) throw err;
-            console.log("successfully deleted");
-            res.status(200).send(JSON.stringify(paragraphs));
-          });
+      await DownloadPdf(paper.paper_id, paper.url);
+      ExtractSummary("./uploads/" + paper.paper_id + ".pdf").then(
+        (paragraphs) => {
+          const result = Paper.updateOne(
+            { paper_id: req.params.id },
+            { $set: { extractive_summary: JSON.stringify(paragraphs) } },
+            { upsert: true }
+          )
+            .then(() => {
+              fs.unlink("./uploads/" + paper.paper_id + ".pdf", (err) => {
+                if (err) throw err;
+                console.log("successfully deleted");
+                res.status(200).send(JSON.stringify(paragraphs));
+              });
+            })
+            .catch((err) => res.status(200).send(err));
+          // if (result) {
+          // }
         }
-      });
+      );
     }
   } else {
     res.status(404).send("Paper not found");
@@ -387,14 +423,17 @@ async function ExtractSummary(src) {
       });
     if (response.data) {
       let { summary } = response.data;
-
       return summary;
     }
     // let { summary } = await response;
-
     // return summary;
   }
-  await createChunkForHighlighting(src, paragraphs).then();
+
+  const highlighted = await createChunkForHighlighting(src, paragraphs);
+  return {
+    paragraphs,
+    highlighted,
+  };
 }
 
 async function createChunkForHighlighting(src, paragraph) {
@@ -755,4 +794,8 @@ function noOfSentences(context) {
   }
   // console.log(noOfSentence);
   return noOfSentence;
+}
+function breakTextChunkIntoSentence(textChunk) {
+  let sentences = textChunk.split(/[.?!]/g);
+  return sentences;
 }
