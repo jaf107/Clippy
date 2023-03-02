@@ -138,7 +138,7 @@ exports.uploadPaper = async (req, res) => {
           paper_id: uuid,
           title: req.body.title,
           knowledge_graph: "",
-          url: "/upload/" + uuid + ".pdf",
+          url: "/uploads/" + uuid + ".pdf",
           abstract: "",
           abstractive_summary: "",
           extractive_summary: "",
