@@ -12,7 +12,9 @@ const API_URL = 'http://localhost:8080/api/paper/';
 export class FeaturesService {
   public summarizerType: string = '';
   public summary: any;
-  public highlighted: any;
+  public highlighted: BehaviorSubject<any[] | null> = new BehaviorSubject<
+    any[]
+  >(null);
   public fileurl: string = '';
 
   constructor(
@@ -75,10 +77,10 @@ export class FeaturesService {
 
   getHighlightedText() {
     console.log('inside highlighted');
-    return this.highlighted.asObservable();
+    return this.highlighted;
   }
   setHighlightedText(highlighed: any) {
-    this.highlighted = highlighed;
+    this.highlighted.next(highlighed);
   }
 
   getKnowledgeGraphStatus(): Observable<boolean> {
