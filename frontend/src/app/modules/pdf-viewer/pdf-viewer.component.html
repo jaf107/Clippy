@@ -135,7 +135,7 @@
       [zoom]="zoom"
       [rotation]="rotation"
       [fit-to-page]="false"
-      [page]="page"
+      [(page)]="page"
       [show-all]="true"
       (after-load-complete)="loadComplete($event)"
       (page-rendered)="pageRendered($event)"
@@ -171,7 +171,7 @@
   <div
     class="middle"
     *ngIf="summarizerOn"
-    style="z-index: 100"
+    style="z-index: 1000"
     [ngStyle]="{ width: summarizerOn == true ? '27%' : '0%' }"
   >
     <app-summarizer></app-summarizer>
