@@ -116,13 +116,15 @@ export class HomeComponent implements OnInit {
                   this.pdfShareService.sendFile(data);
                   this.tokenStorage.savePaper(JSON.stringify(data));
                   this.router.navigate(['pdfviewer']);
+                  this.spinner.hide();
                 },
                 (err) => {
+                  this.spinner.hide();
                   console.log(err);
                 }
               );
             });
-            this.spinner.hide();
+            
         },
         (err) => {
           this.toastr.error(err.error);

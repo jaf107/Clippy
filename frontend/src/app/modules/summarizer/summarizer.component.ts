@@ -50,6 +50,10 @@ export class SummarizerComponent implements OnInit {
           data = JSON.parse(data);
           this.summary = data.paragraphs;
           console.log(this.summary);
+
+          if(this.summary.length == 0){
+            this.currentChunkSummary = 'No summary available for this pdf';
+          }
         });
       }
     })
@@ -65,6 +69,10 @@ export class SummarizerComponent implements OnInit {
           data = JSON.parse(data);
           this.summary = data;
           console.log(this.summary);
+
+          if(this.summary.length = 0){
+            this.currentChunkSummary = 'No summary available for this pdf';
+          }
         });
     }
   })
