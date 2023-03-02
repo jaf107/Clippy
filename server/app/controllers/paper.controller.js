@@ -347,7 +347,10 @@ exports.getAbstractSummary = async (req, res) => {
                   })
                   .catch((err) => res.status(404).send(err.message));
               })
-              .catch((err) => res.status(404).send(err.message));
+              .catch((err) => {
+                fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
+                res.status(404).send(err.message);
+              });
           })
           .catch((err) => res.status(404).send(err.message));
       }
@@ -377,7 +380,10 @@ exports.getExtractSummary = async (req, res) => {
                   })
                   .catch((err) => res.status(404).send(err.message));
               })
-              .catch((err) => res.status(404).send(err.message));
+              .catch((err) => {
+                fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
+                res.status(404).send(err.message);
+              });
           })
           .catch((err) => res.status(404).send(err.message));
       }
