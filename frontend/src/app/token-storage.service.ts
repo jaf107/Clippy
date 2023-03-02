@@ -28,9 +28,9 @@ export class TokenStorageService {
     window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 
-  public savePaper(paperId: any): void {
+  public savePaper(paper: any): void {
     window.sessionStorage.removeItem(PAPER);
-    window.sessionStorage.setItem(PAPER, paperId);
+    window.sessionStorage.setItem(PAPER, paper);
   }
 
   public getPaper(): string | null {

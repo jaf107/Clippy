@@ -61,7 +61,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
         this.pdfPath = './assets/SCORE_intro.pdf';
       }
       else{
-        this.pdfPath = this.tokenStorage.getPaper();
+        this.pdfPath = JSON.parse(this.tokenStorage.getPaper());
       }
     }
 

@@ -57,7 +57,6 @@ export class PdfShareService {
   }
 
   setPaperId(paperId: any){
-    this.tokenStorage.savePaper(paperId);
     this.paper_id = paperId;
   }
 
