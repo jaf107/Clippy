@@ -14,6 +14,7 @@ var endpoint = "https://api.meaningcloud.com/summarization-1.0";
 var FormData = require("form-data");
 const { DownloaderHelper } = require("node-downloader-helper");
 const crawler = require("crawler-request");
+const path = require("path");
 
 class Paragraph {
   constructor(title, text) {
@@ -247,13 +248,22 @@ exports.searchPaperByTitle = async (req, res) => {
 };
 
 exports.getPdf = async (req, res) => {
-  axios
-    .get(req.body.url, { responseType: "arraybuffer" })
-    .then((response) => {
-      console.log(response);
-      res.status(200).send(JSON.stringify(response.data));
-    })
-    .catch((err) => res.status(404).send(err));
+  if (req.body.url.includes("uploads")) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      let data = reader.result;
+      res.status(200).send(JSON.stringify(data));
+    };
+    reader.readAsArrayBuffer(req.body.url);
+  } else {
+    axios
+      .get(req.body.url, { responseType: "arraybuffer" })
+      .then((response) => {
+        console.log(response);
+        res.status(200).send(JSON.stringify(response.data));
+      })
+      .catch((err) => res.status(404).send(err));
+  }
 };
 
 exports.uploadPaperById = async (req, res) => {
@@ -843,7 +853,13 @@ function noOfSentences(context) {
   return noOfSentence;
 }
 async function getPdfTextContent(src) {
-  const doc = await pdfjs.getDocument(src).promise;
+  const doc = await pdfjs.getDocument({
+    data: src,
+    standardFontDataUrl: path.join(
+      __dirname,
+      "../../../../node_modules/pdfjs-dist/standard_fonts/"
+    ),
+  }).promise;
   const totalPageCount = doc.numPages;
   doc.getDestination;
   let textChunkArray = [];

@@ -1,11 +1,11 @@
 {
-  "author": "Michael Hueter <mthueter@gmail.com>",
+  "author": "Clippy",
   "version": "2.0.0",
-  "name": "docker-node-express-boilerplate",
-  "description": "Boilerplate Dockerized Express code to launch new RESTful APIs.",
+  "name": "clippy-pdf-reader-server",
+  "description": "Clippy PDF Reader Server",
   "repository": {
     "type": "git",
-    "url": "git@github.com:mhueter/docker-node-express-boilerplate.git"
+    "url": ""
   },
   "main": "app/app.js",
   "scripts": {
