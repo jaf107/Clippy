@@ -157,10 +157,12 @@ exports.uploadPaper = async (req, res) => {
 };
 
 exports.searchPaperByTitle = async (req, res) => {
-  const paper_data = await axios
+  axios
     .get(
       SEMANTIC_SCHOLAR_API +
-        `search?query=${req.body.title}&limit=10&fields=isOpenAccess,openAccessPdf`
+        `search?query=${encodeURIComponent(
+          req.body.title
+        )}&limit=10&fields=isOpenAccess,openAccessPdf`
     )
     .then((response) => {
       res.status(200).send(JSON.stringify(response.data));
