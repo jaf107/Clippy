@@ -21,7 +21,7 @@ verifyToken = (req, res, next) => {
 };
 
 checkToken = (req, res, next) => {
-  let token = req.session.token;
+  let token = req.headers["x-access-token"];
   if (!token || token === undefined) {
     return next();
   }
