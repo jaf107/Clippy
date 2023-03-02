@@ -62,7 +62,7 @@ interface IReference {
       <div class="pdfViewer" (mouseover)="handlePopOver($event)"></div>
     </div>
   `,
-  styleUrls: ['./pdf-viewer.component.scss'],
+  styleUrls: ['./pdf-viewer-custom-lib.component.scss'],
 })
 export class PdfViewerComponent
   implements OnChanges, OnInit, OnDestroy, AfterViewChecked

@@ -3,7 +3,7 @@
  */
 import { NgModule } from '@angular/core';
 
-import { PdfViewerComponent } from './pdf-viewer.component';
+import { PdfViewerComponent } from './pdf-viewer-custom-lib.component';
 
 export * from './typings';
 

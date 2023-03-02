@@ -70,7 +70,6 @@ export class HomeComponent implements OnInit{
   handle(e) {
     this.file = e.target.files[0];
     if (this.file.type != 'application/pdf') {
-      console.log('Not supported file type!');
       this.errorsmsg();
     } else {
 

@@ -1,7 +1,7 @@
 import { TestBed, ComponentFixture, waitForAsync } from '@angular/core/testing';
 import { Component } from '@angular/core';
 
-import { PdfViewerComponent } from './pdf-viewer.component';
+import { PdfViewerComponent } from './pdf-viewer-custom-lib.component';
 import { PdfViewerModule } from './pdf-viewer.module';
 
 @Component({
