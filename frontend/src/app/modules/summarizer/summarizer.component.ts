@@ -26,6 +26,7 @@ export class SummarizerComponent implements OnInit {
   ) {}
 
   public summary: chunk[] = [];
+  public highlighted: any = [];
 
   // public summary: Observable<chunk[]>;
 
@@ -39,38 +40,50 @@ export class SummarizerComponent implements OnInit {
   public exSummarizerOn: boolean;
 
   ngOnInit() {
-    
-      this.featureService.getExSummarizerStatus().subscribe((value) => {
-        this.exSummarizerOn = value;
-        this.currentChunkSummary = 'Click any of the title to view its content summary';
-        this.currentChunkTitle = 'Select a Title';
-      if(this.exSummarizerOn){
-        this.featureService.getExtractiveSummary(this.pdfShareService.paper_id).subscribe(
-      (data) => {
-          data = JSON.parse(data);
-          this.summary = data.paragraphs;
-          console.log(this.summary);
-        });
+    this.featureService.getExSummarizerStatus().subscribe((value) => {
+      this.exSummarizerOn = value;
+      this.currentChunkSummary =
+        'Click any of the title to view its content summary';
+      this.currentChunkTitle = 'Select a Title';
+      if (this.exSummarizerOn) {
+        this.featureService
+          .getExtractiveSummary(this.pdfShareService.paper_id)
+          .subscribe((data) => {
+            data = JSON.parse(data);
+            this.summary = data.paragraphs;
+            this.highlighted = data.highlighted;
+            this.featureService.setHighlightedText(this.highlighted);
+            console.log(this.summary);
+            console.log(this.highlighted);
+
+            if (this.summary.length == 0) {
+              this.currentChunkSummary = 'No summary available for this pdf';
+            }
+          });
       }
-    })
+    });
 
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
       this.absSummarizerOn = value;
-      this.currentChunkSummary = 'Click any of the title to view its content summary';
+      this.currentChunkSummary =
+        'Click any of the title to view its content summary';
       this.currentChunkTitle = 'Select a Title';
 
-    if(this.absSummarizerOn){
-      this.featureService.getAbstractiveSummary(this.pdfShareService.paper_id).subscribe(
-      (data) => {
-          data = JSON.parse(data);
-          this.summary = data;
-          console.log(this.summary);
-        });
-    }
-  })
+      if (this.absSummarizerOn) {
+        this.featureService
+          .getAbstractiveSummary(this.pdfShareService.paper_id)
+          .subscribe((data) => {
+            data = JSON.parse(data);
+            this.summary = data;
+            console.log(this.summary);
 
+            if ((this.summary.length = 0)) {
+              this.currentChunkSummary = 'No summary available for this pdf';
+            }
+          });
+      }
+    });
   }
-  
 
   showChunkSummary(chunk: any) {
     this.currentChunkSummary = chunk.summaryText;

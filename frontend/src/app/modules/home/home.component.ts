@@ -94,59 +94,76 @@ export class HomeComponent implements OnInit {
   searchPaper() {
     this.pdfShareService.setSearched(true);
     if (this.searchBy == 'Title') {
-      this.spinner.show();
-      this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
-        (data) => {
-          this.pdfShareService
-            .searchPaperbyId(data.data[0].paperId)
-            .subscribe((data) => {
-              console.log(data);
-              this.pdfShareService.setPaperId(data.paper_id);
-              this.pdfShareService.getPaperFromSearch(data.url).subscribe(
-                (data) => {
-                  this.pdfShareService.sendFile(data);
-                  this.tokenStorage.savePaper(JSON.stringify(data));
-                  this.router.navigate(['pdfviewer']);
-                },
-                (err) => {
-                  console.log(err);
-                }
-              );
-            });
-            this.spinner.hide();
-        },
-        (err) => {
-          this.toastr.error(err.error);
-        }
-      );
+      this.searchByTitle();
     } else if (this.searchBy == 'DOI') {
-      this.spinner.show();
-      this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
-        (data) => {
-          console.log(data);
-          this.pdfShareService.setPaperId(data.paper_id);
-          this.pdfShareService.getPaperFromSearch(data.url).subscribe(
-            (data) => {
-              this.pdfShareService.sendFile(data);
-              this.tokenStorage.savePaper(JSON.stringify(data));
-              this.router.navigate(['pdfviewer']);
-              this.spinner.hide();
-            },
-            (err) => {
-              console.log(err);
-            }
-          );
-        },
-        (err) => {
-          this.toastr.error(err.error);
-        }
-      );
+      this.searchById();
     } else {
       this.toastr.error('Select Search Type');
     }
   }
 
+  searchByTitle() {
+    this.spinner.show();
+    this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
+      (data) => {
+        this.pdfShareService
+          .searchPaperbyId(data.data[0].paperId)
+          .subscribe((data) => {
+            console.log(data);
+            this.pdfShareService.setPaperId(data.paper_id);
+            this.pdfShareService.getPaperFromSearch(data.url).subscribe(
+              (data) => {
+                this.pdfShareService.sendFile(data);
+                this.tokenStorage.savePaper(JSON.stringify(data));
+                this.router.navigate(['pdfviewer']);
+                this.spinner.hide();
+              },
+              (err) => {
+                this.spinner.hide();
+                console.log(err);
+              }
+            );
+          });
+      },
+      (err) => {
+        this.toastr.error(err.error);
+        // this.spinner.hide();
+      }
+    );
+  }
+
+  searchById() {
+    this.spinner.show();
+    this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
+      (data) => {
+        console.log(data);
+        this.pdfShareService.setPaperId(data.paper_id);
+        this.pdfShareService.getPaperFromSearch(data.url).subscribe(
+          (data) => {
+            this.pdfShareService.sendFile(data);
+            this.tokenStorage.savePaper(JSON.stringify(data));
+            this.router.navigate(['pdfviewer']);
+            this.spinner.hide();
+          },
+          (err) => {
+            console.log(err);
+            this.spinner.hide();
+          }
+        );
+      },
+      (err) => {
+        this.toastr.error(err.error);
+      }
+    );
+  }
+
   searchPaperToggle(searchType: string) {
     this.searchBy = searchType;
+  }
+
+  viewHistoryPaper(historyFile: history) {
+    console.log(historyFile.paper_id);
+    this.searchedTerm = historyFile.paper_id;
+    this.searchById();
   }
 }
