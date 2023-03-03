@@ -1,3 +1,4 @@
+const dotenv = require('dotenv').config();
 const db = require("../models");
 const User = db.user;
 const Paper = db.paper;
@@ -432,7 +433,7 @@ async function AbstractSummary(filepath) {
   let paragraphs = await createJsonObjectFromPdf(filepath);
   if (paragraphs.length > 0) {
     let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    let absApiKey = "278aff3b-5c8d-4fe3-8fda-cb82b42fba4a";
+    let absApiKey =`${process.env.absApiKey}`;
 
     for (let i = 0; i < paragraphs.length; i++) {
       let element = paragraphs[i];
@@ -471,7 +472,7 @@ async function AbstractSummary(filepath) {
 async function ExtractSummary(src) {
   let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let apiKey = "dffe1d46b7dc44e77c2807c775855819";
+  let apiKey = `${process.env.exApiKey}`;
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
