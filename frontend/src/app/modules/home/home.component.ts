@@ -138,10 +138,10 @@ export class HomeComponent implements OnInit {
     this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
       (data) => {
         console.log(data);
+        this.tokenStorage.savePaperData(data);
         this.pdfShareService.setPaperId(data.paper_id);
         this.pdfShareService.getPaperFromSearch(data.url).subscribe(
           (data) => {
-            this.tokenStorage.savePaperData(data);
             this.pdfShareService.sendFile(data);
             this.tokenStorage.savePaper(JSON.stringify(data));
             this.router.navigate(['pdfviewer']);

@@ -7,6 +7,7 @@ import { FeaturesService } from '../shared/features.service';
 import { Observable, Subject } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { error } from 'console';
+import { TokenStorageService } from 'src/app/token-storage.service';
 
 interface chunk {
   title: String;
@@ -25,7 +26,8 @@ export class SummarizerComponent implements OnInit {
     private featureService: FeaturesService,
     private pdfShareService: PdfShareService,
     private toastr: ToastrService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private tokenStorage: TokenStorageService
   ) {}
 
   public summary: chunk[] = [];
@@ -43,6 +45,7 @@ export class SummarizerComponent implements OnInit {
   public exSummarizerOn: boolean;
 
   ngOnInit() {
+
     this.exSummarizerOn = this.featureService.extractiveSummarizerOnCheck.value;
     this.currentChunkSummary =
       'Click any of the title to view its content summary';

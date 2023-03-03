@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { TokenStorageService } from 'src/app/token-storage.service';
 
-const API_URL = 'http://localhost:8080/api/paper/';
-const API_USER_URL = 'http://localhost:8080/api/user/';
+const API_URL = 'https://bs23.ddnsfree.com/api/paper/';
+const API_USER_URL = 'https://bs23.ddnsfree.com/api/user/';
 
 @Injectable({
   providedIn: 'root'
