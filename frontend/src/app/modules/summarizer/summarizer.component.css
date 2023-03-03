@@ -1,0 +1,50 @@
+.container{
+    width: 95%;
+    float: right;
+    z-index: 10000;
+}
+
+.navbar{
+    float: right;
+    width: 95%;
+}
+
+.content{
+    width: 95%;
+    float: right;
+    padding: 1.5rem;
+    text-align: center;
+    margin: auto;
+    background-color: #e0e0e0;
+    overflow-wrap: wrap;
+    word-wrap: break-word;
+    overflow-y: auto;
+    height: 40rem;
+    z-index: 10000;
+}
+
+p{
+    text-align: justify;
+}
+
+.close{
+    position: absolute;
+    top: 0.1%;
+    right: 2%;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.close-icon{
+    font-size: 2rem;
+}
+
+.single{
+    width: 100%;
+}
+
+.copy{
+    margin: 1rem auto;
+    text-align: center;
+}

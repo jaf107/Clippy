@@ -1,3 +1,8 @@
+# output txt files
+pdfjs-test/object.txt
+pdfjs-test/output.txt
+pdfjs-test/heights.txt
+
 # Logs
 logs
 *.log
@@ -6,6 +11,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+
+# Angular
+.angular
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

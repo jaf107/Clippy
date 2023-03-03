@@ -1,0 +1,95 @@
+<app-navbar></app-navbar>
+<div class="container">
+  <div class="select-paper">
+    <button class="btn upload align-items-center" (click)="openFileDialog()">
+      <input
+        type="file"
+        style="display: none"
+        (change)="handle($event)"
+        accept="application/pdf"
+      />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="15"
+        height="15"
+        fill="#c6c6c6"
+        class="bi bi-file-earmark-arrow-up"
+        viewBox="0 0 16 16"
+        style="margin-top: -0.3rem"
+      >
+        <path
+          d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"
+        />
+        <path
+          d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"
+        />
+      </svg>
+      Upload PDF
+    </button>
+    <br />Or<br />
+    <div class="form-outline mb-4 searchBar">
+      <!-- <label class="form-label" for="form3Example3">Email address</label> -->
+      <input
+        type="search"
+        id="paper"
+        class="form-control"
+        placeholder="Enter Paper Title or DOI"
+        [(ngModel)]="searchedTerm"
+      />
+      <div class="dropdown">
+        <button
+          class="btn btn-secondary dropdown-toggle"
+          type="button"
+          id="dropdownMenuButton1"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          {{ searchBy }}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          <li>
+            <a class="dropdown-item" (click)="searchPaperToggle('Title')"
+              >Title</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" (click)="searchPaperToggle('DOI')">DOI</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <button
+      class="input-group-text border-0"
+      id="search-addon"
+      (click)="searchPaper()"
+    >
+      <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+    </button>
+  </div>
+  <div class="history">
+    <h3 class="mb-5" style="color: white">History</h3>
+    <div class="historyList" *ngIf="!isGuest">
+      <div class="list" *ngFor="let history of historyList" (click)="viewHistoryPaper(history)">
+        <div class="row gx-5 history-files d-flex">
+          <div class="col-9">
+            <h5>{{ history.title }}</h5>
+          </div>
+          <div class="col-3">
+            <h5>{{ history.openedAt | date : "short" }}</h5>
+          </div>
+        </div>
+        <hr />
+      </div>
+    </div>
+    <div class="historyList" *ngIf="isGuest" style="color: #c6c6c6">
+      <h5>No history available for guest mode</h5>
+    </div>
+  </div>
+</div>
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-pulse"
+  [fullScreen]="true"
+><p style="color: white" > Loading... </p></ngx-spinner>
