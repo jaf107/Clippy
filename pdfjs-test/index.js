@@ -197,7 +197,10 @@ async function createJsonObjectFromPdf(src) {
   let maxLimit = arr.length;
 
   for (let i = 0; i < maxLimit; i++) {
-    if (arr[i].height == titleHeight && arr[i].str.includes("References")) {
+    if (
+      arr[i].height == titleHeight &&
+      arr[i].str.toLowerCase().includes("references")
+    ) {
       let referanceText = "";
       let j = i;
       if (j < maxLimit) j++;
@@ -211,36 +214,24 @@ async function createJsonObjectFromPdf(src) {
       break;
     }
     // if (arr[i].height == titleHeight && arr[i].str.includes("Abstract")) {
-    if (arr[i].str.includes("Abstract")) {
+    if (arr[i].str.toLowerCase().includes("abstract")) {
       isAbstract = true;
       let abstractTextTitle = arr[i].str;
       let abstractTextHeight = arr[i].height;
-      // console.log(abstractTextHeight);
-      // console.log(titleHeight);
-      // console.log(wiggleHeight);
       let titleIterator = i;
 
       while (arr[titleIterator].height == abstractTextHeight) {
-        // if (titleString === "") {
-        //   abstractTextTitle += arr[titleIterator].str;
-        // } else {
-        //   abstractTextTitle += " ";
-        //   abstractTextTitle += arr[titleIterator].str;
-        // }
         abstractTextTitle += arr[titleIterator].str;
         // console.log(arr[titleIterator].str);
         titleIterator++;
       }
       // console.log(i + " " + arr[i].height + "  " + arr[i].str);
       i = titleIterator - 1;
-      // console.log(i);
       let abstractText = "";
 
       if (i < maxLimit) i++;
-      // i++;
-      // console.log(i + " " + arr[i].height + "  " + arr[i].str);
       while (i < maxLimit && arr[i].height != titleHeight) {
-        console.log(arr[i].str);
+        // console.log(arr[i].str);
         abstractText += arr[i].str;
         i++;
       }
@@ -465,7 +456,8 @@ async function AbstractiveSummary(src) {
 }
 
 let src = `./sample7.pdf`;
-ExtractiveSummary(src);
+// ExtractiveSummary(src);
+createJsonObjectFromPdf(src);
 // AbstractiveSummary(src);
 
 async function createChunkForHighlighting() {
