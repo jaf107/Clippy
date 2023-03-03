@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FeaturesService } from '../shared/features.service';
 import { Observable, Subject } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { error } from 'console';
 
 interface chunk {
   title: String;
@@ -42,18 +43,18 @@ export class SummarizerComponent implements OnInit {
   public exSummarizerOn: boolean;
 
   ngOnInit() {
-
-      this.exSummarizerOn = this.featureService.extractiveSummarizerOnCheck.value;
-      this.currentChunkSummary =
-        'Click any of the title to view its content summary';
-      this.currentChunkTitle = 'Select a Title';
-      if (this.exSummarizerOn) {
-        console.log('Summarizer On ');
-        this.spinner.show();
-        this.featureService
-          .getExtractiveSummary(this.pdfShareService.getPaperId())
-          .subscribe((data) => {
-            data = JSON.parse(data);
+    this.exSummarizerOn = this.featureService.extractiveSummarizerOnCheck.value;
+    this.currentChunkSummary =
+      'Click any of the title to view its content summary';
+    this.currentChunkTitle = 'Select a Title';
+    if (this.exSummarizerOn) {
+      console.log('Summarizer On ');
+      this.spinner.show();
+      this.featureService
+        .getExtractiveSummary(this.pdfShareService.getPaperId())
+        .subscribe(
+          (data) => {
+            //  data = JSON.parse(data);
             this.rawSummary = data.paragraphs;
             this.highlighted = data.highlighted;
             this.featureService.setHighlightedText(this.highlighted);
@@ -63,34 +64,45 @@ export class SummarizerComponent implements OnInit {
             }
 
             this.spinner.hide();
+          },
+          (error) => {
+            this.spinner.hide();
+            this.toastr.error('Something went wrong');
+          }
+        );
+    }
 
-          });
-      }
+    this.absSummarizerOn =
+      this.featureService.abstractiveSummarizerOnCheck.value;
+    this.currentChunkSummary =
+      'Click any of the title to view its content summary';
+    this.currentChunkTitle = 'Select a Title';
 
-      this.absSummarizerOn = this.featureService.abstractiveSummarizerOnCheck.value;
-      this.currentChunkSummary =
-        'Click any of the title to view its content summary';
-      this.currentChunkTitle = 'Select a Title';
-
-      if (this.absSummarizerOn) {
-        console.log('Summarizer On ');
-        this.spinner.show();
-        this.featureService
-          .getAbstractiveSummary(this.pdfShareService.getPaperId())
-          .subscribe((data) => {
-            console.log(JSON.parse(data));
-            data = JSON.parse(data);
+    if (this.absSummarizerOn) {
+      console.log('Summarizer On ');
+      this.spinner.show();
+      this.featureService
+        .getAbstractiveSummary(this.pdfShareService.getPaperId())
+        .subscribe(
+          (data) => {
+            //console.log(JSON.parse(data));
+            // data = JSON.parse(data);
             this.rawSummary = data;
             console.log(this.rawSummary);
-            
+
             if ((this.summary.length = 0)) {
               this.currentChunkSummary = 'No summary available for this pdf';
             }
 
             this.spinner.hide();
-          });
-      }
+          },
+          (error) => {
+            this.spinner.hide();
+            this.toastr.error('Something went wrong');
+          }
+        );
     }
+  }
 
   showChunkSummary(chunk: any) {
     this.currentChunkSummary = chunk.summaryText;

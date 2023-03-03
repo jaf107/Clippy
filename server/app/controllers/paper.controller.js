@@ -1,12 +1,12 @@
-const dotenv = require('dotenv').config();
+const dotenv = require("dotenv").config();
 const db = require("../models");
 const User = db.user;
 const Paper = db.paper;
 const cloudinary = require("cloudinary");
 const axios = require("axios");
 const SEMANTIC_SCHOLAR_API = process.env.SEMANTIC_SCHOLAR_API; //env
-const scholarApiKey=process.env.scholarApiKey;
-const SERVER_ADDRESS = "http://localhost:8080"; 
+const scholarApiKey = process.env.scholarApiKey;
+const SERVER_ADDRESS = "http://localhost:8080";
 const fs = require("fs");
 const fsExtra = require("fs-extra");
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
@@ -16,7 +16,7 @@ var FormData = require("form-data");
 const { DownloaderHelper } = require("node-downloader-helper");
 const crawler = require("crawler-request");
 const path = require("path");
-const absApiKey =process.env.absApiKey;
+const absApiKey = process.env.absApiKey;
 const exApiKey = process.env.exApiKey;
 
 class Paragraph {
@@ -262,7 +262,6 @@ exports.getPdf = async (req, res) => {
     axios
       .get(req.body.url, { responseType: "arraybuffer" })
       .then((response) => {
-        console.log(response);
         res.status(200).send(JSON.stringify(response.data));
       })
       .catch((err) => res.status(404).send(err));
@@ -332,7 +331,7 @@ exports.getAbstractSummary = async (req, res) => {
   Paper.findOne({ paper_id: req.params.id })
     .then((paper) => {
       if (paper.abstractive_summary !== "") {
-        res.status(200).send(JSON.stringify(paper.abstractive_summary));
+        res.status(200).send(paper.abstractive_summary);
       } else {
         DownloadPdf(paper.paper_id, paper.url)
           .then((r) => {
@@ -340,13 +339,13 @@ exports.getAbstractSummary = async (req, res) => {
               .then((paragraphs) => {
                 Paper.updateOne(
                   { paper_id: req.params.id },
-                  { $set: { abstractive_summary: JSON.stringify(paragraphs) } },
+                  { $set: { abstractive_summary: paragraphs } },
                   { upsert: true }
                 )
                   .then((result) => {
                     fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
                     console.log("successfully deleted");
-                    res.status(200).send(JSON.stringify(paragraphs));
+                    res.status(200).send(paragraphs);
                   })
                   .catch((err) => res.status(404).send(err.message));
               })
@@ -365,7 +364,7 @@ exports.getExtractSummary = async (req, res) => {
   Paper.findOne({ paper_id: req.params.id })
     .then((paper) => {
       if (paper.extractive_summary !== "") {
-        res.status(200).send(JSON.stringify(paper.extractive_summary));
+        res.status(200).send(paper.extractive_summary);
       } else {
         DownloadPdf(paper.paper_id, paper.url)
           .then((r) => {
@@ -373,13 +372,13 @@ exports.getExtractSummary = async (req, res) => {
               .then((paragraphs) => {
                 Paper.updateOne(
                   { paper_id: req.params.id },
-                  { $set: { extractive_summary: JSON.stringify(paragraphs) } },
+                  { $set: { extractive_summary: paragraphs } },
                   { upsert: true }
                 )
                   .then((result) => {
                     fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
                     console.log("successfully deleted");
-                    res.status(200).send(JSON.stringify(paragraphs));
+                    res.status(200).send(paragraphs);
                   })
                   .catch((err) => res.status(404).send(err.message));
               })
@@ -436,7 +435,6 @@ async function AbstractSummary(filepath) {
   if (paragraphs.length > 0) {
     let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-
     for (let i = 0; i < paragraphs.length; i++) {
       let element = paragraphs[i];
       let contextString = element.text;
@@ -444,11 +442,9 @@ async function AbstractSummary(filepath) {
 
       if (element.noOfSentences > 50) {
         noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
-      }
-      else  if (element.noOfSentences > 30) {
+      } else if (element.noOfSentences > 30) {
         noOfSentenceInSummary = parseInt(element.noOfSentences / 6);
-      }
-       else {
+      } else {
         noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
       }
 
@@ -479,18 +475,14 @@ async function ExtractSummary(src) {
   let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
 
     if (element.noOfSentences > 50) {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
-    } 
-    else if(element.noOfSentences > 30)
-    {
+    } else if (element.noOfSentences > 30) {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 6);
-    }
-    else {
+    } else {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
     }
 
