@@ -859,13 +859,7 @@ function noOfSentences(context) {
   return noOfSentence;
 }
 async function getPdfTextContent(src) {
-  const doc = await pdfjs.getDocument({
-    data: src,
-    standardFontDataUrl: path.join(
-      __dirname,
-      "../../../../node_modules/pdfjs-dist/standard_fonts/"
-    ),
-  }).promise;
+  const doc = await pdfjs.getDocument(src).promise;
   const totalPageCount = doc.numPages;
   doc.getDestination;
   let textChunkArray = [];
