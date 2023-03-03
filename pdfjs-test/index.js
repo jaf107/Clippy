@@ -135,6 +135,8 @@ async function createJsonObjectFromPdf(src) {
   let { textChunkArray: arr } = await getPdfTextContent(src);
   arr = arr.flat();
 
+  fs.writeFileSync("./flattenedFile.json", JSON.stringify(arr));
+
   heights = [];
   arr.forEach((element) => {
     heights.push(element.height);
@@ -462,7 +464,7 @@ async function AbstractiveSummary(src) {
   }
 }
 
-let src = `./sample13.pdf`;
+let src = `./sample7.pdf`;
 ExtractiveSummary(src);
 // AbstractiveSummary(src);
 
