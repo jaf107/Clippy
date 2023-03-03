@@ -61,13 +61,6 @@ export class SidebarComponent {
       if (this.extractiveOn == false) {
         console.log('Extractive turned on');
         this.extractiveOn = true;
-        // this.featureService
-        //   .getExtractiveSummary(this.pdfShareService.paper_id)
-        //   .subscribe((data) => {
-        //     data = JSON.parse(data);
-        //     this.summary = data.paragraphs;
-        //     this.featureService.storeSummary(this.summary);
-        //   });
         this.abstractiveOn = false;
         this.featureService.setExSummarizerOn(this.extractiveOn);
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);

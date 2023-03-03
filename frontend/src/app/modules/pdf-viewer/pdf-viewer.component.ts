@@ -70,6 +70,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
       this.absSummary = value;
       if (this.absSummary) {
+        this.summarizerOn = false;
         this.summarizerOn = true;
       } else if (this.absSummary == false && this.exSummary == false) {
         this.summarizerOn = false;
@@ -77,8 +78,10 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     });
 
     this.featureService.getExSummarizerStatus().subscribe((value) => {
+      console.log('extractive status changed');
       this.exSummary = value;
       if (this.exSummary) {
+        this.summarizerOn = false;
         this.summarizerOn = true;
       } else if (this.absSummary == false && this.exSummary == false) {
         this.summarizerOn = false;

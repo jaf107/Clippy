@@ -28,7 +28,7 @@
               class="dropdown-menu dropdown-menu-dark"
               aria-labelledby="navbarDarkDropdownMenuLink"
             >
-              <li *ngFor="let chunk of summary">
+              <li *ngFor="let chunk of rawSummary">
                 <a class="dropdown-item" (click)="showChunkSummary(chunk)">{{
                   chunk.title
                 }}</a>
@@ -60,3 +60,10 @@
     </div>
   </div>
 </div>
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-pulse"
+  [fullScreen]="true"
+><p style="color: white" > Loading... </p></ngx-spinner>

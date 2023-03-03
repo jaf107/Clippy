@@ -48,19 +48,21 @@ export class SummarizerComponent implements OnInit {
         'Click any of the title to view its content summary';
       this.currentChunkTitle = 'Select a Title';
       if (this.exSummarizerOn) {
-        this.summary = [];
+        console.log('Summarizer On ');
         this.spinner.show();
         this.featureService
           .getExtractiveSummary(this.pdfShareService.getPaperId())
           .subscribe((data) => {
             data = JSON.parse(data);
-            this.summary = data.paragraphs;
+            this.rawSummary = data.paragraphs;
             this.highlighted = data.highlighted;
             this.featureService.setHighlightedText(this.highlighted);
 
-            if (this.summary.length == 0) {
+            if (this.rawSummary.length == 0) {
               this.currentChunkSummary = 'No summary available for this pdf';
             }
+
+            this.spinner.hide();
 
           });
       }
@@ -71,18 +73,21 @@ export class SummarizerComponent implements OnInit {
       this.currentChunkTitle = 'Select a Title';
 
       if (this.absSummarizerOn) {
-        this.summary = [];
         console.log('Summarizer On ');
+        this.spinner.show();
         this.featureService
           .getAbstractiveSummary(this.pdfShareService.getPaperId())
           .subscribe((data) => {
+            console.log(JSON.parse(data));
             data = JSON.parse(data);
-            this.summary = data;
-            console.log(data);
-
+            this.rawSummary = data;
+            console.log(this.rawSummary);
+            
             if ((this.summary.length = 0)) {
               this.currentChunkSummary = 'No summary available for this pdf';
             }
+
+            this.spinner.hide();
           });
       }
     }
