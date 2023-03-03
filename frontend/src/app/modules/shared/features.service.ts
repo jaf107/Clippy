@@ -45,27 +45,29 @@ export class FeaturesService {
 
   setAbsSummarizerOn(onOff: boolean) {
     this.abstractiveSummarizerOnCheck.next(onOff);
-    console.log('Abs summary turned on');
+    console.log('Abs summary turned ' + onOff);
     this.absSummaryOn = onOff;
   }
 
   setExSummarizerOn(onOff: boolean) {
     this.extractiveSummarizerOnCheck.next(onOff);
-    console.log('Ex summary turned on');
+    console.log('Ex summary turned ' + onOff);
     this.exSummaryOn = onOff;
   }
 
   getAbsSummarizerStatus(): Observable<boolean> {
+    console.log("abs " + this.abstractiveSummarizerOnCheck.value);
     return this.abstractiveSummarizerOnCheck.asObservable();
   }
 
   getExSummarizerStatus(): Observable<boolean> {
+    console.log("ex " + this.extractiveSummarizerOnCheck.value);
     return this.extractiveSummarizerOnCheck.asObservable();
   }
 
   setKnowledgeGraphOn(onOff: boolean) {
     this.knowledgeGraphOnCheck.next(onOff);
-    console.log('knowledge graph turned on');
+    console.log('knowledge graph turned ' + onOff);
   }
 
   storeSummary(summary: any) {

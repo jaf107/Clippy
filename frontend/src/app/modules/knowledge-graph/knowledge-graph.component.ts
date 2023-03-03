@@ -61,7 +61,6 @@ export class KnowledgeGraphComponent implements OnInit {
             this.graphEdges = [];
             this.graphNodes = [];
             this.addDataToGraph();
-            console.log(JSON.parse(data));
 
             this.initializeGraph();
             // this.spinner.hide();
