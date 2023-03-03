@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const APP_NAME = "Boilerplate API";
 const ENV = process.env.NODE_ENV;
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080 ;
 
 const db = require("./models");
 const Role = db.role;
@@ -12,8 +12,7 @@ const Role = db.role;
  */
 async function connectToDatabase() {
   const MONGODB_URI =
-    process.env.MONGODB_URI ||
-    "mongodb+srv://clippy:clippy2023@cluster0.tlrl1sh.mongodb.net/?retryWrites=true&w=majority";
+    process.env.MONGODB_URI;
 
   mongoose.Promise = Promise;
   if (ENV === "development" || ENV === "test") {

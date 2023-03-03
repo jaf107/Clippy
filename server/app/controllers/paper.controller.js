@@ -4,18 +4,20 @@ const User = db.user;
 const Paper = db.paper;
 const cloudinary = require("cloudinary");
 const axios = require("axios");
-const SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1/paper/";
-const SERVER_ADDRESS = "http://localhost:8080";
+const SEMANTIC_SCHOLAR_API = process.env.SEMANTIC_SCHOLAR_API; //env
+const scholarApiKey=process.env.scholarApiKey;
+const SERVER_ADDRESS = "http://localhost:8080"; 
 const fs = require("fs");
 const fsExtra = require("fs-extra");
-var apiKey = "b93d9d2475ed072f999710c6949f6a65";
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const { OneAI } = require("oneai");
-var endpoint = "https://api.meaningcloud.com/summarization-1.0";
+var meaningCloudEndpoint = process.env.meaningCloudEndpoint; //env
 var FormData = require("form-data");
 const { DownloaderHelper } = require("node-downloader-helper");
 const crawler = require("crawler-request");
 const path = require("path");
+const absApiKey =process.env.absApiKey;
+const exApiKey = process.env.exApiKey;
 
 class Paragraph {
   constructor(title, text) {
@@ -93,7 +95,7 @@ exports.uploadPaper = async (req, res) => {
           `search?query=${encodeURIComponent(
             req.body.title
           )}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`,
-        { headers: { "x-api-key": "qZWKkOKyzP5g9fgjyMmBt1MN2NTC6aT61UklAiyw" } }
+        { headers: { "x-api-key": scholarApiKey } }
       )
       .then((paper_data) => {
         if (paper_data.data) {
@@ -238,7 +240,7 @@ exports.searchPaperByTitle = async (req, res) => {
         `search?query=${encodeURIComponent(
           req.body.title
         )}&limit=10&fields=isOpenAccess,openAccessPdf`,
-      { headers: { "x-api-key": "qZWKkOKyzP5g9fgjyMmBt1MN2NTC6aT61UklAiyw" } }
+      { headers: { "x-api-key": scholarApiKey } }
     )
     .then((response) => {
       res.status(200).send(JSON.stringify(response.data));
@@ -280,7 +282,7 @@ exports.uploadPaperById = async (req, res) => {
         SEMANTIC_SCHOLAR_API +
           req.body.paper_id +
           "?fields=isOpenAccess,openAccessPdf,title,abstract,citationCount,referenceCount,authors",
-        { headers: { "x-api-key": "qZWKkOKyzP5g9fgjyMmBt1MN2NTC6aT61UklAiyw" } }
+        { headers: { "x-api-key": scholarApiKey } }
       )
       .then((paper_data) => {
         Paper.findOne({ paper_id: paper_data.data.paperId })
@@ -400,7 +402,7 @@ exports.getCitation = async (req, res) => {
   } else {
     axios
       .get(SEMANTIC_SCHOLAR_API + `${rootPaperId}?fields=title,citations`, {
-        headers: { "x-api-key": "qZWKkOKyzP5g9fgjyMmBt1MN2NTC6aT61UklAiyw" },
+        headers: { "x-api-key": scholarApiKey },
       })
       .then((citationResponse) => {
         let rootCitationData = citationResponse.data.citations;
@@ -433,7 +435,7 @@ async function AbstractSummary(filepath) {
   let paragraphs = await createJsonObjectFromPdf(filepath);
   if (paragraphs.length > 0) {
     let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    let absApiKey =`${process.env.absApiKey}`;
+
 
     for (let i = 0; i < paragraphs.length; i++) {
       let element = paragraphs[i];
@@ -442,7 +444,11 @@ async function AbstractSummary(filepath) {
 
       if (element.noOfSentences > 50) {
         noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
-      } else {
+      }
+      else  if (element.noOfSentences > 30) {
+        noOfSentenceInSummary = parseInt(element.noOfSentences / 6);
+      }
+       else {
         noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
       }
 
@@ -472,14 +478,19 @@ async function AbstractSummary(filepath) {
 async function ExtractSummary(src) {
   let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let apiKey = `${process.env.exApiKey}`;
+
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
 
     if (element.noOfSentences > 50) {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
-    } else {
+    } 
+    else if(element.noOfSentences > 30)
+    {
+      noOfSentenceInSummary = parseInt(element.noOfSentences / 6);
+    }
+    else {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 3);
     }
 
@@ -491,7 +502,7 @@ async function ExtractSummary(src) {
         let summary = await requestSummaryWithRetry(
           contextString,
           noOfSentenceInSummary,
-          apiKey,
+          exApiKey,
           retryCount
         );
         // console.log(`Summary holo: index ${i} ${JSON.stringify(summary)}`);
@@ -515,7 +526,7 @@ async function ExtractSummary(src) {
     retryCount
   ) {
     let formData = new FormData();
-    formData.append("key", apiKey);
+    formData.append("key", exApiKey);
     formData.append("txt", contextString);
     formData.append("sentences", noOfSentences);
     formData.append("retry", retryCount); // Add retry count to formData
@@ -527,7 +538,7 @@ async function ExtractSummary(src) {
     };
 
     let response = await axios
-      .post("https://api.meaningcloud.com/summarization-1.0", formData)
+      .post(meaningCloudEndpoint, formData)
       .catch((err) => {
         throw new Error(`Request failed with error :  ${err}`);
       });
