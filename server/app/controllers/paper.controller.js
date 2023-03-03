@@ -662,7 +662,10 @@ async function createJsonObjectFromPdf(src) {
   let maxLimit = arr.length;
 
   for (let i = 0; i < maxLimit; i++) {
-    if (arr[i].height == titleHeight && arr[i].str.includes("References")) {
+    if (
+      arr[i].height == titleHeight &&
+      arr[i].str.toLowerCase().includes("references")
+    ) {
       let referanceText = "";
       let j = i;
       if (j < maxLimit) j++;
@@ -675,7 +678,7 @@ async function createJsonObjectFromPdf(src) {
       paragraphs.push(referanceParagraph);
       break;
     }
-    if (arr[i].str.includes("Abstract")) {
+    if (arr[i].str.toLowerCase().includes("abstract")) {
       isAbstract = true;
       let abstractTextTitle = arr[i].str;
       let abstractTextHeight = arr[i].height;
@@ -690,7 +693,7 @@ async function createJsonObjectFromPdf(src) {
 
       if (i < maxLimit) i++;
       while (i < maxLimit && arr[i].height != titleHeight) {
-        console.log(arr[i].str);
+        // console.log(arr[i].str);
         abstractText += arr[i].str;
         i++;
       }
