@@ -53,8 +53,6 @@ export class SummarizerComponent implements OnInit {
             this.summary = data.paragraphs;
             this.highlighted = data.highlighted;
             this.featureService.setHighlightedText(this.highlighted);
-            console.log(this.summary);
-            console.log(this.highlighted);
 
             if (this.summary.length == 0) {
               this.currentChunkSummary = 'No summary available for this pdf';

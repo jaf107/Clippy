@@ -51,11 +51,11 @@ export class KnowledgeGraphComponent implements OnInit {
   ngOnInit() {
 
     this.featureService.getKnowledgeGraphStatus().subscribe((value)=>{
-      this.spinner.show();
+      // this.spinner.show();
       this.graphOn = value;
       if(this.graphOn){
         console.log("Hello from knowledge graph component");
-        this.featureService.getCitationGraph(this.pdfShareService.paper_id).subscribe(
+        this.featureService.getCitationGraph(this.pdfShareService.getPaperId()).subscribe(
           (data) =>{
             this.graphData = JSON.parse(data);
             this.graphEdges = [];
@@ -64,12 +64,12 @@ export class KnowledgeGraphComponent implements OnInit {
             console.log(JSON.parse(data));
 
             this.initializeGraph();
-            this.spinner.hide();
+            // this.spinner.hide();
           },
           (err) => {
             console.log("Error in graph");
             this.errorInGraph();
-            this.spinner.hide();
+            // this.spinner.hide();
           }
         );
       }
