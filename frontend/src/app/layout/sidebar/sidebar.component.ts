@@ -82,6 +82,7 @@ export class SidebarComponent {
       // this.featureService.setSummarizerOn(type, this.extractiveOn);
     } else {
       if (this.abstractiveOn == false) {
+        console.log('Abstractive turned on');
         this.extractiveOn = false;
         this.abstractiveOn = true;
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);

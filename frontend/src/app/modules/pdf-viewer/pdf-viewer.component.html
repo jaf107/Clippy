@@ -183,7 +183,7 @@
     class="middle"
     *ngIf="summarizerOn"
     style="z-index: 1000"
-    [ngStyle]="{ width: summarizerOn == true ? '27%' : '0%' }"
+    [ngStyle]="{ width: summarizerOn == true ? '27%' : '0%', visibility: summarizerOn == true ? 'visible' : 'hidden' }"
   >
     <app-summarizer></app-summarizer>
   </div>
