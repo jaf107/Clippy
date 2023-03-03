@@ -69,18 +69,7 @@
   <div class="history">
     <h3 class="mb-5" style="color: white">History</h3>
     <div class="historyList" *ngIf="!isGuest">
-      <div class="list" *ngFor="let visited of visitedFiles">
-        <div class="row gx-5 history-files d-flex">
-          <div class="col-9">
-            <h5>{{ visited.name }}</h5>
-          </div>
-          <div class="col-3">
-            <h5>{{ visited.lastVisited }}</h5>
-          </div>
-        </div>
-        <hr />
-      </div>
-      <div class="list" *ngFor="let history of historyList">
+      <div class="list" *ngFor="let history of historyList" (click)="viewHistoryPaper(history)">
         <div class="row gx-5 history-files d-flex">
           <div class="col-9">
             <h5>{{ history.title }}</h5>

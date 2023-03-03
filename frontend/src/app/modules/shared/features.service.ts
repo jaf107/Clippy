@@ -45,13 +45,11 @@ export class FeaturesService {
 
   setAbsSummarizerOn(onOff: boolean) {
     this.abstractiveSummarizerOnCheck.next(onOff);
-    console.log('Abs summary turned ' + onOff);
     this.absSummaryOn = onOff;
   }
 
   setExSummarizerOn(onOff: boolean) {
     this.extractiveSummarizerOnCheck.next(onOff);
-    console.log('Ex summary turned ' + onOff);
     this.exSummaryOn = onOff;
   }
 
@@ -67,7 +65,6 @@ export class FeaturesService {
 
   setKnowledgeGraphOn(onOff: boolean) {
     this.knowledgeGraphOnCheck.next(onOff);
-    console.log('knowledge graph turned ' + onOff);
   }
 
   storeSummary(summary: any) {
@@ -98,7 +95,6 @@ export class FeaturesService {
   }
 
   getExtractiveSummary(_id: string): Observable<any> {
-    console.log('Getting extractive summary');
     return this.http.post(API_URL + _id + '/extractiveSummary', {
       headers: this.headers,
     });

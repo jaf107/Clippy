@@ -4,6 +4,7 @@ const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
 const PAPER = 'current-paper';
 const PAPER_ID = 'current-paper-id';
+const PAPER_DATA = 'current-paper-data';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +37,15 @@ export class TokenStorageService {
 
   public getPaper(): any | null {
     return window.sessionStorage.getItem(PAPER);
+  }
+
+  public savePaperData(paperData: any): void{
+    window.sessionStorage.removeItem(PAPER_DATA);
+    window.sessionStorage.setItem(PAPER_DATA, paperData);
+  }
+
+  public getPaperData(): string | null {
+    return window.sessionStorage.getItem(PAPER_DATA);
   }
 
   public savePaperId(paperId: any): void {
