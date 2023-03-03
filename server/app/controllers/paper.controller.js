@@ -96,11 +96,12 @@ exports.uploadPaper = async (req, res) => {
                 res.status(200).send(ppr);
               } else {
                 console.log("else " + ppr);
+                var uuid = Math.random().toString(36).substr(2, 9);
                 const paper = {
-                  paper_id: data.paperId,
+                  paper_id: uuid,
                   title: data.title,
                   knowledge_graph: "",
-                  url: data.isOpenAccess ? data.openAccessPdf.url : "",
+                  url: "/uploads/" + uuid + ".pdf",
                   abstract: data.abstract,
                   abstractive_summary: "",
                   extractive_summary: "",
@@ -110,12 +111,6 @@ exports.uploadPaper = async (req, res) => {
                 };
                 Paper.create(paper)
                   .then((r) => {
-                    fs.unlinkSync(req.file.path, (err) => {
-                      if (err) throw err;
-                      console.log(
-                        "successfully deleted - paper found in scholar"
-                      );
-                    });
                     if (req.userId) {
                       updateHistory(req.userId, paper.paper_id, paper.title);
                     }
