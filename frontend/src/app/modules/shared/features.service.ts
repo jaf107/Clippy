@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TokenStorageService } from 'src/app/token-storage.service';
 import { PdfShareService } from './pdf-share.service';
 
-const API_URL = 'https://bs23.ddnsfree.com/api/paper/';
+const API_URL = 'http://bs23.ddnsfree.com/api/paper/';
 
 @Injectable({
   providedIn: 'root',
