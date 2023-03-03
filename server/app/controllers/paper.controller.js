@@ -4,14 +4,13 @@ const User = db.user;
 const Paper = db.paper;
 const cloudinary = require("cloudinary");
 const axios = require("axios");
-const SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1/paper/";
-const SERVER_ADDRESS = "http://localhost:8080";
+const SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1/paper/"; //env
+const SERVER_ADDRESS = "http://localhost:8080"; 
 const fs = require("fs");
 const fsExtra = require("fs-extra");
-var apiKey = "b93d9d2475ed072f999710c6949f6a65";
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 const { OneAI } = require("oneai");
-var endpoint = "https://api.meaningcloud.com/summarization-1.0";
+var endpoint = "https://api.meaningcloud.com/summarization-1.0"; //env
 var FormData = require("form-data");
 const { DownloaderHelper } = require("node-downloader-helper");
 const crawler = require("crawler-request");
@@ -433,7 +432,7 @@ async function AbstractSummary(filepath) {
   let paragraphs = await createJsonObjectFromPdf(filepath);
   if (paragraphs.length > 0) {
     let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    let absApiKey =`${process.env.absApiKey}`;
+    let absApiKey =process.env.absApiKey;
 
     for (let i = 0; i < paragraphs.length; i++) {
       let element = paragraphs[i];
@@ -472,7 +471,7 @@ async function AbstractSummary(filepath) {
 async function ExtractSummary(src) {
   let paragraphs = await createJsonObjectFromPdf(src);
   let delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let apiKey = `${process.env.exApiKey}`;
+  let apiKey = process.env.exApiKey;
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
