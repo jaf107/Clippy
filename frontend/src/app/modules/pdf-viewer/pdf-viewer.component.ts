@@ -5,8 +5,6 @@ import { saveAs } from 'file-saver';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 
-import * as HL from '../../../assets/highlight.json';
-import * as refs from '../../../assets/reference.json';
 import { TokenStorageService } from 'src/app/token-storage.service';
 import { Router } from '@angular/router';
 
@@ -22,6 +20,8 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   public graphOn: boolean;
   public exSummary: boolean = false;
   public absSummary: boolean = false;
+  public highlightedText: any = [];
+  public pageRenderedEvents: any = [];
 
   zoom = 0.5;
   page = 1;
@@ -59,8 +59,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     if (this.pdfPath == null) {
       if (this.tokenStorage.getPaper() == null) {
         this.pdfPath = './assets/SCORE_intro.pdf';
-      }
-      else{
+      } else {
         this.pdfPath = JSON.parse(this.tokenStorage.getPaper());
       }
     }
@@ -70,27 +69,39 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
       this.absSummary = value;
-      if(this.absSummary){
+      if (this.absSummary) {
+        this.summarizerOn = false;
         this.summarizerOn = true;
-      }
-      else if(this.absSummary == false && this.exSummary == false){
+      } else if (this.absSummary == false && this.exSummary == false) {
         this.summarizerOn = false;
       }
     });
 
     this.featureService.getExSummarizerStatus().subscribe((value) => {
+      console.log('extractive status changed');
       this.exSummary = value;
-      if(this.exSummary){
+      if (this.exSummary) {
+        this.summarizerOn = false;
         this.summarizerOn = true;
-      }
-      else if(this.absSummary == false && this.exSummary == false){
+      } else if (this.absSummary == false && this.exSummary == false) {
         this.summarizerOn = false;
       }
     });
 
-
     this.featureService.getKnowledgeGraphStatus().subscribe((value) => {
       this.graphOn = value;
+    });
+
+    this.featureService.getHighlightedText().subscribe((value) => {
+      this.highlightedText = value;
+      // this.getTextSpans();
+      this.pageRenderedEvents.forEach((e) => {
+        let pageNum = e.pageNumber;
+        let spans = e.source.textLayer.textDivs;
+
+        if (this.highlightedText?.length > 0)
+          this.highlightSummary(pageNum, spans, this.highlightedText);
+      });
     });
   }
 
@@ -118,13 +129,21 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param e custom event
    */
   pageRendered(e: any) {
-    // Select page container
+    console.log('page rendered:', e);
+    this.pageRenderedEvents.push(e);
+
+    let pageNum = e.pageNumber;
+    let spans = e.source.textLayer.textDivs;
+
+    if (this.highlightedText?.length > 0)
+      this.highlightSummary(pageNum, spans, this.highlightedText);
   }
 
-  highlightSummary(pgaeNo, spans, AllSegments) {
+  highlightSummary(pageNo, spans, AllSegments) {
+    console.log('inside highlighted', pageNo, spans);
     let higlightedSegments = this.filterDataSegmentsForAPage(
       AllSegments,
-      pgaeNo
+      pageNo
     );
 
     higlightedSegments.map((segment) => {
@@ -133,9 +152,10 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
         span.innerHTML,
         segment.str,
         'summary-highlight',
-        'aqua'
+        'yellow'
       );
-      span.innerHTML = textToBeWrapped;
+
+      if (span.children.length === 0) span.innerHTML = textToBeWrapped;
     });
   }
 
@@ -162,7 +182,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     let startingIndex = spanStr.indexOf(segStr);
     let wrappedText = ``;
     for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
-    wrappedText += `<a class="highlighed-text ${selectionClass}" #manual style="background-color: ${highlightColor} !important; color: ${highlightColor} !important;">`;
+    wrappedText += `<a class="highlighed-text ${selectionClass}" style="background-color: ${highlightColor} !important; color: ${highlightColor} !important;">`;
     for (let i = startingIndex; i < startingIndex + segStr.length; i++)
       wrappedText += spanStr[i];
     wrappedText += `</a>`;
@@ -209,6 +229,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   loadComplete(pdfData: any) {
     this.totalPages = pdfData.numPages;
+    console.log(pdfData);
   }
 
   openFileDialog() {
@@ -252,6 +273,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       this.pdfShareService.sendFiletoServer(formData).subscribe(
         (data) => {
           console.log(data);
+          this.tokenStorage.savePaperData(data);
           this.pdfShareService.setPaperId(data.paper_id);
         },
         (err) => {

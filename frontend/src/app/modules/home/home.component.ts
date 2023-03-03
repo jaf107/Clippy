@@ -53,6 +53,7 @@ export class HomeComponent implements OnInit {
     } else {
       this.pdfShareService.getHistory().subscribe((data) => {
         this.historyList = data.history;
+        console.log(data.history);
         this.historyList.reverse();
         this.historyList = this.historyList.slice(0, 2);
       });
@@ -70,7 +71,6 @@ export class HomeComponent implements OnInit {
       this.errorsmsg();
     } else {
       this.visitedFiles.push({ name: this.file.name, lastVisited: new Date() });
-
       const reader = new FileReader();
       reader.onload = () => {
         this.url = reader.result;
@@ -110,6 +110,7 @@ export class HomeComponent implements OnInit {
           .searchPaperbyId(data.data[0].paperId)
           .subscribe((data) => {
             console.log(data);
+            this.tokenStorage.savePaperData(data);
             this.pdfShareService.setPaperId(data.paper_id);
             this.pdfShareService.getPaperFromSearch(data.url).subscribe(
               (data) => {
@@ -127,7 +128,7 @@ export class HomeComponent implements OnInit {
       },
       (err) => {
         this.toastr.error(err.error);
-        // this.spinner.hide();
+        this.spinner.hide();
       }
     );
   }
@@ -140,6 +141,7 @@ export class HomeComponent implements OnInit {
         this.pdfShareService.setPaperId(data.paper_id);
         this.pdfShareService.getPaperFromSearch(data.url).subscribe(
           (data) => {
+            this.tokenStorage.savePaperData(data);
             this.pdfShareService.sendFile(data);
             this.tokenStorage.savePaper(JSON.stringify(data));
             this.router.navigate(['pdfviewer']);
@@ -152,6 +154,7 @@ export class HomeComponent implements OnInit {
         );
       },
       (err) => {
+        this.spinner.hide();
         this.toastr.error(err.error);
       }
     );

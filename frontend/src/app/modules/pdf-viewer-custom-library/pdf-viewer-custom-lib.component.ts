@@ -232,8 +232,8 @@ export class PdfViewerComponent
   }
 
   async getMetaData() {
-    let metData:any = await this._pdf.getMetadata();
-    this.metadata.emit(metData.info.Title)
+    let metData: any = await this._pdf.getMetadata();
+    this.metadata.emit(metData.info.Title);
   }
 
   async handlePopOver(event: any) {
@@ -242,21 +242,20 @@ export class PdfViewerComponent
     }
     let refParent: HTMLElement;
     if (event.target.hash != undefined) {
-      
-      
       this.initPopOverEventBus();
       this.initPopOverPDFService();
-      
+
       const referenceID = event.target.hash.substring(1);
       refParent = event.target.parentElement;
       let refBoundingRect = refParent.getBoundingClientRect();
       const refDestination = await this._pdf.getDestination(referenceID);
       if (refDestination == null) {
         //do nothing, this condition is handled already
-      }
-      else{
+      } else {
         let maxHeight, maxwidth, x, y;
-        const pageNum = this.pdfLinkService._cachedPageNumber(refDestination[0]);
+        const pageNum = this.pdfLinkService._cachedPageNumber(
+          refDestination[0]
+        );
         this._pdf.getPage(pageNum).then((pdfPage) => {
           let viewPort = pdfPage.getViewport({ scale: 1.0 });
           maxHeight =
@@ -274,17 +273,16 @@ export class PdfViewerComponent
             clienY: event.clientY,
             height: maxHeight,
             width: maxwidth,
-            manual: false
+            manual: false,
           });
-      });
-
-      refParent.addEventListener('mouseleave', () => {
-        this.hover.emit({
-          show: false,
         });
-      });
+
+        refParent.addEventListener('mouseleave', () => {
+          this.hover.emit({
+            show: false,
+          });
+        });
       }
-      
     }
   }
 
@@ -408,8 +406,7 @@ export class PdfViewerComponent
       });
     }
     setTimeout(() => {
-      if(this.references.length == 0) {
-
+      if (this.references.length == 0) {
       }
       this.references.emit({ data: this.destinations });
     }, 1000);
@@ -525,8 +522,8 @@ export class PdfViewerComponent
             break;
           }
         }
-        
-        if(data.str== undefined){
+
+        if (data.str == undefined) {
           return;
         }
         var ref = [];
@@ -538,36 +535,30 @@ export class PdfViewerComponent
           ref.push(data.x);
           ref.push(data.y);
           ref.push(null);
-          this.hover.emit(
-            {
-              show: true,
-              page: data.page,
-              refDestination: ref,
-              clientX: event.clientX,
-              clienY: event.clientY,
-              height: data.height,
-              width: data.width,
-              manual: true
-            }
-          )
+          this.hover.emit({
+            show: true,
+            page: data.page,
+            refDestination: ref,
+            clientX: event.clientX,
+            clienY: event.clientY,
+            height: data.height,
+            width: data.width,
+            manual: true,
+          });
         });
       });
 
-      anchor.addEventListener('click', (event:any)=>{
+      anchor.addEventListener('click', (event: any) => {
         event.preventDefault();
-      })
+      });
 
-      anchor.addEventListener('mouseleave', (event:any)=>{
-        this.hover.emit(
-          {
-            show: false
-          }
-        )
-      })
+      anchor.addEventListener('mouseleave', (event: any) => {
+        this.hover.emit({
+          show: false,
+        });
+      });
     });
   }
-
-
 
   highlightReference(pageNo, spans, AllRefs) {
     spans.map((span) => {
@@ -641,21 +632,25 @@ export class PdfViewerComponent
 
     fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
       .pipe(takeUntil(this.destroy$))
-      .subscribe((event:any) => {
-        setTimeout( async () => {
-          if(this.destinations.length==0){
-            this.refs = await getManualReferences(this.src)
+      .subscribe((event: any) => {
+        setTimeout(async () => {
+          if (this.destinations.length == 0) {
+            this.refs = await getManualReferences(this.src);
             let spans = event.source.textLayer.textDivs;
-            this.highlightReference(event.pageChange, spans, Array.from(this.refs));
+            this.highlightReference(
+              event.pageChange,
+              spans,
+              Array.from(this.refs)
+            );
+            this.pageRendered.emit(event);
           }
-          
         }, 1100);
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => {
-        this.getMetaData()
+        this.getMetaData();
         this.pageInitialized.emit(event);
       });
 
@@ -912,19 +907,17 @@ export class PdfViewerComponent
             ref.push(this.startingPosition.x);
             ref.push(this.startingPosition.y);
             this.pdfLinkService.goToDestination(ref);
-            
-            this.hover.emit(
-              {
-                show: true,
-                page: pageNum,
-                refDestination: ref,
-                clientX: this.startingPosition.x,
-                clienY: this.startingPosition.y,
-                height: this.startingPosition.height,
-                width: this.startingPosition.width,
-                manual: false
-              }
-            )
+
+            this.hover.emit({
+              show: true,
+              page: pageNum,
+              refDestination: ref,
+              clientX: this.startingPosition.x,
+              clienY: this.startingPosition.y,
+              height: this.startingPosition.height,
+              width: this.startingPosition.width,
+              manual: false,
+            });
           });
         }
       }
@@ -1003,5 +996,4 @@ export class PdfViewerComponent
         });
     });
   }
-
 }

@@ -1,5 +1,7 @@
 <nav class="nav__cont">
   <ul class="nav">
+    <h6>Citations: {{pdfData.citationCount}}</h6>
+    <h6>References: {{pdfData.referenceCount}}</h6>
     <li class="nav__items">
       <svg xmlns="http://www.w3.org/2000/svg" 
       [ngStyle]="{
@@ -64,7 +66,8 @@
       </svg>
       <a class="item" (click)="showOptions()">Summarize</a>
       <div class="sub-menu" *ngIf="optionsActive">
-        <li class="sub_items" (click)="toggleSummarizer('Extractive')">
+        <li class="sub_items" (click)="toggleSummarizer('Extractive')" 
+        [ngStyle]="{'pointer-events': extractiveOn == false && abstractiveOn == false || extractiveOn == true && abstractiveOn == false ? 'all' : 'none' }">
           <div class="toggle-icon">
             <svg
               [ngStyle]="{
@@ -99,13 +102,10 @@
               />
             </svg>
           </div>
-          <a class="sub-item"
-          [ngStyle]="{
-            'background':
-              extractiveOn == true ? 'radial-gradient(circle at 94.02% 88.03%, #1f1f1f, transparent 100%)' : 'transparent'}"
-            >Extractive</a>
+          <a class="sub-item" [ngStyle]="{'color': extractiveOn == false && abstractiveOn == true ? '#737373' : 'white'}">Extractive</a>
         </li>
-        <li class="sub_items" (click)="toggleSummarizer('Abstractive')">
+        <li class="sub_items" (click)="toggleSummarizer('Abstractive')"
+        [ngStyle]="{'pointer-events': abstractiveOn == false && extractiveOn == false || abstractiveOn == true && extractiveOn == false ? 'all' : 'none' }">
           <div class="toggle-icon">
             <svg
               [ngStyle]="{
@@ -141,10 +141,7 @@
             </svg>
           </div>
           <a class="sub-item"
-          [ngStyle]="{
-            'background':
-              abstractiveOn == true ? 'radial-gradient(circle at 94.02% 88.03%, #1f1f1f, transparent 100%)' : 'transparent'}"
-            >Abstractive</a>
+          [ngStyle]="{'color': abstractiveOn == false && extractiveOn == true ? '#737373' : 'white'}">Abstractive</a>
         </li>
       </div>
     </li>

@@ -20,10 +20,10 @@ const paperSchema = new mongoose.Schema({
     type: String,
   },
   abstractive_summary: {
-    type: String,
+    type: Object,
   },
   extractive_summary: {
-    type: String,
+    type: Object,
   },
   url: {
     type: String,

@@ -12,6 +12,9 @@ const API_URL = 'http://localhost:8080/api/paper/';
 export class FeaturesService {
   public summarizerType: string = '';
   public summary: any;
+  public highlighted: BehaviorSubject<any[] | null> = new BehaviorSubject<
+    any[]
+  >(null);
   public fileurl: string = '';
 
   constructor(
@@ -30,36 +33,38 @@ export class FeaturesService {
 
   knowledgeGraphOnCheck: Subject<boolean> = new Subject<boolean>();
 
-  extractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  abstractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  extractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(
+    false
+  );
+  abstractiveSummarizerOnCheck: BehaviorSubject<boolean> = new BehaviorSubject(
+    false
+  );
 
   exSummaryOn: boolean;
   absSummaryOn: boolean;
 
   setAbsSummarizerOn(onOff: boolean) {
     this.abstractiveSummarizerOnCheck.next(onOff);
-    console.log('Abs summary turned on');
     this.absSummaryOn = onOff;
   }
 
   setExSummarizerOn(onOff: boolean) {
     this.extractiveSummarizerOnCheck.next(onOff);
-    console.log('Ex summary turned on');
     this.exSummaryOn = onOff;
   }
 
   getAbsSummarizerStatus(): Observable<boolean> {
+    console.log("abs " + this.abstractiveSummarizerOnCheck.value);
     return this.abstractiveSummarizerOnCheck.asObservable();
   }
 
   getExSummarizerStatus(): Observable<boolean> {
+    console.log("ex " + this.extractiveSummarizerOnCheck.value);
     return this.extractiveSummarizerOnCheck.asObservable();
   }
 
- 
   setKnowledgeGraphOn(onOff: boolean) {
     this.knowledgeGraphOnCheck.next(onOff);
-    console.log('knowledge graph turned on');
   }
 
   storeSummary(summary: any) {
@@ -67,6 +72,14 @@ export class FeaturesService {
   }
   getSummary() {
     return this.summary;
+  }
+
+  getHighlightedText() {
+    console.log('inside highlighted');
+    return this.highlighted;
+  }
+  setHighlightedText(highlighed: any) {
+    this.highlighted.next(highlighed);
   }
 
   getKnowledgeGraphStatus(): Observable<boolean> {
@@ -82,7 +95,6 @@ export class FeaturesService {
   }
 
   getExtractiveSummary(_id: string): Observable<any> {
-    console.log('Getting extractive summary');
     return this.http.post(API_URL + _id + '/extractiveSummary', {
       headers: this.headers,
     });

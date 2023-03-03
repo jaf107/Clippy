@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FeaturesService } from 'src/app/modules/shared/features.service';
 import { PdfShareService } from 'src/app/modules/shared/pdf-share.service';
+import { TokenStorageService } from 'src/app/token-storage.service';
 
 interface chunk {
   title: String;
@@ -20,7 +21,8 @@ export class SidebarComponent {
 
   constructor(
     public featureService: FeaturesService,
-    public pdfShareService: PdfShareService
+    public pdfShareService: PdfShareService,
+    public tokenStorage: TokenStorageService
   ) {}
 
   public extractiveOn: boolean = false;
@@ -30,7 +32,10 @@ export class SidebarComponent {
   public knowledgeGraphOn: boolean = false;
   public pdfOn: boolean = true;
 
+  public pdfData: any;
+
   ngOnInit(): void {
+    this.pdfData = this.tokenStorage.getPaperData();
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
       if (value == false) {
         this.abstractiveOn = false;
@@ -59,15 +64,7 @@ export class SidebarComponent {
   toggleSummarizer(type: string) {
     if (type == 'Extractive') {
       if (this.extractiveOn == false) {
-        console.log('Extractive turned on');
         this.extractiveOn = true;
-        // this.featureService
-        //   .getExtractiveSummary(this.pdfShareService.paper_id)
-        //   .subscribe((data) => {
-        //     data = JSON.parse(data);
-        //     this.summary = data.paragraphs;
-        //     this.featureService.storeSummary(this.summary);
-        //   });
         this.abstractiveOn = false;
         this.featureService.setExSummarizerOn(this.extractiveOn);
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);
