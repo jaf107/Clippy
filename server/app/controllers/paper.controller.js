@@ -37,21 +37,18 @@ class Paragraph {
 }
 
 async function DownloadPdf(paperId, url) {
-  if (url.includes("uploads")) {
-    fs.copyFileSync(url, "./temp/" + paperId + ".pdf");
-    console.log("copied");
-    return;
+  if (fs.existsSync("./uploads/" + paperId + ".pdf")) {
+    console.log("file already exists");
+  } else {
+    const dl = new DownloaderHelper(url, "./uploads", {
+      fileName: paperId + ".pdf",
+    });
+    dl.on("error", (err) => console.log("Download Failed", err));
+    dl.on("end", () => {
+      console.log("Download Completed");
+    });
+    await dl.start(); // wait for the download to start and finish
   }
-  console.log("contains here");
-  const dl = new DownloaderHelper(url, "./temp", {
-    fileName: paperId + ".pdf",
-  });
-  dl.on("error", (err) => console.log("Download Failed", err));
-  dl.on("end", () => {
-    console.log("Download Completed");
-    return true; // return true after download is completed
-  });
-  await dl.start(); // wait for the download to start and finish
 }
 
 exports.getPaperDetails = async (req, res) => {
@@ -84,21 +81,20 @@ exports.getPaperDetailsfromSemanticScholar = async (req, res) => {
 };
 
 exports.uploadPaper = async (req, res) => {
-  // console.log(req.body.title);
-  // console.log(req.file);
-  if (!req.body.title || !req.file) {
-    res.status(404).send("File and Title are required");
+  if (!req.file) {
+    res.status(404).send("File Required");
   } else {
+    const def_title = " ";
     axios
       .get(
         SEMANTIC_SCHOLAR_API +
           `search?query=${encodeURIComponent(
-            req.body.title
+            req.body.title ? req.body.title : def_title
           )}&limit=10&fields=title,abstract,isOpenAccess,openAccessPdf,citationCount,referenceCount,authors`,
         { headers: { "x-api-key": scholarApiKey } }
       )
       .then((paper_data) => {
-        if (paper_data.data) {
+        if (paper_data.data.data.length > 0) {
           const data = paper_data.data.data[0];
           if (data.title !== req.body.title) {
             Paper.findOne({ title: req.body.title })
@@ -114,14 +110,8 @@ exports.uploadPaper = async (req, res) => {
                   res.status(200).send(ppr);
                 } else {
                   var uuid = Math.random().toString(36).substr(2, 9);
-                  fs.renameSync(
-                    req.file.path,
-                    "./uploads/" + uuid + ".pdf",
-                    (err) => {
-                      if (err) throw err;
-                      console.log("File renamed successfully");
-                    }
-                  );
+                  fs.renameSync(req.file.path, "./uploads/" + uuid + ".pdf");
+                  console.log("File renamed successfully");
                   const paper = {
                     paper_id: uuid,
                     title: req.body.title,
@@ -153,11 +143,19 @@ exports.uploadPaper = async (req, res) => {
                   console.log("successfully deleted - paper found in db");
                   res.status(200).send(ppr);
                 } else {
+                  if (fs.existsSync("./uploads/" + data.paperId + ".pdf")) {
+                    console.log("exists");
+                    fs.unlinkSync(req.file.path);
+                  } else
+                    fs.renameSync(
+                      req.file.path,
+                      "./uploads/" + data.paperId + ".pdf"
+                    );
                   const paper = {
                     paper_id: data.paperId,
                     title: data.title,
                     knowledge_graph: "",
-                    url: data.isOpenAccess ? data.openAccessPdf.url : "",
+                    url: "./uploads/" + data.paperId + ".pdf",
                     abstract: data.abstract,
                     abstractive_summary: "",
                     extractive_summary: "",
@@ -182,49 +180,26 @@ exports.uploadPaper = async (req, res) => {
               .catch((err) => res.status(404).send(err.message));
           }
         } else {
-          console.log(paper_data);
-          Paper.findOne({ title: req.body.title })
-            .then((ppr) => {
-              if (ppr) {
-                fs.unlinkSync(req.file.path, (err) => {
-                  if (err) throw err;
-                  console.log("successfully deleted");
-                });
-                if (req.userId) {
-                  updateHistory(req.userId, ppr.paper_id, ppr.title);
-                }
-                res.status(200).send(ppr);
-              } else {
-                var uuid = Math.random().toString(36).substr(2, 9);
-                fs.renameSync(
-                  req.file.path,
-                  "./uploads/" + uuid + ".pdf",
-                  (err) => {
-                    if (err) throw err;
-                    console.log("File renamed successfully");
-                  }
-                );
-                const paper = {
-                  paper_id: uuid,
-                  title: req.body.title,
-                  knowledge_graph: "",
-                  url: "./uploads/" + uuid + ".pdf",
-                  abstract: "",
-                  abstractive_summary: "",
-                  extractive_summary: "",
-                  citationCount: 0,
-                  referenceCount: 0,
-                  authors: [],
-                };
-                Paper.create(paper)
-                  .then((r) => {
-                    if (req.userId) {
-                      updateHistory(req.userId, paper.paper_id, paper.title);
-                    }
-                    res.status(200).send(paper);
-                  })
-                  .catch((err) => res.status(404).send(err.message));
+          var uuid = Math.random().toString(36).substr(2, 9);
+          fs.renameSync(req.file.path, "./uploads/" + uuid + ".pdf");
+          const paper = {
+            paper_id: uuid,
+            title: req.body.title,
+            knowledge_graph: "",
+            url: "./uploads/" + uuid + ".pdf",
+            abstract: "",
+            abstractive_summary: "",
+            extractive_summary: "",
+            citationCount: 0,
+            referenceCount: 0,
+            authors: [],
+          };
+          Paper.create(paper)
+            .then((r) => {
+              if (req.userId) {
+                updateHistory(req.userId, paper.paper_id, paper.title);
               }
+              res.status(200).send(paper);
             })
             .catch((err) => res.status(404).send(err.message));
         }
@@ -252,12 +227,17 @@ exports.searchPaperByTitle = async (req, res) => {
 
 exports.getPdf = async (req, res) => {
   if (req.body.url.includes("uploads")) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      let data = reader.result;
-      res.status(200).send(JSON.stringify(data));
-    };
-    reader.readAsArrayBuffer(req.body.url);
+    const data = fs.readFile(req.body.url, (err, data) => {
+      if (err) res.status(404).send(err);
+      if (data) res.status(200).send(JSON.stringify(data));
+    });
+
+    // const reader = new FileReader();
+    // reader.onload = () => {
+    //   let data = reader.result;
+    //   res.status(200).send(JSON.stringify(data));
+    // };
+    // reader.readAsArrayBuffer();
   } else {
     axios
       .get(req.body.url, { responseType: "arraybuffer" })
@@ -269,62 +249,60 @@ exports.getPdf = async (req, res) => {
 };
 
 exports.uploadPaperById = async (req, res) => {
-  const ppr = await Paper.findOne({ paper_id: req.body.paper_id });
-  if (ppr) {
-    if (req.userId) {
-      updateHistory(req.userId, req.body.paper_id, ppr.title);
-    }
-    res.status(200).send(ppr);
-  } else {
-    axios
-      .get(
-        SEMANTIC_SCHOLAR_API +
-          req.body.paper_id +
-          "?fields=isOpenAccess,openAccessPdf,title,abstract,citationCount,referenceCount,authors",
-        { headers: { "x-api-key": scholarApiKey } }
-      )
-      .then((paper_data) => {
-        Paper.findOne({ paper_id: paper_data.data.paperId })
-          .then((ppr) => {
-            if (ppr) {
-              if (req.userId) {
-                updateHistory(req.userId, req.body.paper_id, ppr.title);
-              }
-              res.status(200).send(ppr);
-            } else {
-              if (
-                !paper_data.data.isOpenAccess ||
-                !paper_data.data.openAccessPdf
-              )
-                res.status(404).send("Paper Not Accessible");
-              else {
-                var paper = {
-                  title: paper_data.data.title,
-                  paper_id: paper_data.data.paperId,
-                  knowledge_graph: "",
-                  abstract: paper_data.data.abstract,
-                  url: paper_data.data.openAccessPdf.url,
-                  abstractive_summary: "",
-                  extractive_summary: "",
-                  citationCount: paper_data.data.citationCount,
-                  referenceCount: paper_data.data.referenceCount,
-                  authors: paper_data.data.authors,
-                };
-                Paper.create(paper)
-                  .then((r) => {
-                    if (req.userId) {
-                      updateHistory(req.userId, paper.paper_id, paper.title);
-                    }
-                    res.status(200).send(paper);
-                  })
-                  .catch((err) => res.status(404).send(err.message));
-              }
+  axios
+    .get(
+      SEMANTIC_SCHOLAR_API +
+        req.body.paper_id +
+        "?fields=isOpenAccess,openAccessPdf,title,abstract,citationCount,referenceCount,authors",
+      { headers: { "x-api-key": scholarApiKey } }
+    )
+    .then((paper_data) => {
+      Paper.findOne({ paper_id: paper_data.data.paperId })
+        .then((ppr) => {
+          if (ppr) {
+            console.log("here in db");
+            if (req.userId) {
+              updateHistory(req.userId, req.body.paper_id, ppr.title);
             }
-          })
-          .catch((err) => res.status(404).send(err.message));
-      })
-      .catch((err) => res.status(404).send(err.message));
-  }
+            res.status(200).send(ppr);
+          } else {
+            if (!paper_data.data.isOpenAccess || !paper_data.data.openAccessPdf)
+              res.status(404).send("Paper Not Accessible");
+            else {
+              console.log("here");
+              DownloadPdf(
+                paper_data.data.paperId,
+                paper_data.data.openAccessPdf.url
+              )
+                .then((r) => {
+                  var paper = {
+                    title: paper_data.data.title,
+                    paper_id: paper_data.data.paperId,
+                    knowledge_graph: "",
+                    abstract: paper_data.data.abstract,
+                    url: "./uploads/" + paper_data.data.paperId + ".pdf",
+                    abstractive_summary: "",
+                    extractive_summary: "",
+                    citationCount: paper_data.data.citationCount,
+                    referenceCount: paper_data.data.referenceCount,
+                    authors: paper_data.data.authors,
+                  };
+                  Paper.create(paper)
+                    .then((r) => {
+                      if (req.userId) {
+                        updateHistory(req.userId, paper.paper_id, paper.title);
+                      }
+                      res.status(200).send(paper);
+                    })
+                    .catch((err) => res.status(404).send(err.message));
+                })
+                .catch((err) => res.status(404).send(err.message));
+            }
+          }
+        })
+        .catch((err) => res.status(404).send(err.message));
+    })
+    .catch((err) => res.status(404).send(err.message));
 };
 
 exports.getAbstractSummary = async (req, res) => {
@@ -333,28 +311,24 @@ exports.getAbstractSummary = async (req, res) => {
       if (paper.abstractive_summary !== "") {
         res.status(200).send(paper.abstractive_summary);
       } else {
-        DownloadPdf(paper.paper_id, paper.url)
-          .then((r) => {
-            AbstractSummary("./temp/" + paper.paper_id + ".pdf")
-              .then((paragraphs) => {
-                Paper.updateOne(
-                  { paper_id: req.params.id },
-                  { $set: { abstractive_summary: paragraphs } },
-                  { upsert: true }
-                )
-                  .then((result) => {
-                    fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
-                    console.log("successfully deleted");
-                    res.status(200).send(paragraphs);
-                  })
-                  .catch((err) => res.status(404).send(err.message));
+        AbstractSummary("./uploads/" + paper.paper_id + ".pdf")
+          .then((paragraphs) => {
+            Paper.updateOne(
+              { paper_id: req.params.id },
+              { $set: { abstractive_summary: paragraphs } },
+              { upsert: true }
+            )
+              .then((result) => {
+                //   fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
+                //      console.log("successfully deleted");
+                res.status(200).send(paragraphs);
               })
-              .catch((err) => {
-                fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
-                res.status(404).send(err.message);
-              });
+              .catch((err) => res.status(404).send(err.message));
           })
-          .catch((err) => res.status(404).send(err.message));
+          .catch((err) => {
+            //   fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
+            res.status(404).send(err.message);
+          });
       }
     })
     .catch((err) => res.status(404).send(err.message));
@@ -366,28 +340,24 @@ exports.getExtractSummary = async (req, res) => {
       if (paper.extractive_summary !== "") {
         res.status(200).send(paper.extractive_summary);
       } else {
-        DownloadPdf(paper.paper_id, paper.url)
-          .then((r) => {
-            ExtractSummary("./temp/" + paper.paper_id + ".pdf")
-              .then((paragraphs) => {
-                Paper.updateOne(
-                  { paper_id: req.params.id },
-                  { $set: { extractive_summary: paragraphs } },
-                  { upsert: true }
-                )
-                  .then((result) => {
-                    fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
-                    console.log("successfully deleted");
-                    res.status(200).send(paragraphs);
-                  })
-                  .catch((err) => res.status(404).send(err.message));
+        ExtractSummary("./uploads/" + paper.paper_id + ".pdf")
+          .then((paragraphs) => {
+            Paper.updateOne(
+              { paper_id: req.params.id },
+              { $set: { extractive_summary: paragraphs } },
+              { upsert: true }
+            )
+              .then((result) => {
+                //        fs.unlinkSync("./uploads/" + paper.paper_id + ".pdf");
+                // console.log("successfully deleted");
+                res.status(200).send(paragraphs);
               })
-              .catch((err) => {
-                fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
-                res.status(404).send(err.message);
-              });
+              .catch((err) => res.status(404).send(err.message));
           })
-          .catch((err) => res.status(404).send(err.message));
+          .catch((err) => {
+            // fs.unlinkSync("./temp/" + paper.paper_id + ".pdf");
+            res.status(404).send(err.message);
+          });
       }
     })
     .catch((err) => res.status(404).send(err.message));
@@ -681,27 +651,36 @@ async function createChunkForHighlighting(src, paragraph) {
 
 async function updateHistory(userId, paper_id, title) {
   // Find the document that matches the paper_id in the history array
-  let doc = await User.findOne({ _id: userId, "history.paper_id": paper_id });
+  let doc = await User.findOne({ _id: userId, "history.paper_id": paper_id })
+    .then((r) => {
+      if (doc) {
+        User.updateOne(
+          { _id: userId, "history.paper_id": paper_id },
+          { $set: { "history.$.openedAt": Date.now() } }
+        ).then((r) => console.log("Updated time for paper_id", paper_id));
+      } else {
+        // If the document doesn't exist, push a new document to the history array with the paper_id and newTime
+        User.updateOne(
+          { _id: userId },
+          {
+            $push: {
+              history: {
+                paper_id: paper_id,
+                openedAt: Date.now(),
+                title: title,
+              },
+            },
+          },
+          { upsert: true }
+        )
+          .then((r) => console.log("Pushed new data for paper_id", paper_id))
+          .catch();
+      }
+    })
+    .catch((err) => {
+      return err.message;
+    });
   // If the document exists, update the openedAt field for that paper_id
-  if (doc) {
-    await User.updateOne(
-      { _id: userId, "history.paper_id": paper_id },
-      { $set: { "history.$.openedAt": Date.now() } }
-    );
-    console.log("Updated time for paper_id", paper_id);
-  } else {
-    // If the document doesn't exist, push a new document to the history array with the paper_id and newTime
-    await User.updateOne(
-      { _id: userId },
-      {
-        $push: {
-          history: { paper_id: paper_id, openedAt: Date.now(), title: title },
-        },
-      },
-      { upsert: true }
-    );
-    console.log("Pushed new data for paper_id", paper_id);
-  }
 }
 
 async function requestAbsSummaryWithRetry(

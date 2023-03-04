@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-const API_URL = 'http://bs23.ddnsfree.com/api/test/';
+// const API_URL = 'http://bs23.ddnsfree.com/api/test/';
+const API_URL = 'http://localhost:8080/api/';
 
 @Injectable({
   providedIn: 'root',
@@ -28,11 +29,11 @@ export class UserService {
     return this.http.get(API_URL + 'admin', { responseType: 'text' });
   }
 
-  setUsername(username: string){
+  setUsername(username: string) {
     this.username = username;
   }
 
-  getUsername():string{
+  getUsername(): string {
     console.log(this.username);
     return this.username;
   }
