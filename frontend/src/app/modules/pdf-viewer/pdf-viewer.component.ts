@@ -94,6 +94,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
     this.featureService.getHighlightedText().subscribe((value) => {
       this.highlightedText = value;
+      // console.log(this.pageRenderedEvents);
       // this.getTextSpans();
       this.pageRenderedEvents.forEach((e) => {
         let pageNum = e.pageNumber;
@@ -140,7 +141,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
 
   highlightSummary(pageNo, spans, AllSegments) {
-    console.log('inside highlighted', pageNo, spans);
+    // console.log('inside highlighted', pageNo, spans);
     let higlightedSegments = this.filterDataSegmentsForAPage(
       AllSegments,
       pageNo

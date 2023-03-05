@@ -630,21 +630,28 @@ export class PdfViewerComponent
   private initEventBus() {
     this.eventBus = createEventBus(PDFJSViewer, this.destroy$);
 
+    // fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((event: any) => {
+    //     setTimeout(async () => {
+    //       if (this.destinations.length == 0) {
+    //         this.refs = await getManualReferences(this.src);
+    //         let spans = event.source.textLayer.textDivs;
+    //         this.highlightReference(
+    //           event.pageChange,
+    //           spans,
+    //           Array.from(this.refs)
+    //         );
+    //         this.pageRendered.emit(event);
+    //       }
+    //     }, 1100);
+    //   });
     fromEvent<CustomEvent>(this.eventBus, 'pagerendered')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event: any) => {
-        setTimeout(async () => {
-          if (this.destinations.length == 0) {
-            this.refs = await getManualReferences(this.src);
-            let spans = event.source.textLayer.textDivs;
-            this.highlightReference(
-              event.pageChange,
-              spans,
-              Array.from(this.refs)
-            );
-            this.pageRendered.emit(event);
-          }
-        }, 1100);
+      .pipe(takeUntil(this.destroyPopOver$))
+      .subscribe((event) => {
+        setTimeout(() => {
+          this.pageRendered.emit(event);
+        }, 500);
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
@@ -681,7 +688,7 @@ export class PdfViewerComponent
       .pipe(takeUntil(this.destroyPopOver$))
       .subscribe((event) => {
         setTimeout(() => {
-          // this.pageRendered.emit(event);
+          this.pageRendered.emit(event);
         }, 500);
       });
 
