@@ -19,15 +19,6 @@ export class PdfPreviewComponent implements OnChanges {
   //widthSTR = '300px';
   shadowSTR = '7px 8px 13px -3px rgba(0,0,0,0.72)';
   ngOnInit() {
-    console.log(
-      'preview: ',
-      this.pdfPath,
-      this.page,
-      this.offsetX,
-      this.offsetY,
-      this.height,
-      this.width
-    );
   }
   ngOnChanges() {
     // this.pdfPath = '../../../../assets/sample.pdf';
@@ -36,6 +27,5 @@ export class PdfPreviewComponent implements OnChanges {
   }
 
   getReferences(e: any) {
-    console.log('event preview');
   }
 }

@@ -21,7 +21,6 @@ export class NavbarComponent implements OnInit{
     }
     
     this.userService.setUsername(this.userName);
-    console.log(this.userName);
   }
 
   logout(){
