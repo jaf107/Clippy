@@ -59,7 +59,11 @@ interface IReference {
   selector: 'pdf-viewer',
   template: `
     <div #pdfViewerContainer class="ng2-pdf-viewer-container">
-      <div class="pdfViewer" (mouseover)="handlePopOver($event)"></div>
+      <div
+        #pdfViewer
+        class="pdfViewer"
+        (mouseover)="handlePopOver($event)"
+      ></div>
     </div>
   `,
   styleUrls: ['./pdf-viewer-custom-lib.component.scss'],
@@ -72,6 +76,7 @@ export class PdfViewerComponent
 
   @ViewChild('pdfViewerContainer') pdfViewerContainer;
   @ViewChild('popOverContainer') pdfPopOverContainer: ElementRef;
+  @ViewChild('pdfViewer') pdfViewerElement: ElementRef;
   public eventBus: PDFJSViewer.EventBus;
   public popOverEventBus: PDFJSViewer.EventBus;
   public pdfLinkService: PDFJSViewer.PDFLinkService;
@@ -642,9 +647,14 @@ export class PdfViewerComponent
               spans,
               Array.from(this.refs)
             );
-            this.pageRendered.emit(event);
           }
+          this.pageRendered.emit(event);
         }, 1100);
+      });
+    fromEvent(this.pdfViewerElement.nativeElement, 'mouseover')
+      .pipe(debounceTime(1000))
+      .subscribe((event: MouseEvent) => {
+        this.handlePopOver(event);
       });
 
     fromEvent<CustomEvent>(this.eventBus, 'pagesinit')
