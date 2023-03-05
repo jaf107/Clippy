@@ -143,13 +143,12 @@
         </li>
       </div>
     </li>
-    <h6 *ngIf="pdfData?.citationCount !== undefined">
-      Citations: {{pdfData.citationCount}}
+    <h6 *ngIf="this.pdfData?.citationCount !== null">
+      Citations: {{this.pdfData.citationCount}}
     </h6>
 
-
-    <h6 *ngIf="pdfData?.referenceCount !== undefined">
-      References: {{pdfData.referenceCount}}
+    <h6 *ngIf="this.pdfData?.referenceCount !== null">
+      References: {{this.pdfData.referenceCount}}
     </h6>
    
     
