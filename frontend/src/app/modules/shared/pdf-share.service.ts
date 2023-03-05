@@ -1,12 +1,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import * as process from 'process';
 import { Observable, Subject } from 'rxjs';
 import { TokenStorageService } from 'src/app/token-storage.service';
+import { environment } from 'src/environment/environment';
 
 // const API_URL = 'http://bs23.ddnsfree.com/api/paper/';
 // const API_USER_URL = 'http://bs23.ddnsfree.com/api/user/';
-const API_URL = 'http://localhost:8080/api/paper/';
-const API_USER_URL = 'http://localhost:8080/api/user/';
+const API_URL = environment.url + 'paper/';
+const API_USER_URL = environment.url + 'user/';
 @Injectable({
   providedIn: 'root',
 })

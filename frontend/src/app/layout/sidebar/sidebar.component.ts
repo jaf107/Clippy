@@ -18,6 +18,8 @@ interface chunk {
 export class SidebarComponent {
   public isActive: boolean = true;
   public optionsActive: boolean = false;
+  public enableHighlightOption: boolean = false;
+  public highlightOn: boolean = false;
 
   constructor(
     public featureService: FeaturesService,
@@ -67,6 +69,14 @@ export class SidebarComponent {
     this.optionsActive = !this.optionsActive;
   }
 
+  showHighlighter(){
+    this.enableHighlightOption = !this.enableHighlightOption;
+  }
+
+  toggleHighlighter(){
+    this.highlightOn = !this.highlightOn;
+  }
+
   toggleSummarizer(type: string) {
     if (type == 'Extractive') {
       if (this.extractiveOn == false) {
@@ -78,6 +88,7 @@ export class SidebarComponent {
       } else {
         this.extractiveOn = false;
         this.abstractiveOn = false;
+        this.highlightOn = false;
         this.featureService.setExSummarizerOn(this.extractiveOn);
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);
       }

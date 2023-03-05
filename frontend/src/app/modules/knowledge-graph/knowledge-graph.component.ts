@@ -6,6 +6,7 @@ import { FeaturesService } from '../shared/features.service';
 import { PdfShareService } from '../shared/pdf-share.service';
 
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 interface edges{
   data:{
@@ -41,7 +42,8 @@ export class KnowledgeGraphComponent implements OnInit {
   constructor(
     private featureService: FeaturesService,
     private pdfShareService: PdfShareService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
     ){}
 
     public graphOn: boolean;
@@ -67,6 +69,7 @@ export class KnowledgeGraphComponent implements OnInit {
           },
           (err) => {
             console.log("Error in graph");
+            this.toastr.error('No Citation Graph found for the paper');
             this.errorInGraph();
             // this.spinner.hide();
           }

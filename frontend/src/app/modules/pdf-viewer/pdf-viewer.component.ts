@@ -277,6 +277,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
           this.pdfShareService.setPaperId(data.paper_id);
         },
         (err) => {
+          this.toastr.error('File sending failed!');
           console.log('File sending failed');
         }
       );

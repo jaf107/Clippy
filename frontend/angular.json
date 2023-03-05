@@ -28,6 +28,12 @@
               "node_modules/ngx-spinner/animations/square-jelly-box.css",
               "node_modules/ngx-spinner/animations/line-scale-party.css"
             ],
+            "fileReplacements": [
+              {
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }
+            ],
             "scripts": []
           },
           "configurations": {

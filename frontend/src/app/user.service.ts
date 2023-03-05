@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environment/environment';
 
-// const API_URL = 'http://bs23.ddnsfree.com/api/test/';
-const API_URL = 'http://localhost:8080/api/';
+// const API_URL = 'http://bs23.ddnsfree.com/api/';
+const API_URL = environment.url;
 
 @Injectable({
   providedIn: 'root',

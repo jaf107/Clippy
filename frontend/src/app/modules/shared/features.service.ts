@@ -2,10 +2,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TokenStorageService } from 'src/app/token-storage.service';
+import { environment } from 'src/environment/environment';
 import { PdfShareService } from './pdf-share.service';
 
 // const API_URL = 'http://bs23.ddnsfree.com/api/paper/';
-const API_URL = 'http://localhost:8080/api/paper/';
+const API_URL = environment.url + 'paper/';
 
 @Injectable({
   providedIn: 'root',

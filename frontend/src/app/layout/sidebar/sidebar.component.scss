@@ -143,3 +143,41 @@
   }
   
   
+  .sub-sub-item{
+    position: relative;
+    display:block;
+    top:-20px;
+    padding: 0.5rem 0.9rem 0.5rem 1.5rem;
+    transition:all .3s ease;
+    margin-left:80px;
+    // margin-right:10px;
+    text-decoration: none;
+    color:white;
+    font-family: 'Poppins';
+    font-weight: 70;
+    font-size: 1.05em;
+}
+
+.sub-sub-item:hover{
+    border-radius:2px;
+    background:radial-gradient(circle at 94.02% 88.03%, #575757, transparent 100%);
+    transition:all .5s ease;
+}
+
+.sub_sub_items{
+  margin-top: 0.5rem;
+  svg{
+    width:12px;
+    height:12px;
+    position: relative;
+    top:-5px;
+    left: 60px;
+    cursor:pointer;
+    @media screen and (min-width:600px) {
+      width:15px;
+      height:15px;
+      left: 65px;
+    }
+  }
+
+}

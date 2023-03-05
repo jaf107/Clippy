@@ -64,13 +64,16 @@ export class SummarizerComponent implements OnInit {
 
             if (this.rawSummary.length == 0) {
               this.currentChunkSummary = 'No summary available for this pdf';
+              this.currentChunkTitle = 'Not available';
             }
 
             this.spinner.hide();
           },
           (error) => {
             this.spinner.hide();
-            this.toastr.error('Something went wrong');
+            this.currentChunkSummary = 'No summary available for this pdf';
+            this.currentChunkTitle = 'Not available';
+            this.toastr.error('PDF Structure not supported!');
           }
         );
     }

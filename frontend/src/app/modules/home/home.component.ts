@@ -120,6 +120,7 @@ export class HomeComponent implements OnInit {
                 this.spinner.hide();
               },
               (err) => {
+                this.toastr.error('Paper not found in Semantic Scholar');
                 this.spinner.hide();
                 console.log(err);
               }
@@ -149,6 +150,7 @@ export class HomeComponent implements OnInit {
           },
           (err) => {
             console.log(err);
+            this.toastr.error('Not found', 'Paper not found in Semantic Scholar');
             this.spinner.hide();
           }
         );
