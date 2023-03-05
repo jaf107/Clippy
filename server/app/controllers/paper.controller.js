@@ -252,6 +252,7 @@ exports.searchPaperByTitle = async (req, res) => {
 
 exports.getPdf = async (req, res) => {
   if (req.body.url.includes("uploads")) {
+    // eslint-disable-next-line no-undef
     const reader = new FileReader();
     reader.onload = () => {
       let data = reader.result;
@@ -439,6 +440,7 @@ async function AbstractSummary(filepath) {
       let element = paragraphs[i];
       let contextString = element.text;
       let retryCount = 0;
+      let noOfSentenceInSummary;
 
       if (element.noOfSentences > 50) {
         noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
@@ -477,6 +479,7 @@ async function ExtractSummary(src) {
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
+    let noOfSentenceInSummary;
 
     if (element.noOfSentences > 50) {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
@@ -858,7 +861,7 @@ async function createJsonObjectFromPdf(src) {
 }
 function noOfSentences(context) {
   let noOfSentence = 0;
-  for (var i = 0; i < context.length; i++) {
+  for (let i = 0; i < context.length; i++) {
     if (context[i] == "." || context[i] == "?" || context[i] == "!")
       noOfSentence++;
   }
@@ -902,15 +905,6 @@ function getTextChunkObject(content) {
   return retItems;
 }
 
-function noOfSentences(context) {
-  let noOfSentence = 0;
-  for (var i = 0; i < context.length; i++) {
-    if (context[i] == "." || context[i] == "?" || context[i] == "!")
-      noOfSentence++;
-  }
-  // console.log(noOfSentence);
-  return noOfSentence;
-}
 function breakTextChunkIntoSentence(textChunk) {
   let sentences = textChunk.split(/[.?!]/g);
   return sentences;
