@@ -42,6 +42,9 @@ async function DownloadPdf(paperId, url) {
   } else {
     const dl = new DownloaderHelper(url, "./uploads", {
       fileName: paperId + ".pdf",
+      headers: {
+        responseType: "arraybuffer",
+      },
     });
     dl.on("error", (err) => console.log("Download Failed", err));
     dl.on("end", () => {
@@ -256,6 +259,7 @@ exports.uploadPaperById = async (req, res) => {
           if (ppr) {
             console.log("here in db");
             if (req.userId) {
+              console.log("updating history");
               updateHistory(req.userId, req.body.paper_id, ppr.title);
             }
             res.status(200).send(ppr);
