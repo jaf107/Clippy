@@ -35,7 +35,11 @@ export class SidebarComponent {
   public pdfData: any;
 
   ngOnInit(): void {
-    this.pdfData = this.tokenStorage.getPaperData();
+
+    this.pdfData = JSON.parse(this.tokenStorage.getPaperData());
+    console.log(this.pdfData);
+
+    
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
       if (value == false) {
         this.abstractiveOn = false;
