@@ -37,7 +37,9 @@ export class SidebarComponent {
   ngOnInit(): void {
 
     this.pdfData = JSON.parse(this.tokenStorage.getPaperData());
-    console.log(this.pdfData);
+ //   console.log(this.pdfData);
+ {{ console.log('pdfData:', this.pdfData) }}
+ {{ console.log('citationCount:', this.pdfData?.citationCount) }}
 
     
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
