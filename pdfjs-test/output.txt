@@ -1,2459 +1,5148 @@
 page No: 1 
 ===============
-Automatic Generation of Text
-Descriptive Comments for Code Blocks
-Yuding Liang, Kenny Q. Zhu
-∗
+A Study on the basics of Quantum Computing
 
-liangyuding@sjtu.edu.cn, kzhu@cs.sjtu.edu.cn
-Department of Computer Science and Engineering
-Shanghai Jiao Tong University
-800 Dongchuan Road, Shanghai, China 200240
+Prashant
+Department d’Informatique et de recherché operationnelle,
+Universite de Montreal, Montreal. Canada.
+{prashant}@iro.umontreal.ca
+http://www-etud.iro.umontreal.ca/~prashant/
 
 Abstract
 
-We propose a framework to automatically generate descrip-
-tive comments for source code blocks. While this problem
-has been studied by many researchers previously, their meth-
-ods are mostly based on fixed template and achieves poor
-results. Our framework does not rely on any template, but
-makes use of a new recursive neural network called Code-
-RNN to extract features from the source code and embed
-them into one vector. When this vector representation is input
-to a new recurrent neural network (Code-GRU), the overall
-framework generates text descriptions of the code with accu-
-racy (Rouge-2 value) significantly higher than other learning-
-based approaches such as sequence-to-sequence model. The
-Code-RNN model can also be used in other scenario where
-the representation of code is required.
+Quantum theory is one of the most successful theories that have influenced the course of
+scientific progress during the twentieth century.
  
-1
+It has presented a new line of scientific
+thought, predicted entirely inconceivable situations and influenced several domains of
+modern technologies. There are many different ways for expressing laws of science in
+general and laws of physics in particular. Similar to physical laws of nature, information
+can also be expressed in different ways. The fact that information can be expressed in
+different ways without losing its essential nature, leads for the possibility of the automatic
+manipulation of information.
+All ways of expressing information use physical system, spoken words are
+conveyed by air pressure fluctuations: “No information without physical representation”.
+The fact that information is insensitive to exactly how it is expressed and can be freely
+translated from one form to another, makes it an obvious candidate for fundamentally
+important role in physics, like interaction, energy, momentum and other such abstractors.
+This is a project report on the general attributes of Quantum Computing and Information
+Processing from a layman’s point of view.
 
-1
+Keywords
+:
  
-Introduction
-
-Real-world software development involves large source
-code repositories. Reading and trying to understand other
-people’s code in such repositories is a difficult and unpleas-
-ant process for many software developers, especially when
-the code is not sufficiently commented. For example, if the
-Java method in Fig. 1 does not have the comment in the be-
-ginning, it will take the programmer quite some efforts to
-grasp the meaning of the code. However, with a meaning-
-ful sentence such as “calculates dot product of two points”
-as a descriptive comment, programmer’s productivity can be
-tremendously improved.
-
-/* Calculates
+computation,
  
-dot
+EPR,
  
-product
+quantum
  
-of
+mechanics,
  
-two
+superposition,
  
-points.
-*
- 
-@return
- 
-float */
-public static float
- 
-ccpDot(final CGPoint
- 
-v1,
- 
-final
-CGPoint
- 
-v2) {
-return
- 
-v1.x * v2.x
- 
-+
- 
-v1.y * v2.y;
-}
-
-Figure 1: source code example
-A related scenario happens when one wants to search for
-a piece of code with a specific functionality or meaning. Or-
-dinary keyword search would not work because expressions
-Copyright c
-©
- 
-2018, Association for the Advancement of Artificial
-Intelligence (www.aaai.org). All rights reserved.
-1
- 
-Kenny Q. Zhu is the contact author.
-in programs can be quite different from natural languages.
-If methods are annotated with meaningful natural language
-comments, then keyword matching or even fuzzy semantic
-search can be achieved.
-Even though comments are so useful, programmers are
-not using them enough in their coding. Table 1 shows the
-number of methods in ten actively developed Java reposito-
-ries from Github, and those of which annotated with a de-
-scriptive comment. On average, only 15.4% of the methods
-are commented.
-To automatically generate descriptive comments from
-source code, one needs a way of accurately representing the
-semantics of code blocks. One potential solution is to treat
-each code block as a document and represent it by a topic
-distribution using models such as LDA (Blei, Ng, and Jor-
-dan 2003). However, topic models, when applied to source
-code, have several limitations:
-
-•
- 
-a topic model treats documents as a bag of words and ig-
-nores the structural information such as programming lan-
-guage syntax and function or method calls in the code;
-
-•
- 
-the contribution of lexical semantics to the meaning of
-code is exaggerated;
-
-•
- 
-comments produced can only be words but not phrases or
-sentences.
-One step toward generating readable comments is to use
-templates (McBurney and McMillan 2014; Sridhara et al.
-2010). The disadvantage is that comments created by tem-
-plates are often very similar to each other and only rele-
-vant to parts of the code that fit the template. For example,
-the comment generated by McBurney’s model for Fig. 1 is
-fairly useless:
- 
-“This method handles the ccp dot and returns
-a float. ccpDot() seems less important than average because
-it is not called by any methods.”
-
-To overcome these problems, in this paper, we propose to
-use Recursive Neural Network (RNN) (Socher et al. 2011a;
-2011b) to combine the semantic and structural information
-from code. Recursive NN has previously been applied to
-parse trees of natural language sentences, such as the ex-
-ample of two sentences in Fig. 2. In our problem, source
-codes can be accurately parsed into their parse trees, so re-
-cursive NN can be applied in our work readily. To this end,
-we design a new recursive NN called Code-RNN to extract
-the features from the source code.
-
-The Thirty-Second AAAI Conference
-on Artificial Intelligence (AAAI-18)
-5229
+unitary
+transformation, decoherence.
 
 page No: 2 
 ===============
-Table 1: Ten Active Projects on Github
-Project
- 
-Description
- 
-# of bytes
- 
-# of Java Files
- 
-# of Methods
- 
-# Methods Commented
-Activiti
- 
-a light-weight workflow and Business Process Management (BPM) Platform
- 
-168M
- 
-2939
- 
-15875
- 
-1080
-aima-java
- 
-Java implementation of algorithms from “Artificial Intelligence - A Modern Approach”
- 
-182M
- 
-889
- 
-4078
- 
-1130
-neo4j
- 
-the worlds leading Graph Database.
- 
-270M
- 
-4125
- 
-24529
- 
-1197
-cocos2d
- 
-cocos2d for android, based on cocos2d-android-0.82
- 
-78M
- 
-512
- 
-3677
- 
-1182
-rhino
- 
-a Java implementation of JavaScript.
- 
-21M
- 
-352
- 
-4610
- 
-1195
-spring-batch
- 
-a framework for writing offline and batch applications using Spring and Java
- 
-56M
- 
-1742
- 
-7936
- 
-1827
-Smack
- 
-an open source, highly modular, easy to use, XMPP client library written in Java
- 
-41M
- 
-1335
- 
-5034
- 
-2344
-guava
- 
-Java-based projects: collections, caching, primitives
- 
-80M
- 
-1710
- 
-20321
- 
-3079
-jersey
- 
-a REST framework that provides JAX-RS Reference Implementation and more.
- 
-73M
- 
-2743
- 
-14374
- 
-2540
-libgdx
- 
-a cross-platform Java game development framework based on OpenGL (ES)
- 
-989M
- 
-1906
- 
-18889
- 
-2828
-A comment here refers to the description at the beginning of a method, with more than eight words.
-
-ŵĞ
-^ŚĞ
- 
-ůŝŬĞƐ
-ŵŝĐĞ
-ĞĂƚ
-dŚĞ
- 
-ĐĂƚƐ
-
-Figure 2: The Recursive Neural Networks of Two Sentences
-Using Code-RNN to train from the source code, we can
-get a vector representation of each code block and this vec-
-tor contains rich semantics of the code block, just like word
-vectors (Mikolov et al. 2013). We then use a Recurrent Neu-
-ral Network to learn to generate meaningful comments. Ex-
-isting recurrent NN does not take good advantage of the
-code block representation vectors. Thus we propose a new
-GRU (Cho et al. 2014) cell that does a better job.
-In sum, this paper makes the following contributions:
-
-•
- 
-by designing a new Recursive Neural Network,
- 
-Code-
-RNN
-, we are able to describe the
- 
-structural information
-
-of source code;
-
-•
- 
-with the new design of a GRU cell, namely
- 
-Code-GRU
-,
-we make the best out of code block representation vector
-to effectively generate comments for source codes;
-
-•
- 
-the
- 
-overall
- 
-framework
- 
-achieves
- 
-remarkable
- 
-accuracy
-(Rouge-2 value) in the task of generating descriptive com-
-ments for Java methods, compared to state-of-the-art ap-
-proaches.
-
 2
+
+TABLE OF CONTENTS
+Abstract
+
+Chapter 1
+: Introduction
+
+Chapter 2:
  
-Framework
-
-In this section, we introduce the details of how to repre-
-sent source code and how to use the representation vector
-of source code to generate comments.
-
+Literature Survey
 2.1
  
-Code Representation
-
-We propose a new kind of recursive neural network called
-Code-RNN to encapsulate the critical structural informa-
-tion of the source code. Code-RNN is an arbitrary tree form
-while other recursive neural nets used in NLP are typically
-binary trees. Fig. 3 shows an example of Code-RNN for a
-small piece of Java code.
-In Code-RNN, every parse tree of a program is encoded
-into a neural network, where the structure of the network
-is exactly the parse tree itself and each syntactic node in
-the parse tree is represented by a vector representation.
+A Brief History of Quantum Computing
+2.2
  
-2
-One unique internal node “CombineName” indicates a com-
-pound identifier that is the concatenation of several primi-
-tive words, for example, “allFound” can be split into “all”
-and “found”. More on the semantics of identifier will be dis-
-cussed later in this section.
-There are two models for the Code-RNN, namely
+Limitations of Classical Computers and birth of art of Quantum Computing
+2.2.1
  
-Sum
-Model
+Public key Cryptography and Classical factoring of big integers.
+2.2.2
  
-and
+Quantum Factoring
+2.2.3
  
-Average Model
-:
-1. Sum Model
-
-V
+Searching of an item with desired property.
+2.2.4
  
-=
+Simulation of quantum system by classical computer.
+2.3
  
-V
-node
+Quantum Computing: A whole new concept in Parallelism
+2.4
  
-+
+Quantum Superposition and Quantum Interference: Conceptual
+visualization of Quantum Computer.
+2.5
  
-f
+Quantum Entanglement
+2.5.1
  
-(
-W
+Bertleman’s Socks
+2.5.2
  
-×
+EPR situation, Hidden Variables and Bell Theorem
+2.5.2.1
  
-∑
-
-c
-∈
-C
-
-V
-c
+An EPR situation
+2.5.2.2
  
-+
+Bell Inequalities.
+2.6
  
-b
-)
+Quantum Teleportation and Quantum Theory of Information
+2.7
  
-(1)
-2. Average Model
-
-V
+Thermodynamics of Quantum Computation
+2.8
  
-=
+Experimental Realization of Quantum Computer
+2.8.1
  
-V
-node
+Heteropolymers
+2.8.2
  
-+
+Ion Traps
+2.8.3
  
-f
+Quantum Electrodynamics Cavity
+2.8.4
  
-(
-W
+Nuclear Magnetic Resonance
+2.8.5
  
-×
+Quantum Dots
+2.8.5.1
  
-1
-
-n
-
-∑
-
-c
-∈
-C
-
-V
-c
+Josephson Junctions
+2.8.5.2
  
-+
+The Kane Computer
+2.8.6
  
-b
-)
+Topological Quantum Computer
+2.9
  
-(2)
-Here
- 
-V
- 
-is the vector representation of sub-tree rooted at
- 
-N
- 
-;
-
-V
-node
- 
-is the vector that represents the syntactic type of
- 
-N
-
-itself, e.g.,
- 
-IfStatement
-;
- 
-C
- 
-is the set of all child nodes of
- 
-N
- 
-;
-
-V
-c
- 
-is the vector that represents a subtree rooted at
- 
-c
-, one of
-
-N
- 
-’s children. During the training,
- 
-W
- 
-and
- 
-b
- 
-are tuned.
- 
-V
- 
-,
-
-V
-node
- 
-and
- 
-V
-c
- 
-are calculated based on the structure of neural
-network.
- 
-f
- 
-is
- 
-RELU
- 
-activation function.
-These
- 
-equations
- 
-are
- 
-applied
- 
-recursively,
- 
-bottom-up
-through the Code-RNN at every internal node, to obtain the
-vector representation of the root node, which is also the vec-
-tor of the entire code piece.
-
-Identifier Semantics
- 
-In this work, we adopt two ways to
-extract the semantics from the identifiers. One is to split all
-the long forms to multiple words and the other one is to re-
-cover the full words from abbreviations.
-Table 2 shows some example identifiers and the results
-of splitting. Many identifiers in the source code are combi-
-nation of English words, with the first letter of the word in
-upper case, or joined together using underscores. We thus
-define simple rules to extract the original English words ac-
-cordingly. These words are further connected by the “Com-
-bineName” node in the code-RNN.
-Table 3 shows some abbreviations and their intended
-meaning. We can infer the full-versions by looking for
-2
- 
-We
- 
-use
- 
-JavaParser
- 
-from
- 
-https://github.com/javaparser/
-javaparser to generate parse tree for Java code in this paper.
-
-5230
+Future Directions of Quantum Computing
 
 page No: 3 
 ===============
-if
- 
-(!found){
-allFound =
-false;
-}
-if
- 
-(allFound){
-return true;
-}
-
-source code
-
-ƌŽŽƚ
-/Ĩ^ƚĂƚĞŵĞŶƚ
- 
-/Ĩ^ƚĂƚĞŵĞŶƚ
-
-/ĨdŽŬĞŶ
- 
-KƉĞŶWĂƌĞŶdŽŬĞŶ
- 
-ůŽƐĞWĂƌĞŶdŽŬĞŶ
- 
-dŚĞŶ^ƚŵƚ
-ŽŶĚŝƚŝŽŶ
-
-EĂŵĞdžƉƌ
-
-Ăůů
-ŽŵďŝŶĞEĂŵĞ
-
-ĨŽƵŶĚ
-
-ŝĨ
- 
-;
- 
-Ϳ
-
-ZĞƚƵƌŶ^ƚŵƚ
-
-ZĞƚƵƌŶdŽŬĞŶ
-
-ƌĞƚƵƌŶ
-ŽŽůĞĂŶ>ŝƚĞƌĂůdžƉƌ
-
-ƚƌƵĞ
-
-ůŽĐŬ^ƚŵƚ
-
-ůŽĐŬŶĚdŽŬĞŶ
-΃
-΂
-ůŽĐŬĞŐŝŶdŽŬĞŶ
-
-Code-RNN
-Figure 3: Code-RNN Example
-longer forms in the context of the identifier in the code.
-Specifically, we compare the identifier with the word list
-generated from the context of the identifier to see whether
-the identifier’s name is a substring of some word from the
-list, or is the combination of the initial of the words in the
-list. If the list contains only one word, we just check if the
-identifier is part of that word. If so, we conclude that the
-identifier is the abbreviation of that word with higher prob-
-ability. If the list contains multiple words, we can collect all
-the initials of the words in the list to see whether the iden-
-tifier is part of this collection. Suppose the code fragment
-is
-
-Matrix dm =
- 
-new
- 
-DoubleMatrix(confusionMatrix);
-
-We search for the original words of “dm” as follows. Since
-“dm” is not the substring of any word in the context, we col-
-lect the initials of the contextual words in a list: “m” “dm”
-and “cm”. Therefore, “dm” is an abbreviation of “Dou-
-bleMatrix”.
-Table 2: Example of Split Identifiers
-Identifier
- 
-Words
-contextInitialize
- 
-context, initialize
-apiSettings
- 
-api, settings
-buildDataDictionary
- 
-build, data, dictionary
-add result
- 
-add, result
-Table 3: Example of Abbreviation
-Abbreviation
- 
-Origin
- 
-Context
-val
- 
-value
- 
-key.value()
-cm
- 
-confusion, matrix
- 
-new ConfusionMatrix()
-conf
- 
-configuration
- 
-context.getConfiguration()
-rnd
- 
-random
- 
-RandomUtils.getRandom()
-
-Training
- 
-Each source code block in the training data has
-a class label. Our objective function is:
-
-arg min
- 
-CrossEntropy
-(
-sof tmax
-(
-W
-s
-V
-m
- 
-+
- 
-b
-s
-)
-, V
-label
-)
- 
-(3)
-where
- 
-V
-m
- 
-is the representation vector of source code,
- 
-V
-label
-
-is an one-hot vector to represent the class label.
- 
-W
-s
- 
-and
- 
-b
-s
-
-are parameters for softmax function and will be tuned during
-training. We use AdaGrad (Duchi, Hazan, and Singer 2011)
-to apply unique learning rate to each parameter.
-
-2.2
- 
-Comment Generation
-
-Existing work (Elman 1990; Sutskever, Martens, and Hin-
-ton 2011; Mikolov et al. 2010) has used Recurrent Neural
-Network to generate sentences. However, one challenge to
-utilize the code block representation vector in Recurrent NN
-is that we can not feed the code block representation vector
-to the Recurrent NN cell directly. We thus propose a vari-
-ation of the GRU based RNN. Fig. 4 shows our comment
-generation process.
-
-Ā
- 
-āĀ
- 
-ā
-Ā
- 
-āĀ
- 
-ā
-
-ܹ
-݄
-݅
-
-
-
-ܹ
-݄
-݄
-
-
-
-ܹ
-݄݋
-ܹ
-݄
-ݔ
- 
-
-
-ݔ
-ݐ
- 
-
-
-ݕ
-ݐ
- 
-
-
-Figure 4: Comment Generation
-We use pre-trained model Code-RNN to get the represen-
-tation vector of the input code block
- 
-V
-m
-. This vector
- 
-V
-m
-
-is fixed during training of comment generation model. Then
-we feed code block vector into the RNN (Recurrent Neural
-Network) model at every step. For example in Fig. 4, we in-
-put the START token as the initial input of model and feed
-the code block vector into the hidden layer. After calculating
-the output of this step, we do the back-propagation. Then at
-step two, we input the word “gets” and feed the code block
-vector
- 
-V
-m
- 
-into hidden layer again, and receive the
- 
-h
-t
-−
-1
- 
-from
-the step one. We repeat the above process to tune all param-
-eters. The equations of comment generation model are listed
-below.
-
-5231
-
-page No: 4 
-===============
-z
-t
- 
-=
- 
-σ
-(
-W
-z
- 
-·
- 
-[
-h
-t
-−
-1
-, x
-t
-])
- 
-(4)
-
-r
-t
- 
-=
- 
-σ
-(
-W
-r
- 
-·
- 
-[
-h
-t
-−
-1
-, x
-t
-])
- 
-(5)
-
-c
-t
- 
-=
- 
-σ
-(
-W
-c
- 
-·
- 
-[
-h
-t
-−
-1
-, x
-t
-])
- 
-(6)
-
- ̃
-h
-t
- 
-=
- 
-tanh
-(
-W
- 
-·
- 
-[
-r
-t
- 
-∗
- 
-h
-t
-−
-1
-, c
-t
- 
-∗
- 
-V
-m
-, x
-t
-])
- 
-(7)
-
-h
-t
- 
-= (1
- 
-−
- 
-z
-t
-)
- 
-∗
- 
-h
-t
-−
-1
- 
-+
- 
-z
-t
- 
-∗
- 
- ̃
-h
-t
- 
-(8)
-
-y
-t
- 
-=
- 
-sof tmax
-(
-W
-oh
-h
-t
- 
-+
- 
-b
-o
-)
- 
-(9)
-where
- 
-V
-m
- 
-is the code block representation vector,
- 
-h
-t
-−
-1
- 
-is
-the previous state and
- 
-x
-t
- 
-is the input word of this step.
-To better use the code block vectors, our model differs
-from existing RNNs, particularly in the definition of
- 
-c
-t
- 
-in
-the Equation 6 and 7. The new RNN cell, illustrated in Fig.
-5, aims to strengthen the effect of code block vectors. This
-modified GRU is hereinafter called
- 
-Code-GRU
-. Code block
-vector contains all information of code block but not all in-
-formation is useful at all steps. Therefore, we add a new gate
-called choose gate to determine which dimension of code
-block vector would work in Code-GRU. In Fig 5, the left
-gate is the choose gate, and the other two gates are the same
-as the original GRU.
-
-X
-X
-
-ܐܖ܉ܜ
-࣌
-࣌
-࣌
-
-X
-X
-+
-
-࢞
-࢚
-ࢎ
-࢚
-ି
- 
-૚
-ࢂ
- 
-࢓
-ࢎ
-࢚
-ࢂ
- 
-࢓
-
-Figure 5: Structure of Code-GRU
-During test time, we input the “START” token at first and
-choose the most probable word as the output. Then from
-the second step the input words of every step are the output
-words of previous one step until the output is “END” token.
-So that we can get an automatically generated comment for
-code blocks in our model.
-To gain better results, we also apply the beam search
-while testing. We adopt a variant of beam search with a
-length penalty described in (Wu et al. 2016). In this beam
-search model, there are two parameters: beam size and
-weight for the length penalty. We tune these two parame-
-ters on the validation set to determine which values to use.
-Our tuning ranges are:
-
-•
- 
-beam size: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-•
- 
-weight for the length penalty: [0, 0.1, 0.2, 0.3, 0.4, 0.5,
-0.6, 0.7, 0.8, 0.9, 1.0]
-
 3
- 
-Evaluation
 
-Our evaluation comes in two parts. In the first part, we eval-
-uate Code-RNN model’s ability to classify different source
-code blocks into
+Chapter 3:
  
-k
- 
-known categories. In the second part, we
-show the effectiveness of our comment generation model
-by comparing with several state-of-the-art approaches in
-both quantitative and qualitative assessments. The source
-code of our approach as well as all data set is available at
-https://adapt.seiee.sjtu.edu.cn/CodeComment/.
-
+A New outlook to the Principle of Linear Superposition
 3.1
  
-Source Code Classification
-Data Set
- 
-The goal is to classify a given Java method (we
-only use the body block without name and parameters) into
-a predefined set of classes depending on its functionality.
-Our data set comes from the Google Code Jam contest
-(2008
-∼
-2016), which there are multiple problems, each as-
-sociated with a number of correct solutions contributed by
-programmers.
- 
-3
- 
-Each solution is a Java method. The set of
-solutions for the same problem are considered to function
-identically and belong to the same class in this work. We
-use the solutions (10,724 methods) of 6 problems as training
-set and the solutions (30 methods) of the other 6 problems
-as the test set. Notice that the problems in the training data
-and the ones in the test data do not overlap. We specifically
-design the data set this way because, many methods for the
-same problem tend to use the same or similar set of identi-
-fiers, which is not true in real world application. The details
-of training set and test set are shown in Table 4.
-Table 4: Data Sets for Source Code Clustering
-Problem
- 
-Year
- 
-# of methods
-Training Set
-Cookie Clicker Alpha
- 
-2014
- 
-1639
-Counting Sheep
- 
-2016
- 
-1722
-Magic Trick
- 
-2014
- 
-2234
-Revenge of the Pancakes
- 
-2016
- 
-1214
-Speaking in Tongues
- 
-2012
- 
-1689
-Standing Ovation
- 
-2015
- 
-2226
-Test Set
-All Your Base
- 
-2009
- 
-5
-Consonants
- 
-2013
- 
-5
-Dijkstra
- 
-2015
- 
-5
-GoroSort
- 
-2011
- 
-5
-Osmos
- 
-2013
- 
-5
-Part Elf
- 
-2014
- 
-5
-
-Baselines
- 
-We compare Code-RNN with two baseline ap-
-proaches. The first one is called language embedding (
-LE
-)
-and only treats the source code as a sequence of words, mi-
-nus the special symbols (e.g., “$”, “(”, “+”,
- 
-· · ·
- 
-). All con-
-catenated words are preprocessed into primitive words as
-previously discussed. Then the whole code can be repre-
-sented by either the sum (
-LES
-) or the average (
-LEA
-) of word
-vectors of this sequence, trained in this model.This approach
-basically focuses on the word semantics only and ignores the
-structural information from the source code.
-The second baseline is a variant of Code-RNN, which
-preprocesses the code parse tree by consistently replacing
-the identifier names with placeholders before computing the
-overall representation of the tree. This variant focuses on the
-structural properties only and ignores the word semantics.
-3
- 
-All solutions are available at http://www.go-hero.net/jam/16.
-
-5232
-
-page No: 5 
-===============
-Result of Classification
- 
-At test time, when a method is
-classified into a class label, we need to determine which test
-problem this class label refers to. To that end, we compute
-the accuracy of classification for all possible class label as-
-signment and use the highest accuracy as the one given by a
-model.
-Table 5 shows the purity of the produced classes, the F1
-and accuracy of the 6-class classification problem by differ-
-ent methods. It is clear that Code-RNN (avg) perform better
-uniformly than the baselines that use only word semantics
-or only structural information. Therefore, in the rest of this
-section, we will use Code-RNN(avg) model to create vector
-representation for a given method to be used for comment
-generation. The F1 score for each individual problem is also
-included in Table 6.
-Table 5: Purity, Average F1 and Accuracy
-Purity
- 
-F1
- 
-Accuracy
-LEA
- 
-0.400
- 
-0.3515
- 
-0.3667
-LES
- 
-0.3667
- 
-0.2846
- 
-0.3667
-CRA(ni)
- 
-0.4667
- 
-0.4167
- 
-0.4667
-CRS(ni)
- 
-0.4667
- 
-0.4187
- 
-0.4667
-CRA
- 
-0.533
- 
-0.4774
- 
-0.5
-
-CRS
- 
-0.4667
- 
-0.3945
- 
-0.4333
-LEA = Language Embedding Average model; LES = Language Embedding Sum
-model; CRA = Code-RNN Average model; CRS = Code-RNN Sum model; (ni) =
-no identifier.
-Table 6: F1 scores of individual problems
-Dijkstra
- 
-Part Elf
- 
-All Your Base
- 
-GoroSort
- 
-Consonants
- 
-Osmos
-LEA
- 
-0.25
- 
-0.33
- 
-0.43
- 
-0.33
- 
-0.4
- 
-0.36
-LES
- 
-0.33
- 
-0
- 
-0.53
- 
-0
- 
-0.53
- 
-0.31
-CRA(ni)
- 
-0.6
- 
-0
- 
-0.44
- 
-0.40
- 
-0.56
- 
-0.5
-CRS(ni)
- 
-0.62
- 
-0.29
- 
-0.67
- 
-0.5
- 
-0.44
- 
-0
-CRA
- 
-0.67
- 
-0
- 
-0.6
- 
-0.57
- 
-0.53
- 
-0.52
-CRS
- 
-0.73
- 
-0
- 
-0.44
- 
-0.55
- 
-0.4
- 
-0.25
-
+Modification of Wave function as a requirement of Quantum
+Teleportation
 3.2
  
-Comment Generation Model
-Data Set
+Introduction of EPR correlation term in Expansion Theorem
+3.2.1 Suitability of Quantum bits for Quantum Computation
+3.3
  
-We use ten open-source Java code repositories
-from GitHub for this experiment (see Table 1). In each of
-these repositories we extract descriptive comment and the
-corresponding method pairs. Constructor methods are ex-
-cluded from this exercise. These pairs are then used for train-
-ing and test. Notice that all the method names and parame-
-ters are excluded from training and test.
+An alternative interpretation of Quantum No Cloning Theorem.
 
-Baselines
+Chapter 4
+: Experimental realization of Quantum Computers
+4.1
  
-We compare our approach with four baseline
-methods.
+Materials of Low dimensionality-Quantum Dot a promising
+candidate.
+4.2
+ 
+Need for Modified Coulomb Potential and its analysis
+4.3
+ 
+Analysis of Quantum Dots using Modified Coulomb Potential.
+4.4
+ 
+Study of Quantum Wires using Modified Coulomb Potential
+4.5
+ 
+Visit to Nano Technology Lab in Barkatullah University, Bhopal
 
-•
- 
-Moses
-4
- 
-is a statistical machine translation system. We re-
-gard the source codes as the source language and the com-
-ments as the target, and use Moses to translate from the
-source to the target.
-
-•
- 
-CODE-NN
- 
-(Iyer et al. 2016) is the first model to use neu-
-ral network to create sentences for source code. In this
-model author used LSTM and attention mechanism to
-4
- 
-Home page of Moses is http://www.statmt.org/moses/.
-generate sentences. The original data set for CODE-NN
-are StackOverFlow thread title and code snippet pairs.
- 
-5
- 
-.
-In this experiment, we use the comment-code pair data in
-place of the title-snippet data.
-
-•
- 
-We apply the
- 
-sequence-to-sequence (seq2seq)
- 
-model used
-in machine translation (Britz et al. 2017) and treat the
-code as a sequence of words and the comment as another
-sequence.
-
-•
- 
-A. Karpathy and L. Fei-Fei (Karpathy and Fei-Fei 2015)
-proposed a meaningful method to generate image de-
-scriptions. It also used Recurrent NN and representation
-vector, so we apply this method to comment generation
-model. The main equations are:
-
-b
-v
- 
-=
- 
-W
-hi
-V
-m
- 
-(10)
-
-h
-t
- 
-=
- 
-f
- 
-(
-W
-hx
-x
-t
- 
-+
- 
-W
-hh
-h
-t
-−
-1
- 
-+
- 
-b
-h
- 
-+
- 
-b
-v
- 
-)
- 
-(11)
-
-y
-t
- 
-=
- 
-sof tmax
-(
-W
-oh
-h
-t
- 
-+
- 
-b
-o
-)
- 
-(12)
-where
- 
-W
-hi
-,
- 
-W
-hx
-,
- 
-W
-hh
-,
- 
-W
-oh
-,
- 
-x
-i
- 
-and
- 
-b
-h
-,
- 
-b
-o
- 
-are parameters
-to be learned, and
- 
-V
-m
- 
-is the method vector. We call this
-model
- 
-Basic RNN
-.
-Moses and CODE-NN has its own terminate condition.
-Seq2Seq, Basic RNN and our model run 800 epochs during
-training time. For one project, we separate the commented
-methods into three parts: training set, validation set and test
-set. We tune the hyper parameter on the validation set. The
-results of ten repositories are shown in Table 7.
-
-Evaluation Metric
- 
-We evaluate the quality of comment
-generation by the Rouge method(Lin 2004). Rouge model
-counts the number of overlapping units between generated
-sentence and target sentence. We choose Rouge-2 score in
-this paper where word based 2-grams are used as the unit,
-as it is the most commonly used in evaluating automatic text
-generation such as summarization.
-Table 7: Rouge-2 Values for Different Methods
-neo4j cocos2d jersey aima-
-java
-guava Smack Activiti spring-
-batch
-libgdx rhino
-MOSES
-0.076
- 
-0.147
- 
-0.081 0.1440.134
- 
-0.145
- 
-0.104
- 
-0.147 0.212
- 
-0.082
-CODE-
-NN
-0.077
- 
-0.136
- 
-0.105 0.1240.153
- 
-0.135
- 
-0.103
- 
-0.184 0.208
- 
-0.171
-
-Seq2seq
-0.039
- 
-0.115
- 
-0.183 0.1080.152
- 
-0.109
- 
-0.158
- 
-0.171
- 
-0.247
- 
-0.169
-Basic
-RNN*
-0.133
- 
-0.152
- 
-0.214 0.2070.156
- 
-0.150
- 
-0.203
- 
-0.237
- 
-0.218
- 
-0.163
-Code-
-GRU*
-
-0.141
- 
-0.158
- 
-0.230 0.2090.164
- 
-0.162
- 
-0.200
- 
-0.213 0.233
- 
-0.165
-*: both models use the method representation vector from
-Code-RNN.
-
-Examples of Generated Comment
- 
-Fig. 6 shows the com-
-ments generated by the competing methods for three exam-
-ple Java methods coming from different repositories. Be-
-cause we delete all punctuation from the training data, the
-generated comments are without punctuation. Nonetheless,
-we can see that comments by our Code-GRU model are gen-
-erally more readable and meaningful.
-5
- 
-Data comes from https://stackoverflow.com/. Source code of
-CODE-NN is available from https://github.com/sriniiyer/codenn.
-
-5233
-
-page No: 6 
-===============
-Project: jersey
-public long
- 
-tryConvertToReadLock(long stamp)
- 
-{
-long
- 
-a = stamp
- 
-&
- 
-ABITS,
- 
-m,
- 
-s,
- 
-next;
- 
-WNode
- 
-h;
-while
- 
-(((s =
- 
-state)
- 
-&
- 
-SBITS)
- 
-==
- 
-(stamp
- 
-&
- 
-SBITS)) {
-if
- 
-((m
- 
-= s
- 
-&
- 
-ABITS)
- 
-==
- 
-0L)
- 
-{
-if
- 
-(a
- 
-!=
- 
-0L)
- 
-break;
-else if
- 
-(m
- 
-<
- 
-RFULL)
- 
-{
-if
- 
-(U.compareAndSwapLong(this,
- 
-STATE, s,
-next
- 
-=
- 
-s
- 
-+ RUNIT))
-return next;}
-else if
- 
-((next
- 
-=
- 
-tryIncReaderOverflow(s)) !=
-0L)
- 
-return next;}
-else if
- 
-(m
- 
-==
- 
-WBIT)
- 
-{
-if
- 
-(a
- 
-!=
- 
-m)
- 
-break;
-state
- 
-=
- 
-next
- 
-=
- 
-s
- 
-+ (WBIT
- 
-+
- 
-RUNIT);
-if
- 
-((h
- 
-=
- 
-whead)
- 
-!= null &&
- 
-h.status
- 
-!= 0)
-release(h);
-return
- 
-next;}
-else if
- 
-(a
- 
-!=
- 
-0L
- 
-&&
- 
-a
- 
-<
- 
-WBIT)
- 
-return stamp;
-else break;}
-return
- 
-0L;}
-
-Gold
- 
-if the lock state matches the given stamp performs one of the fol-
-lowing actions if the stamp represents holding a write lock re-
-leases it and UNK a read lock or if a read lock returns it or if
-an optimistic read acquires a read lock and returns a read stamp
-only if immediately available this method returns zero in all other
-cases
-MOSES
- 
-if the lock state matches the given if the lock state matches the
-given gets of processing sbits state matches the given sbits string
-of the lock hold abits l l break component of rfull that runs sets
-of processing of runit or create a new pattern if this inc reader
-overflow l create a human readable description of component of
-wbit break if the lock of processing of wbit runit h whead by the
-given status release the given action if the sum associated with
-the given component l lock state matches the given action wbit
-get returns break l
-CODE-NN
- 
-returns code true if the lock is not a link org glassfish jersey server
-mvc
-Seq2Seq
- 
-UNK a new item to the list of superclass timeout version
-Basic RNN*
- 
-get a UNK to a link javax ws rs core UNK
-Code-GRU*
- 
-if the lock state matches the given stamp performs one of the fol-
-lowing actions if the stamp represents holding a write lock returns
-it or if a read lock if the write lock is available releases the read
-lock and returns a write stamp or if an optimistic read returns
-
-project: cocos2d
-public static float
- 
-ccpDot(final CGPoint
- 
-v1,
- 
-final
-CGPoint v2)
- 
-{
-return
- 
-v1.x * v2.x
- 
-+
- 
-v1.y * v2.y;
- 
-}
-
-Gold
- 
-Calculates dot product of two points
-MOSES
- 
-subtract another subtract another the given vector
-CODE-NN
- 
-rotates two points
-Seq2Seq
- 
-returns the closest long to the specified value
-Basic RNN*
- 
-calculates cross product of two points
-Code-GRU*
- 
-calculates cross product of two points
-
-project: libgdx
-public static
- 
-IntBuffer
- 
-allocate
- 
-(int
- 
-capacity) {
-if
- 
-(capacity
- 
-<
- 
-0)
- 
-{
-throw
- 
-new IllegalArgumentException();
-}
-return
- 
-BufferFactory.newIntBuffer(capacity);}
-
-Gold
- 
-creates an int buffer based on a newly allocated int array
-MOSES
- 
-based on the creates a new backing buffer
-CODE-NN
- 
-creates a byte buffer based on a newly allocated char array
-Seq2Seq
- 
-creates a float buffer based on a newly allocated float array
-Basic RNN*
- 
-creates a char buffer based on a newly allocated char array
-Code-GRU*
- 
-creates a long buffer based on a newly allocated long array
-Figure 6: Examples of generated comments and corresponding code snippets
-In the first example, we can see that CODE-NN, Seq2Seq
-and Basic RNN’s results are poor and have almost nothing
-to do with the Gold comment. Even though both MOSES
-produces a sequence of words that look similar to the Gold
-in the beginning, the rest of the result is less readable and
-does not have any useful information. For example, “if the
-lock state matches the given” is output repeatedly. MOSES
-also produces strange terms such as “wbit” and “runit” just
-because they appeared in the source code. In the contrast,
-Code-GRU’s result is more readable and meaningful.
-In the second example, there is not any useful word in
-the method body so the results of MOSES, CODE-NN and
-Seq2Seq are bad. Code-RNN can extract the structural in-
-formation of source code and embed it into a vector, so both
-models that use this vector, namely Basic RNN and Code-
-GRU, can generate the relevant comments.
-In the third example, although all results change the type
-of the value, that is, Basic RNN changes “int” to “char”
-while Code-GRU changes to “long”. “long” and “int” are
-both numerical types while “char” is not. Thus Code-GRU is
-better than Basic RNN. For the result of Seq2Seq, although
-“float” is also a numerical type, it is for real numbers, and
-not integers.
-
-4
- 
-Related Work
-
-Mining of source code repositories becomes increasingly
-popular in recent years. Existing work in source code min-
-ing include code search, clone detection, software evolution,
-models of software development processes, bug localization,
-software bug prediction, code summarization and so on. Our
-work can be categorized as code summarization and com-
-ment generation.
-Sridhara et al. (Sridhara et al. 2010) proposed an au-
-tomatic comment generator that identifies the content for
-
-5234
-
-page No: 7 
-===============
-the summary and generates natural language text that sum-
-marizes the methods overall actions based on some tem-
-plates. Moreno et al. (Moreno et al. 2013) also proposed a
-template based method but it is used on summarizing Java
-classes. McBurney and McMillan (McBurney and McMil-
-lan 2014) presented a novel approach for automatically gen-
-erating summaries of Java methods that summarize the con-
-text surrounding a method, rather than details from the
-internals of the method. These summarization techniques
-(Murphy 1996; Sridhara, Pollock, and Vijay-Shanker 2011;
-Moreno et al. 2013; Haiduc et al. 2010) work by select-
-ing a subset of the statements and keywords from the code,
-and then including information from those statements and
-keywords in the summary. To improve them, Rodeghero et
-al. (Rodeghero et al. 2014) presented an eye-tracking study
-of programmers during source code summarization, a tool
-for selecting keywords based on the findings of the eye-
-tracking study.
-These models are invariably based on templates and care-
-ful selection of fragments of the input source code. In con-
-trast, our model is based on learning and neural network.
-There are also some models that apply learning methods to
-mine source code.
-Movshovitz-Attias and Cohen (Movshovitz-Attias and
-Cohen 2013) predicted comments using topic models and
-n-grams. Like source code summarization, Allamanis et
-al. (Allamanis et al. 2015) proposed a continuous embed-
-ding model to suggest accurate method and class names.
-Iyer et al. (Iyer et al. 2016) proposed a new model called
-CODE-NN that uses Long Short Term Memory (LSTM)
-networks with attention to produce sentences that can de-
-scribe C# code snippets and SQL queries. Iyer et al.’s work
-has strong performance on two tasks, code summarization
-and code retrieval. This work is very similar to our work, in
-that we both use the Recurrent NN to generate sentences
-for source code. What differs is that we propose a new
-type of Recurrent NN. Adrian et al. (Kuhn, Ducasse, and
-G ́
-ırba 2007) utilized the information of identifier names and
-comments to mine topic of source code repositories. Punya-
-murthula (Punyamurthula 2015) used call graphs to extract
-the metadata and dependency information from the source
-code and used this information to analyze the source code
-and get its topics.
-In other related domains of source code mining, code
-search is a popular research direction. Most search en-
-gines solve the problem by keyword extraction and signa-
-ture matching. Maarek et al. (Maarek, Berry, and Kaiser
-1991) used keywords extracted from man pages written in
-natural language and their work is an early example of ap-
-proaches based on keywords. Rollins and Wing (Rollins and
-Wing 1991) proposed an approach to find code with the sig-
-natures present in code. Mitchell (Mitchell 2008) combined
-signature matching with keyword matching. Then Garcia et
-al. (Garcia-Contreras, Morales, and Hermenegildo 2016) fo-
-cused on querying for semantic characteristics of code and
-proposed a new approach which combines semantic charac-
-teristics and keyword matching.
-Cai
- 
-(Cai
- 
-2016)
- 
-proposed
- 
-a
- 
-method
- 
-for
- 
-code
- 
-paral-
-lelization through sequential code search. That method
-can
- 
-also
- 
-be
- 
-used
- 
-for
- 
-clone
- 
-detection.
- 
-Williams
- 
-and
-Hollingsworth
- 
-(Williams
- 
-and
- 
-Hollingsworth
- 
-2005)
- 
-de-
-scribed a method to use the source code change history of
-a software project to drive and help to refine the search
-for bugs. Adhiselvam et al. (Adhiselvam, Kirubakaran, and
-Sukumar 2015) used MRTBA algorithm to localize bug to
-help programmers debug. The method proposed in this paper
-can also benefit natural language search for code fragments.
-
-5
- 
-Conclusion
-
-In this paper we introduce a new Recursive Neural Net-
-work called
- 
-Code-RNN
- 
-to extract the topic or function of
-the source code. This new Recursive Neural Network is the
-parse tree of the source code and we go through all the tree
-from leaf nodes to root node to get the final representation
-vector. Then we use this vector to classify the source code
-into some classes according to the function, and classifica-
-tion results are acceptable. We further propose a new kind
-of GRU called
- 
-Code-GRU
- 
-to utilize the vector created from
-Code-RNN to generate comments. We apply Code-GRU to
-ten source code repositories and gain the best result in most
-projects. This frame work can also be applied to other pro-
-gramming languages as long as we have access to the parse
-tree of the input program.
-As future work, we can add call graphs into our model,
-so that Code-RNN can contain invocation information and
-extract more topics from source code.
-
-Acknowledgement
-
-This
- 
-work
- 
-was
- 
-supported
- 
-by
- 
-Oracle-SJTU
- 
-Joint
- 
-Re-
-search Scheme, NSFC Grant No. 9164620571421002 and
-61373031, and SJTU funding project 16JCCS08. Hongfei
-Hu contributed to the identifier semantics part of the work.
+Chapter 5
+: Future Directions of Research
+5.1 Explanation of Measurement Problem by Symmetry breaking
+5.2
+ 
+EPR Correlation: Interacting Hamiltonian Vs Non linear wave
+function
+5.3
+ 
+Possibility of third paradigm in Quantum Mechanics
+5.4
+ 
+Conclusion and Future Scope
 
 References
 
-Adhiselvam, A.; Kirubakaran, E.; and Sukumar, R.
- 
-2015.
-An enhanced approach for software bug localization using
-map reduce technique based apriori (mrtba) algorithm.
- 
-In-
-dian Journal of Science and Technology
- 
-8(35).
-Allamanis, M.; Barr, E. T.; Bird, C.; and Sutton, C.
- 
-2015.
-Suggesting accurate method and class names. In
- 
-ESEC/FSE
-,
-38–49. ACM.
-Blei, D. M.; Ng, A. Y.; and Jordan, M. I.
- 
-2003.
- 
-Latent
-dirichlet allocation.
- 
-Journal of machine Learning research
+page No: 4 
+===============
+4
 
-3(Jan):993–1022.
-Britz, D.; Goldie, A.; Luong, T.; and Le, Q.
- 
-2017.
- 
-Mas-
-sive Exploration of Neural Machine Translation Architec-
-tures.
- 
-ArXiv e-prints
-.
-Cai, B. 2016. Code parallelization through sequential code
-search. In
- 
-ICSE-C
-, 695–697. ACM.
-Cho, K.; Van Merri ̈
-enboer, B.; Bahdanau, D.; and Ben-
-gio, Y.
- 
-2014.
- 
-On the properties of neural machine
-translation: Encoder-decoder approaches.
- 
-arXiv preprint
-arXiv:1409.1259
-.
-Duchi, J.; Hazan, E.; and Singer, Y. 2011. Adaptive subgra-
-dient methods for online learning and stochastic optimiza-
+List of Figures:
 
-5235
+Fig 1:
+ 
+Showing number of dopant impurities involved in logic in bipolar transistors with year.
+Fig 2:
+ 
+Beam splitting of light
+
+Fig3: Example to show wave particle duality of light
+Fig 4: EPR paradox description using He atom
+Fig 5: Graphical description of the EPR situation
+Fig 6: Quantum Dots
+Fig 7: Quantum Teleportation using Entanglement
+Fig 8: The graphical representation of the Modified Coulomb potential
+Fig 9: Plot of Wave Function Vs. distance in a Quantum Dot
+Fig 10: Quantum Wire as a 1-D system
+Fig 11: Quantum Dots as seen from an Atomic Force Microscope
+Fig 12: The tip of the Scanning Tunneling Microscope
+Fig 13: AFM Plots of Quantum Dots prepared in laboratory.
+
+page No: 5 
+===============
+5
+
+C
+HAPTER
+ 
+1
+
+1.0
+ 
+I
+NTRODUCTION
+
+With the development of science and technology, leading to the advancement of
+civilization, new ways were discovered exploiting various physical resources such as
+materials, forces and energies. The history of computer development represents the
+culmination of years of technological advancements beginning with the early ideas of
+Charles Babbage and eventual creation of the first computer by German engineer Konard
+Zeise in 1941. The whole process involved a sequence of changes from one type of
+physical realization to another from gears to relays to valves to transistors to integrated
+circuits to chip and so on. Surprisingly however, the high speed modern computer is
+fundamentally no different from its gargantuan 30 ton ancestors which were equipped
+with some 18000 vacuum tubes and 500 miles of wiring. Although computers have
+become more compact and considerably faster in performing their task, the task remains
+the
+ 
+same:
+ 
+to
+ 
+manipulate
+ 
+and
+ 
+interpret
+ 
+an
+ 
+encoding
+ 
+of
+ 
+binary
+ 
+bits
+ 
+into
+ 
+a
+ 
+useful
+computational result.
+The number of atoms needed to represent a bit of memory has been decreasing
+exponentially since 1950. An observation by Gordon Moore in 1965 laid the foundations
+for what came to be known as “Moore’s Law” – that computer processing power doubles
+every eighteen months. If Moore’s Law is extrapolated naively to the future, it is learnt
+that sooner or later, each bit of information should be encoded by a physical system of
+subatomic size. As a matter of fact this point is substantiated by the survey made by
+Keyes in 1988 as shown in fig. 1. This plot shows the number of electrons required to
+store a single bit of information. An extrapolation of the plot suggests that we might be
+within the reach of atomic scale computations with in a decade or so at the atomic scale
+however.
+Year
+
+Fig 1: Showing number of dopant impurities in logic in bipolar transistors with year.
+
+10
+14
+
+10
+12
+
+10
+10
+
+10
+8
+
+10
+6
+
+10
+4
+
+10
+2
+
+1
+ 
+1950
+ 
+1970
+ 
+1980
+ 
+1990
+ 
+2000
+ 
+2010
+
+No. Of
+Impurities
+
+page No: 6 
+===============
+6
+
+Matter obeys the rules of quantum mechanics, which are quite different from the
+classical rules that determine the properties of conventional logic gates. So if computers
+are to become smaller in future, new, quantum technology must replace or supplement
+what we have now. Not withstanding, the quantum technology can offer much more than
+just cramming more and more bits to silicon and multiplying the clock speed of
+microprocessors. It can support entirely a new kind of computation with quantitatively as
+well as qualitatively new algorithms based on the principles of quantum mechanics.
+With the size of components in classical computers shrinking to where the behaviour
+of the components, is practically dominated by quantum theory than classical theory,
+researchers have begun investigating the potential of these quantum behaviours for
+computation. Surprisingly it seems that a computer whose components are all to function
+in a quantum way are more powerful than any classical computer can be. It is the
+physical limitations of the classical computer and the possibilities for the quantum
+computer to perform certain useful tasks more rapidly than any classical computer, which
+drive the study of quantum computing.
+A computer whose memory is exponentially larger than its apparent physical size, a
+computer that can manipulate an exponential set of inputs simultaneously – a whole new
+concept in parallelism; a computer that computes in the twilight (space like) zone of
+Hilbert Space (or possibly a higher space – Grassman Space & so on), is a quantum
+computer. Relatively few and simple concepts from quantum mechanics are needed to
+make quantum computers a possibility. The subtlety has been in learning to manipulate
+these concepts. If such a computer is inevitability or will it be too difficult to build on, is
+a million dollars question.
+
+page No: 7 
+===============
+7
+
+C
+HAPTER
+ 
+2
+
+LITERATURE
+ 
+SURVEY
+
+2.1
+ 
+A
+ 
+B
+RIEF
+ 
+H
+ISTORY
+ 
+O
+F
+ 
+Q
+UANTUM
+ 
+C
+OMPUTING
+:
+
+The idea of computational device based on quantum mechanics was first explored
+in the 1970’s and early 1980’s by physicists and computer scientists such as Charles H.
+Bennet of the IBM Thomas J. Watson Research Centre, Paul A. Beniof of Arogonne
+National Laboratory in Illinois, David Deustch of the University of Oxford and Richard
+P. Feynman of Caltech. The idea emerged when scientists were pondering on the
+fundamental limits of computation. In 1982 Feynman was among the fewer to attempt to
+provide conceptually a new kind of computers which could be devised based on the
+principles of quantum physics. He constructed an abstract model to show how a quantum
+system could be used to do computations and also explain how such a machine would be
+able to act as a simulator for physical problems pertaining to quantum physics. In other
+words, a physicist would have the ability to carry out experiments in quantum physics
+inside
+ 
+a
+ 
+quantum
+ 
+mechanical
+ 
+computer.
+ 
+Feynman
+ 
+further
+ 
+analysed
+ 
+that
+ 
+quantum
+computers can solve quantum mechanical many body problems that are impractical to
+solve on a classical computer. This is due to the fact that solutions on a classical
+computer would require exponentially growing time where as the whole calculations on
+quantum computer can be done in polynomial time.
+Later, in 1985, Deutsch realized that Feynman assertion could eventually lead to a
+general-purpose quantum computer. He showed that any physical process, in principle
+could be modelled perfectly by a quantum computer. Thus, a quantum computer would
+have capabilities far beyond those of any traditional classical computer. Consequently
+efforts were made to find interesting applications for such a machine. This did not lead to
+much success except continuing few mathematical problems. Peter Shor in 1994 set out a
+method for using quantum computers to crack an important problem in number theory
+which
+ 
+was
+ 
+namely
+ 
+factorisation.
+ 
+He
+ 
+showed
+ 
+how
+ 
+an
+ 
+ensemble
+ 
+of
+ 
+mathematical
+operations, designed specifically for a quantum computer could be organized to make
+such a machine to factor huge numbers extremely rapidly, much faster than is possible on
+conventional computers. With this breakthrough, quantum computing transformed from a
+mere academic curiosity directly to an interest world over.
+Perhaps
+ 
+the
+ 
+most
+ 
+astonishing
+ 
+fact
+ 
+about
+ 
+quantum
+ 
+computing
+ 
+is
+ 
+that
+ 
+it
+ 
+took
+exceedingly large time to take off. Physicists have known since 1920’s that the world of
+subatomic particles is a realm apart, but it took computer scientists another half century
+to begin wondering whether quantum effects might be harnessed for computation. The
+answer was far from obvious.
 
 page No: 8 
 ===============
-tion.
- 
-Journal of Machine Learning Research
- 
-12(Jul):2121–
-2159.
-Elman, J. L.
- 
-1990.
- 
-Finding structure in time.
- 
-Cognitive
-science
- 
-14(2):179–211.
-Garcia-Contreras, I.; Morales, J. F.; and Hermenegildo,
-M. V.
- 
-2016.
- 
-Semantic code browsing.
- 
-arXiv preprint
-arXiv:1608.02565
-.
-Haiduc, S.; Aponte, J.; Moreno, L.; and Marcus, A. 2010.
-On the use of automated text summarization techniques for
-summarizing source code. In
- 
-WCRE
-, 35–44. IEEE.
-Iyer, S.; Konstas, I.; Cheung, A.; and Zettlemoyer, L. 2016.
-Summarizing source code using a neural attention model. In
+8
 
-ACL
-, 2073–2083.
-Karpathy, A., and Fei-Fei, L. 2015. Deep visual-semantic
-alignments for generating image descriptions. In
+2.2
  
-Proceed-
-ings of the IEEE Conference on Computer Vision and Pat-
-tern Recognition
-, 3128–3137.
-Kuhn, A.; Ducasse, S.; and G ́
-ırba, T. 2007. Semantic clus-
-tering: Identifying topics in source code.
+L
+IMITATIONS
  
-Information and
-Software Technology
+OF
  
-49(3):230–243.
-Lin, C.-Y.
+C
+LASSICAL
  
-2004.
+C
+OMPUTER
  
-Rouge: A package for automatic evalu-
-ation of summaries.
+AND
  
-In
+BIRTH
  
-Text summarization branches out:
-Proceedings of the ACL-04 workshop
-, volume 8. Barcelona,
-Spain.
-Maarek, Y. S.; Berry, D. M.; and Kaiser, G. E. 1991. An in-
-formation retrieval approach for automatically constructing
-software libraries.
+OF
  
-IEEE Transactions on software Engineer-
-ing
+ART
  
-17(8):800–813.
-McBurney, P. W., and McMillan, C. 2014. Automatic doc-
-umentation generation via source code summarization of
-method context. In
+OF
  
-ICPC
-, 279–290. ACM.
-Mikolov, T.; Karafi ́
-at, M.; Burget, L.; Cernock`
-y, J.; and Khu-
-danpur, S. 2010. Recurrent neural network based language
-model. In
- 
-Interspeech
-, volume 2, 3.
-Mikolov, T.; Sutskever, I.; Chen, K.; Corrado, G. S.; and
-Dean, J.
- 
-2013.
- 
-Distributed representations of words and
-phrases and their compositionality.
- 
-In
- 
-Advances in neural
-information processing systems
-, 3111–3119.
-Mitchell, N. 2008. Hoogle overview.
- 
-The Monad. Reader
+Q
+UANTUM
 
-12:27–35.
-Moreno, L.; Aponte, J.; Sridhara, G.; Marcus, A.; Pollock,
-L.; and Vijay-Shanker, K.
+C
+OMPUTING
+
+2.2.1: Public Key Cryptography and Classical factoring of big integers:
+
+In 1970 a clever mathematical discovery in the shape of “public key” systems
+provided a solution to key distribution problem. In these systems users do not need to
+agree on a secret key before they send the message. The principle of a safe with two keys,
+one public key to lock it, and another private one to open it, is employed. Everyone has a
+key to lock the safe but one person has a key that will open it again, so anyone can put a
+message in the safe but only one person can take it out. In practice the two keys are two
+large integer numbers. One can easily derive a public key from a private key but not vice
+versa. The system exploits the fact that certain mathematical operations are easier to
+perform in one direction that the other e.g. multiplication of numbers can be performed
+much faster than factorising a large number. What really counts for a “fast” algorithm is
+not the actual time taken to multiply a particular pairs of numbers but the fact that the
+time does not increase too sharply when we apply the same method to ever-large
+numbers. We know that multiplication requires little extra time when we switch from two
+three digit numbers to two thirty digit numbers using the simpler trial division method
+about 10
+∧
+13 times more time or memory consuming than factoring a three digit number.
+In case of factorisation the use of computational resources is enormous when we keep on
+increasing the number of digits. As a matter of fact public key cryptosystems could avoid
+key distribution problem. However their security depends upon unproven mathematical
+assumptions such as the difficulty of factoring large integers. Nevertheless one such
+protocol is RSA, which maps electronic banking possible by assuming banks and their
+customers that a bogus transfer of funds or a successful forgery would take the world’s
+fastest computer millions of years to carry out. Another is the under spread Data
+Encryption
  
-2013.
+Standard
  
-Automatic generation of
-natural language summaries for java classes. In
+(DES)
  
-ICPC
-, 23–
-32. IEEE.
-Movshovitz-Attias, D., and Cohen, W. W.
+which
  
-2013.
+remains
  
-Natural
-language models for predicting programming comments.
-Murphy, G. C. 1996.
+secure
  
-Lightweight structural summarization
-as an aid to software evolution
-. Ph.D. Dissertation.
-Punyamurthula, S.
+far
  
-2015.
+most
  
-Dynamic model generation and
-semantic search for open source projects using big data an-
-alytics
-.
+ordinary
  
-Ph.D. Dissertation, Faculty of the University Of
-Missouri-Kansas City in partial fulfillment Of the require-
-ments for the degree MASTER OF SCIENCE By SRAVANI
-PUNYAMURTHULA B. Tech, Jawaharlal Nehru Techno-
-logical University.
-Rodeghero, P.; McMillan, C.; McBurney, P. W.; Bosch, N.;
-and D’Mello, S.
+business
+transactions.
+The procedure of factorising a large integer can be quantified as follows. Consider
+a number N with L decimal digits (N ~ 10 to power L). The number is factored using trial
+division method. On conventional computers one of well known factoring algorithm runs
+for number of operations of the order of
+s ~ O
  
-2014.
+(
+exp
  
-Improving automated source code
-summarization via an eye-tracking study of programmers.
-In
+(
  
-ICSE
-, 390–401. ACM.
-Rollins, E. J., and Wing, J. M. 1991. Specifications as search
-keys for software libraries. In
+(64/9)
+1/3
  
-ICLP
-, 173–187. Citeseer.
-Socher, R.; Lin, C. C.; Manning, C.; and Ng, A. Y. 2011a.
-Parsing natural scenes and natural language with recursive
-neural networks. In
+(
+ln
+N)
+1/3
  
-ICML
-, 129–136.
-Socher, R.; Pennington, J.; Huang, E. H.; Ng, A. Y.; and
-Manning, C. D. 2011b. Semi-supervised recursive autoen-
-coders for predicting sentiment distributions.
+(
+ln
  
-In
+ln
+N)
+2/3
  
-EMNLP
+)
+)
+
+or explicitly,
+ 
+s ~ A exp
+ 
+(
+ 
+1.9 L
+1/3
+ 
+(
+ 
+ln
+L)
+2/3
+ 
+)
+
+This algorithm therefore, scales exponentially with the input size log N (log N determines
+the length of the input. The base of the logarithm is determined by our numbering system.
+Thus base 2 gives the length in binary, a base 2 gives the length in binary, a base of 10 in
+decimal and so on) e.g. in 1994 a 129 digit number (known as RSA 129) was successfully
+factored using this algorithm on approximately 1600 workstations scattered around the
+world, the entire factorisation took eight months. Using this to estimate the per factor of
+the above exponential scaling, it is found that it would take roughly 800,000 years to
+factor a 250 digit number with the same computer power, similarly a 1000 digit number
+would require 10 to the power 25 years (much longer than the age of universe). The
+difficulty of factoring large numbers is crucial for public key cryptography such as used
+
+page No: 9 
+===============
+9
+
+in banks around 250 digits. Using the trial division method for factorisation 10
+L/2
+ 
+(=
+√
+N)
+divisions are needed to solve the problem on exponential increase as function of L.
+Suppose a computer performs 10
+10
+ 
+decisions per second. Thus the computer can factor
+any number N, in about e.g. a 100 digit number will be factored in 10
+40
+ 
+seconds, much
+longer than 3.8 X 10
+17
+ 
+second (12 billion years), the currently estimated age of the
+universe!
+
+2.2.2
+ 
+Quantum Factoring
+
+From the analysis of classical factoring of big integers it seems that factoring big
+numbers will remain beyond the capabilities of any realistic computing devices and
+unless
+ 
+mathematicians
+ 
+or
+ 
+computer
+ 
+scientists
+ 
+come
+ 
+up
+ 
+with
+ 
+an
+ 
+efficient
+ 
+factoring
+algorithm, the public key crypto systems will remain secure. However it turns out that
+this is not the case. The Classical Theory of Computation is not complete simply because
+it does not describe all physically possible computations. In particular, it does not
+describe computations, which can be performed by quantum devices. Indeed, recent work
+in quantum computation shows that a quantum computer can factor much faster than any
+classical computer. According to an algorithm developed by Peter Shor factoring an
+integer using quantum computer runs in O
+(
+(
+ln
+N)
+ 
+2+
+ε
+)
+ 
+steps, where
+ 
+ε
+ 
+is small. This is
+roughly quadratic in the input size, so factoring a 1000 digit number with such an
+algorithm would require only few million steps. The implication is that public key
+cryptosystems based on factoring may be breakable.
+
+2.2.3
+ 
+Searching of an item with desired property
+:
+
+Searching of an item with desired property from a collection of N items is another
+problem that admits tremendous speed up using quantum logic based algorithm. Suppose
+we pick up an item at random from a collection of N items likelihood of correct selection
+is the same as that of right one, the probability of right selection is half. Hence on an
+average we require N/2 operations for getting the right item. However Grover invented
+quantum logic based algorithm, which accomplishes the same task in an average of
+ 
+√
+ 
+N
+number of operations.
+
+2.2.4 Simulation of quantum system by classical computer:
+
+Richard P. Feynman, in 1982 proposed that a quantum physical system of N
+particles with its quantum probabilities can not be simulated by the usual computer
+without an exponential slowdown in the efficiency of simulation. However, a system of
+N particles in classical physics can be simulated with a polynomial slowdown. The main
+reason for this is that the description size of a particle system is linear in N in classical
+physics but exponential in N according to quantum computer (computer based on the
+laws of quantum mechanics) can avoid the slowdown encountered in the simulation
+process of quantum systems. Feynman also addressed the problem of simulating a
+quantum
+ 
+physical
+ 
+system
+ 
+with
+ 
+a
+ 
+probabilistic
+ 
+computer
+ 
+but
+ 
+due
+ 
+to
+ 
+interference
+phenomena, it appears to be a difficult problem.
+
+page No: 10 
+===============
+10
+
+2.3
+ 
+Q
+UANTUM COMPUTING
+:
+ 
+A WHOLE NEW CONCEPT IN PARALLELISM
+
+Performing
+ 
+mathematical
+ 
+calculations,
+ 
+searching
+ 
+the
+ 
+internet,
+ 
+modelling
+ 
+the
+national economy, forecasting the weather and so on puts a constraint on the capacity of
+even the fastest and most powerful computers. The difficulty is not so much that
+microprocessors are too slow; it is that computers are inherently inefficient. Modern
+(classical) computers operate according to programs that divide a task into elementary
+operations, which are then carried out serially, one operation at a time. Efforts have been
+made to coax two or more computers (or at least two or more microprocessors) to work
+on different aspects of a problem at the same time, but the progress in such parallel
+computing has been slow and fitful. The reason to a large extent is that the logic built into
+microprocessors is inherently serial (normal computers sometimes appear to be doing
+many tasks at once, such as running both a word processor and spreadsheet programme,
+but in reality, the central processor is simply cycling rapidly from one task to the next).
+In a true sense, parallel computer would have simultaneity built into its very nature.
+It would be able to carry out many operations at once, to search instantly through a long
+list of possibilities and point out the one that solves the problem. Such computers do
+exist. They are called quantum computers. In reality, the more exciting feature of
+quantum computing is quantum parallelism. A quantum system in general is not in one
+“classical state” but in a “quantum state” consisting (broadly speaking) in a superposition
+of many classical or classical like states. This is called principle of linear superposition
+used to construct quantum states. If the superposition can be protected from unwanted
+entanglement with its environment (known as decoherence) a quantum computer can
+output results depending on details of all its classical like states. This is quantum
+parallelism- parallelism on a serial machine.
+
+2.4
+ 
+Q
+UANTUM
+ 
+SUPERPOSITION
+ 
+AND
+ 
+Q
+UANTUM
+ 
+INTERFERENCE
+:
+ 
+Conceptual
+visualization of quantum computer.
+
+In a quantum computer the fundamental unit of information (is called a quantum bit
+or “qubit”, analogous to classical bit used in ordinary computer), is not binary but rather
+more quaternary in nature. This qubit property arises as direct consequence of its
+adherence to the laws of quantum motions. A qubit can exist not only in a state
+corresponding to the logical state 0 or 1 as in a classical state bit but also in states
+corresponding to a blend of superposition of those classical states. In other words a qubit
+can exist as a zero, a one, or simultaneously as both 0 and 1, with numerical coefficient
+representing the probability for each state. This concept may appear to be counterintuitive
+because
+ 
+every
+ 
+day
+ 
+phenomenon
+ 
+is
+ 
+governed
+ 
+by
+ 
+classical
+ 
+physics,
+ 
+not
+ 
+quantum
+mechanics, which taps out at the atomic level. Physically qubit can be visualized by the
+spin s=1/2 of one electron system, the two state +1/2 and –1/2 being two eigenstates of S
+z
+
+(z component direction of an external magnetic field of spin ½.). Alternatively a beam of
+single photon can also be used, the total states being the state of polarization (horizontal
+or vertical) with respect to some chosen axis. Thus qubit can take 2 values, 0 or 1, which
+are associated with two eigenstates of a spin of a single electron (say):
+|1> = |
+↑
+>
+|0> = |
+↓
+>
+|0> + |1> = |
+↑
+> + |
+↓
+>
+
+page No: 11 
+===============
+11
+
+And further qubit can be a superposition of these two states with complex coefficient and
+this property distinguishes them form classical bits used in conventional computers. In
+mathematical terms, we say that since the general state of a qubit can be superposition of
+two pure states with arbitrary complex coefficients, then the state is described as a vector
+in the two dimensional complex space c
+2
+ 
+and the two pure states form the basis of the
+representation.
+Experimentally the phenomenon of quantum superposition can be demonstrated as
+follows. Consider figure 2.
+
+Fig 2:
+ 
+Beam splitting of light
+Here a light source emits a photon along a path towards a half-silvered mirror. This
+mirror splits the light, reflecting half vertically toward detector A and transmitting half
+toward detector B. a photon however represents a single quantised energy state (E=h
+ν
+)
+and hence cannot be split, so it is detected with equal probability at either A or B. this is
+verified by observation that if the detector A registers the signal than B does not and vice-
+versa. With this piece of information one would like to think that any given photon
+travels either vertically or horizontally, randomly choosing between the two paths.
+Quantum
+ 
+mechanics
+ 
+however
+ 
+predicts
+ 
+that
+ 
+the
+ 
+photon
+ 
+actually travels
+ 
+both
+ 
+paths
+simultaneously, collapsing down to one path only upon measurement (collapse of the
+wave function). This effect is known as single-particle interference resulting from the
+linear superposition of the possible photon states of potential paths. The phenomenon of
+single
+ 
+particle
+ 
+interference
+ 
+can
+ 
+be
+ 
+better
+ 
+illustrated
+ 
+in
+ 
+a
+ 
+slightly
+ 
+more
+ 
+elaborate
+experiment, outlined in fig 3. In this experiment the photon first encounters a half
+polished mirror (beam splitter) thus getting split into two parts: reflected beam and
+transmitted beam. The two beams are recombined with the half of the fully silvered
+mirrors and finally another half silvered mirror splits before reaching a detector. Each
+half silvered mirror introduces the probability of the photon following down one path or
+the other. Once a photon strikes the mirror along either of two paths after the first beam
+splitter, the arrangement is identical to that in fig 2 thus a single photon travelling
+vertically, when strikes the mirror, then by the experiment in fig 2, there should be an
+equal probability (50%) that the photon will strike either detector A or detector B. the
+same goes for a photon travelling down the horizontal path. However, the actual result is
+drastically different. If the two possible paths are exactly equal in length, then it turns out
+that there is 100% probability that photon reaches the detector A & 0% probability that it
+reaches the detector B thus the photon is certain to strike the detector A it seems
+inescapable that the photon must, in some sense, have actually travelled both routes
+simultaneously.
+
+page No: 12 
+===============
+12
+
+Fig 3: Example to show wave nature and particle nature of light
+
+This can be demonstrated by placing an absorbing screen in the way of either of the
+routes, then it becomes equally probable that detector A or B is reached. Block of one of
+the paths actually allows detector B to be reached; with both routes open, the photon
+somehow knows that it is not permitted to reach detector B, so it must have actually felt
+out both routes. It is therefore perfectly legitimate to say that between the two half
+silvered mirrors the photon took both transmitted and reflected paths or using more
+technical language, we can say that photon is in a coherent superposition of being in the
+transmitted beam and in the reflected beam. This quantum interference is resulting due to
+linear superposition principle. This is one of those unique characteristics that make
+current research in quantum computing not merely a continuation of today’s idea of
+computer but rather an entirely new branch of thought and underlying concept and it is
+because quantum computers harness those special characteristics that gives them the
+potential to be incredibly powerful computational device.
+
+2.5
+ 
+Q
+UANTUM ENTANGLEMENT
+
+The observation of correlation among various events is day to day phenomena.
+These correlations are well described with the help of laws of classical physics. Let us
+consider the following example: Imagine a scene of bank robbery is picturised. The bank
+robber is pointing a gun at the terrified teller. By looking at the teller one can tell whether
+the gun has gone off or not if the teller is alive and unharmed, one can be sure the gun has
+not been fired. If the teller is lying dead of a gunshot wound on the floor, one knows the
+gun has been fired. This is a simple detective case. Thus there is a direct correlation
+between the state of gun and the state of the teller ‘gun fired’ means “teller alive”. In the
+event it is presumed the robber only shots to kill and he never misses.
+In the world of microscopic objects described by quantum mechanics, correlation
+among the events is not so simple. Consider a nucleus which might undergo a radioactive
+decay in a certain time or it might not. Thus with respect to decay the nucleus exist in two
+
+V
+
+H
+
+Fully Silvered
+
+Half Silvered
+(Beam splitter)
+
+B
+
+page No: 13 
+===============
+13
+
+possible states only: ‘decayed’ and ‘not decayed’, just as we had two states, ‘fired’ and
+‘not fired’ for the gun or ‘alive’ and ‘dead’ for the teller. However, in the quantum
+mechanical world, it is also possible for the atom to be in a combined state decayed-not
+decayed in which it is neither one nor the other but somewhere in between. This is due to
+the principle of linear superposition of two quantum mechanical states of the atom, and is
+not something we normally expect of classical objects like guns or tellers. Further let us
+consider a system consisting of two nuclei. Two nuclei may be correlated so that if one
+has decayed, the other will also have decayed. And if one has not decayed, neither has the
+other. This is 100% correlation. However, the nuclei may also be correlated so that if one
+is in the superposition state, ‘decayed-not decayed’, the other will also be. Thus quantum
+mechanically,
+ 
+then
+ 
+one
+ 
+more
+ 
+correlation
+ 
+between
+ 
+nuclei
+ 
+than
+ 
+we
+ 
+would
+ 
+expect
+classically. This kind of quantum ‘super correlation’ is called ‘Entanglement’.
+Entanglement was in fact originally named German, ‘Verschrankung’, by Erwin
+Schrodinger,
+ 
+a
+ 
+Nobel
+ 
+laureate
+ 
+in
+ 
+physics,
+ 
+for
+ 
+his
+ 
+basic
+ 
+contribution
+ 
+in
+ 
+quantum
+mechanics. Schrodinger was the first to realize the strange character of entanglement.
+Imagine it is not the robber but the nucleus, which determines whether the gun fires. If
+the nucleus decays, it sets off a hair trigger, which fires the gun. If it does not decay, the
+gun does not fire. But if the nucleus is in the superposition it can be correlated to the gun
+in a superposition state fired-not fired. However such a correlation leads to a catastrophic
+situation. In the present case teller is dead or alive at the same time! Schrodinger was
+worried about the similar situation where the victim of the quantum entanglement was a
+cat in a box (Schrodinger cat: A paradox). For Schrodinger cat in a box decay nucleus
+could trigger the release of lethal chemical. The basic problem is that in the everyday
+world we are not used to see anything like dead-alive cat or dead-alive teller. However, in
+principle, if quantum mechanics is to be a complete theory describing every level of our
+experience, such strange states should be possible. Where does the quantum world stop
+and the classical world begins? Do we really have an interface separating quantum
+phenomenon from the classical one? And so on. These and allied problems have been
+described since long and in the process a number of different interpretations of quantum
+theory have been suggested.
+The problem was brought into focus by a famous paper in 1935 by Einstein,
+Podolsky and Rosen, who argued that the strange behaviour of entanglement that
+quantum mechanics is an incomplete theory not wrong. This is widely known as EPR
+paradox. The concept of EPR paradox can be understood with the help of following
+example: consider a Helium atom in the ground state. It has two electrons having
+following quantum numbers: n=1, l=0, s=1/2, s
+z
+ 
+= +1/2 for one and s
+z
+ 
+= -1/2 for another.
+Thus we have j = 0 & 1. But j
+z
+ 
+= (s
+z
+ 
+)
+1
+ 
++ (s
+z
+ 
+)
+2
+ 
+= 0. Hence only j=0 state is allowed. Thus
+in a Helium atom, two electrons are antiparallel to each other and hence form entangled
+pair of system. The atom is provided sufficient energy (equal to the binding energy of the
+atom). So that it disintegrates at rest. Consequently two electrons fly away in opposite
+direction.
+
+page No: 14 
+===============
+14
+
+Fig 4: EPR paradox description using He atom
+
+Two electrons are taken apart. With the application of magnetic field when the spin of
+one electron
+ 
+is
+ 
+flipped,
+ 
+the spin of other
+ 
+electron is
+ 
+also flipped
+ 
+instantaneously
+(communication with speed faster than speed of light). This is a real phenomenon
+Einstein called it spooky action at a distance; the mechanism of which cannot, as yet be
+explained by any theory- it simply must be taken as given and this was Einstein’s
+objection about the completeness of quantum theory. However we know that further
+developments (Bell inequality and its experimental verification) proved that quantum
+considerations are correct even if it means communication between space like events.
+Even more amazing is the knowledge about the state of spin of another electron without
+making a measurement on it.
+Quantum Entanglement allows qubits that are separated by incredible distances to
+interact with each other instantaneously (not limited to the speed of light). No matter how
+large the distance between the correlated particles, they will remain entangled as long as
+they are isolated. Taken together, quantum superposition and entanglement creates an
+enormously enhanced computing power.
+
+2.5.1 Bertleman’s socks:
+
+In the first instant one may be inclined to ask: What is so special about quantum
+entanglement?
+ 
+One
+ 
+does
+ 
+encounter
+ 
+similar
+ 
+situations
+ 
+(phenomenon
+ 
+of
+ 
+correlation
+between two events) in areas other that quantum world. Let us consider the case of Mr.
+Bertleman who has the peculiar habit of wearing socks of different colours in left and
+right foot. If he wears red coloured sock in one foot, it should be green in the other, or if
+it is yellow in one then it should be blue in the other. Presumably Mr. Bertleman never
+breaks the rule. Therefore looking at the colour of one sock one can tell the colour of the
+other sock which he is wearing. However on deeper scrutiny, the kind of objection raised
+above, does not stand. As a matter of fact in quantum entanglement the choice of
+measurement also plays a crucial role. One may decide to measure x-component of spin,
+or its y-component or a compound along s direction inclined at an arbitrary angle to x-
+axis. The other particle arranges its spin accordingly. In case of Bertleman’s example the
+onlooker
+ 
+has
+ 
+a
+ 
+role
+ 
+to
+ 
+play.
+ 
+The
+ 
+onlooker
+ 
+once
+ 
+decides
+ 
+to
+ 
+see
+ 
+the
+ 
+yellow-blue
+combination of colours for Bertleman socks, looks at accordingly the intention of
+onlooker in deciding the colour is interesting and equally interesting is the instant
+communication of this intention.
+
+page No: 15 
+===============
+15
+
+2.5.2
+ 
+EPR
+ 
+S
+ITUATION
 ,
-151–161. Association for Computational Linguistics.
-Sridhara, G.; Hill, E.; Muppaneni, D.; Pollock, L.; and
-Vijay-Shanker, K.
  
-2010.
+H
+IDDEN
  
-Towards automatically generat-
-ing summary comments for java methods. In
+V
+ARIABLES AND
  
-ASE
-, 43–52.
-ACM.
-Sridhara, G.; Pollock, L.; and Vijay-Shanker, K. 2011. Gen-
-erating parameter comments and integrating with method
-summaries. In
+B
+ELL
  
-ICPC
-, 71–80. IEEE.
-Sutskever, I.; Martens, J.; and Hinton, G. E. 2011. Gener-
-ating text with recurrent neural networks. In
- 
-ICML
-, 1017–
-1024.
-Williams, C. C., and Hollingsworth, J. K. 2005. Automatic
-mining of source code repositories to improve bug finding
-techniques.
- 
-IEEE Transactions on Software Engineering
+T
+HEOREM
+:
 
-31(6):466–480.
-Wu, Y.; Schuster, M.; Chen, Z.; Le, Q. V.; Norouzi, M.;
-Macherey, W.; Krikun, M.; Cao, Y.; Gao, Q.; Macherey, K.;
-et al.
+The critical
  
-2016.
+examination of the paper “Is
  
-Google’s neural machine translation system:
-Bridging the gap between human and machine translation.
+Quantum
+ 
+Mechanics
+ 
+Complete?” by
+Einstein, Podolsky and Rosen (EPR) carried by John Bell lead to following contradictory
+conclusion:
+1.
+ 
+EPR
+ 
+correlations
+ 
+(usually
+ 
+referred
+ 
+as
+ 
+quantum
+ 
+entanglement)
+ 
+predicted
+ 
+by
+quantum mechanics are so strong that one can hardly avoid the conclusion that
+quantum mechanics should be completed by some supplementary parameters
+(those so called hidden variables.)
+2.
+ 
+The elaboration of the above result, demonstrates that the hidden variables
+description in fact contradicts some predictions of quantum mechanics.
+In the face of these two perfectly convincing and contradictory results, there is only
+one way out: ask Nature how it works. Till the end of 1970 there was no experimental
+result to answer this question. The contradiction discovered by Bell in EPR paper, is
+so subtle that it appears only in a very peculiar situations that had not been
+investigated. And require design and build specific experiments.
 
-arXiv preprint arXiv:1609.08144
-.
+2.5.2.1 An EPR situation:
 
-5236
+Consider a source emits a pair of photons v
+1
+ 
+& v
+2
+ 
+travelling in opposite
+direction (Fig 4.). Each photon impinges onto polarizer, which measure the linear
+polarization along both of two directions (a & b) determined by orientation of the
+corresponding polarizer.
++1
+-
+
+Fig 5: Graphical description of the EPR situation
+
+There are two possible outcomes for each measurement, which are +1 and –1. Quantum
+mechanics allows for the existence of a two-photon state (EPR state) for which the
+polarization measurements taken separately appear random but
+ 
+which are strongly
+correlated.
+ 
+More
+ 
+precisely,
+ 
+denoting
+ 
+P
++
+(
+a
+)
+ 
+&
+ 
+P
+-
+(
+a
+)
+ 
+as
+ 
+the
+ 
+probabilities
+ 
+that
+ 
+the
+polarization of
+ 
+ν
+1
+ 
+along a is found equal to + or -, these probabilities are predicted to be
+equal to 0.5, similarly the probabilities P
++
+(
+b
+) & P
+-
+(
+b
+) for photon
+ 
+ν
+2
+ 
+are equal to 0.5 and
+independent of the orientation b.
+On the other hand, the joint probability P
+++
+(
+a
+) for observing + for both the
+photons is equal to 0.5 Cos
+2
+(
+a.b
+). In case of parallel polarisers [(
+a.b
+)=0], this joint
+probability is P
+++
+(0)=0.5, Similarly P
+--
+(0). For cross polariser [(
+a.b
+)=
+ 
+π
+/2], the joint
+probability is P
+-+
+(
+ 
+π
+/2)=P
++-
+(
+π
+/2)=0. The results for the two photons of the same pair are
+thus always identical, both + or – i.e. they are completely correlated. Such correlations
+
+S
+
+ν
+1
+ 
+ν
+2
+
+a
+ 
+b
+
++1
+
+-1
+
+page No: 16 
+===============
+16
+
+between events each of which appears to be random, may arise outside the physics world
+as well. Consider for instance, the occurrence of some defined disease (say G) and let us
+assume that biologists have observed its development in 50% of the population aged 20,
+and its absence in the remaining half. Now on investigating specific pair of (true) twin
+brothers, a perfect correlation is found between the outcomes: if one brother is affected,
+the other is also found to be inflicted with the disease; but if one member of the pair has
+not developed the disease, then the other is also unaffected. In face of such perfect
+correlation for twin brothers, the biologists will certainly conclude that the disease has a
+genetic origin. A simple scenario may be invoked: at the first step of conception of the
+embryo, a genetic process which is random in nature, produced a pair of chromosome
+sequence-one which is responsible for the occurrence or absence of the disease that has
+been duplicated and given to both brothers.
+Thus the two situations the case of correlation between the polarized states of two
+photons and the case of twin brothers (a number of such situations can be exemplified)
+are exactly analogous. It seems therefore, natural to link this correlation between the pairs
+of photons to some common property analogous to the common genome of the two twin
+brothers. This common property changes form pair to pair, which accounts for the
+random character of the single event. This is the basic conclusion drawn by John Bell
+regarding EPR states. A natural generalization of the EPR reasoning leads to the
+conclusion that quantum mechanics is not a complete description of physical reality. As a
+matter of fact, introduction of “some common property” which changes from pair to pair,
+invokes the idea that complete description of a pair must include “something” in addition
+to the state vector, which is the same for all pairs. This “something” can be called
+supplementary parameter or hidden variables. Inclusion of hidden variables sends an
+account of the polarized states of two photons, for any set (
+a
+,
+ 
+b
+) of orientations.
+
+2.5.2.2
+ 
+Bell Inequalities
+
+Bell examined critically the requirement for hidden variables to explain the expected
+correlation between the two polarized states of photons. It was shown that the expected
+correlations, for the joint measurements of polarized states of photons as mentioned
+above, cannot take any set of values, but they are subjected to certain constraints. More
+precisely, if we consider four possible sets of orientations [(
+a.b
+), (
+a.b’
+), (
+a’.b
+), (
+a’.b’
+)],
+the corresponding correlation coefficients (which measure the amount of correlation) are
+restricted by Bell inequalities which states that a given combination of these four
+coefficients ‘s’ is between –2 and +2 for any reasonable hidden variable theory. Thus
+Bell inequalities prescribe a test for the validity of hidden variable theory. However,
+quantum mechanics predicts the value of s as 2.8 i.e., it violates Bell inequalities, and the
+same is tested by experiments. Thus the hidden variable theories envisaged above are
+unable to send an account of the EPR correlation (quantum entanglement) predicted by
+quantum mechanics. As a matter of fact quantum mechanical correlations are more
+intricate to understand as compared to mutual correlations between twin brothers.
+Bell inequality is based on the assumption of local hidden variable models. The
+assumption of locality states that the result of a measurement by a polariser cannot be
+directly influenced by the choice of the orientation of the other remotely located
+polariser. Actually this is nothing but the consequence of Einstein causality (No signal
+can move with a speed greater than speed of light in vacuum). Nevertheless, Bell
+
+page No: 17 
+===============
+17
+
+inequalities apply to wide class of theories than local hidden variable theories. Any
+theory, in which each photon has a “physical reality” localized in space-time, determining
+the outcome of the corresponding measurement, will lead to inequalities that (sometimes)
+conflict with quantum mechanics. Bell’s theorem can thus be phrased in the following
+way: some quantum mechanical predictions (EPR correlations-quantum entanglement)
+cannot be mimicked by any local realistic model in the spirit of Einstein ideas of theory
+of hidden variables.
+
+2.6 Q
+UANTUM
+ 
+T
+ELEPORTATION AND
+ 
+Q
+UANTUM
+ 
+T
+HEORY OF
+ 
+I
+NFORMATION
+
+Information is physical and any processing of information is always performed by
+physical means-an innocent sounding statement, but its consequences are anything but
+trivial. In the last few years there has been an explosion of theoretical and experimental
+innovations leading to the creation of a fundamental new discipline: a distinctly Quantum
+Theory of Information. Quantum physics allows the construction of qualitatively new
+types
+ 
+of
+ 
+logic
+ 
+gates,
+ 
+absolutely
+ 
+secure
+ 
+cryptosystems
+ 
+(systems
+ 
+that
+ 
+combine
+communications and cryptography), the cramming of two bits of information into one
+physical bit and, has far just been proposed, a son of “teleportation”.
+Until
+ 
+recently
+ 
+teleportation
+ 
+was
+ 
+not
+ 
+taken
+ 
+seriously
+ 
+by
+ 
+scientists.
+ 
+Usually
+teleportation is the name given by science fiction writers to the feat of making an object
+or person disintegrate in one place while a perfect replica appears somewhere else.
+Normally this is done by scanning the object in such a way as to extract all the
+information from it, then this information is transmitted to the information from it, then
+this information is transmitted to the receiving location and used to construct the replica,
+not necessarily from the actual material of the original, but probably from atoms of the
+same kinds, arranged in exactly the same pattern as the original. A teleportation machine
+would be like a fax machine, except that it would work on 3-dimensional objects as well
+as documents, it would produce an exact copy rather an approximate facsimile and it
+would destroy the original in the process of scanning it.
+In classical physics,
+ 
+an object can be teleported, in principle by performing a
+measurement to completely characterize the properties of the object that information can
+then be sent to another location, and this object reconstructed. Moreover classical
+information theory agrees with everyday intuition: if a message is to be sent using an
+object which can be put into one of N distinguishable states, the maximum number of
+different messages which can be sent is N. For example, single photon can have only two
+distinguishable polarization states: left handed and right handed. Thus a single photon
+can not transmit more than two distinguishable messages i.e. one bit of information.
+Notwithstanding the basic question: is it possible to provide a complete reconstruction of
+the original object? The answer is no. All the physical systems are ultimately quantum
+mechanical and quantum mechanics tells us that it is impossible to completely determine
+the state of an unknown quantum system, making it impossible to use the classical
+measurement procedure to move a quantum system from one location to another. This is
+due to Heisenberg Uncertainty Principle which states that more accurately an object is
+scanned, the more it is disturbed by the scanning process, until one reaches a point where
+the objects original state has been completely disrupted, still without having extracted
+enough information to make a perfect replica. This sounds like a solid argument against
+
+page No: 18 
+===============
+18
+
+teleportation: if one cannot extract enough information from an object to make a perfect
+copy, it would be seen that a perfect copy cannot be made.
+Charles H Bennet with his group and Stephen Wiesner have suggested a remarkable
+procedure for teleporting quantum states using EPR states (entangled states). Quantum
+teleportation may be described abstractly in terms of two particles, A & B. A has in its
+possession an unknown state |
+ψ
+> represented as:
+|
+ψ
+> =
+ 
+α
+|0> +
+ 
+β
+|1>
+This is a single quantum bit (qubit)-a two level quantum system. The aim of teleportation
+is to transport the state |
+ψ
+> from A to B. This is achieved by employing entangled states.
+A & B each posses one qubit of a two qubit entangled state;
+|
+ψ
+>(|0>
+A
+ 
+|
+0>
+B
+) + |1>
+A
+|1>
+B
+)
+The above state can be rewritten in the Bell basis (|00>
+±
+|11>)), (|01>
+±
+|10>) for the first
+two qubit and a conditional unitary transformation of the state |
+ψ
+> for the last one, that is
+(|00>+|11>)|
+ψ
+>+(|00>-|11>)
+σ
+Z
+|
+ψ
+> + (|01>+|10>)
+σ
+X
+ 
+|
+ψ
+> + (|01>-|10>)(-i
+σ
+Y
+|
+ψ
+>)
+
+Where
+ 
+σ
+X
+,
+ 
+σ
+Y
+,
+ 
+σ
+Z
+ 
+are Pauli matrices in the |0>, |1> basis. A measurement is preformed on
+A’s qubits in the Bell basis. Depending on the outcomes of these measurements, B’s
+respective states are |
+ψ
+>,
+ 
+σ
+Z
+ 
+|
+ψ
+>,
+ 
+σ
+X
+ 
+|
+ψ
+>, -i
+σ
+Z
+ 
+|
+ψ
+> A sends the outcome of its
+measurement
+ 
+to
+ 
+B, who can then recover the
+ 
+original
+ 
+state
+ 
+|
+ψ
+> by applying the
+appropriate unitary transformation I,
+ 
+σ
+Z
+,
+ 
+σ
+ 
+Y
+ 
+or i
+σ
+Y
+ 
+depending on A’s measurement
+outcome. It may be noted that quantum state transmission has not been accomplished
+faster than light because B must wait for A’s measurement result to arrive before he can
+recover the quantum state.
+
+Fig 6
+:
+ 
+Quantum Teleportation using Entanglement
+
+page No: 19 
+===============
+19
+
+2.7
+ 
+THERMODYNAMICS
+ 
+OF
+ 
+QUANTUM
+ 
+COMPUTATION
+
+Computers are machines and like all machines they are subject to thermodynamics
+constraints, based on the laws of thermodynamics. Analogous to any physical system, the
+modern computers based on digital devices produce heat in operation. The basic question
+is: Can digital computers be improved so as to minimize production of heat. It turns out
+that it is possible to think (consistent with the laws of physics) of an ideal computer
+capable of shaping, maintaining and moving around digital signals, maintaining and
+moving around digital signals without any heat generation. Nevertheless there is one
+place where heat must be produced. Whenever information is
+ 
+erased
+ 
+the phase space
+associated with the system that stores information shrinks. Erasing a single bit of
+information reduces entropy of the system that stored that information by at least
+
+∆
+S=klog2. This reduction of entropy results in heat transfer to the environment.
+Thus if a computer could be constructed that does not erase any information, such a
+computer could work without generating any heat at all. This is precisely the situation in
+quantum computers. Quantum Computation is reversible (but not the read out of the
+result of that computation). It is therefore possible, at least in principle, to carryout
+quantum computation without generating heat. Of course, in reality the computer would
+still generate a lot of heat. Electric pulses moving along copper wires would have to work
+their way against resistance. Electrons diffusing from a source would still collide with
+crystal imperfections and with electrons in the drain again, generating heat. But at least in
+ideal situation, copper wires could be replaced with superconductors, imperfect crystals
+with prefect ones.
+The
+ 
+reversibility
+ 
+of
+ 
+quantum
+ 
+computers
+ 
+is
+ 
+being
+ 
+realised
+ 
+by
+ 
+conceiving
+ 
+and
+fabricating special gates. In digital computers gate like NOR, AND, NAND and XOR are
+employed.
+ 
+All
+ 
+these
+ 
+gates
+ 
+are
+ 
+irreversible:
+ 
+they
+ 
+must
+ 
+generate
+ 
+heat.
+ 
+Amount
+ 
+of
+information on the right hand side of
+(a,b)
+ 
+(a
+∧
+b)
+is less than the amount of information on the left hand side. Using Toffoli gates Charles
+Bennett
+ 
+has
+ 
+demonstrated that
+ 
+quantum
+ 
+computers
+ 
+are capable of performing any
+computation utilizing only reversible steps. These special gates maintain all information
+that is passed to them, so that the computation can be run forward and backward.
+Consequently the computation results in a very large amount of data, because every
+intermediate step is remembered, but heat generation is eliminated which the computation
+goes on. After the computation is over the computation can be run backwards in order to
+restore the initial state of the computer and avoid its spontaneous combustion.
+
+2.8
+ 
+Experimental Realisation of Quantum Computer
+
+The architectural simplicity makes the quantum computer faster, smaller and cheaper
+but
+ 
+its
+ 
+conceptual
+ 
+intricacies
+ 
+are
+ 
+posing
+ 
+difficult
+ 
+problems
+ 
+for
+ 
+its
+ 
+experimental
+realization. Nevertheless a number of attempts have been made in this direction with an
+
+page No: 20 
+===============
+20
+
+encouraging success. It is envisaged that it may not be too far when the quantum
+computer would replace digital computer with its full prospects. Some of the attempts for
+the experimental realization of quantum computer are summarized as follows:
+
+2.8.1 Heteropolymers:
+
+The first heteropolymer based quantum computer was designed and built in 1988 by
+Teich and then improved by Lloyd in 1993. In a heteropolymer computer a linear array of
+atoms is used as
+ 
+memory cells.
+ 
+Information
+ 
+is stored on a cell by pumping the
+corresponding
+ 
+atom
+ 
+into
+ 
+an
+ 
+excited
+ 
+state.
+ 
+Instructions
+ 
+are
+ 
+transmitted
+ 
+to
+ 
+the
+heteropolymer by laser pulses of appropriately tuned frequencies. The nature of the
+computation that is performed on selected atoms is determined by the shape and the
+duration of the pulse.
+
+2.8.2 Ion Traps:
+
+An ion trap quantum computer was first proposed by Cirac and Zoller in 1995 and
+implemented first by Monroe and collaborators in 1995 and then by Schwarzchild in
+1996. The ion trap computer encodes data in energy states of ions and in vibrational
+modes between the ions. Conceptually each ion is operated by a separate laser. A
+preliminary analysis demonstrated that Fourier transforms can be evaluated with the
+ion trap computer. This, in turn, leads to Shor’s factoring algorithm, which is based
+on Fourier transforms.
+
+2.8.3 Quantum Electrodynamics Cavity:
+
+A
+ 
+quantum
+ 
+electrodynamics
+ 
+(QED)
+ 
+cavity
+ 
+computer
+ 
+was
+ 
+demonstrated
+ 
+by
+Turchette and collaborators in 1995. The computer consists of a QED cavity filled
+with some cesium atoms and an arrangement of lasers, phase shift detectors, polarizer
+and mirrors. The setup is a true quantum computer because it can create, manipulate
+and preserve superposition and entanglements.
+
+2.8.4 Nuclear Magnetic Resonance:
+
+A Nuclear Magnetic Resonance (NMR) computer consists of a capsule filled with
+a liquid and an NMR machine. Each molecule in the liquid is an independent
+quantum memory register. Computation proceeds by sending radio pulses to the
+sample and reading its response. Qubits are implemented as spin states of the nuclei
+of atoms comprising the molecules. In an NMR computer the readout of the memory
+register is accomplished by a measurement performed on a statistical ensemble of
+say,
+ 
+2.7x10
+19
+ 
+molecules.
+ 
+This
+ 
+is
+ 
+in contrast to QED cavity computer ion-trap
+computer, in which a single isolated quantum system was used for memory register.
+NMR computer can solve NP (Non-polynomial) complete problems in polynomial
+time. Most practical accomplishments in quantum computing so far have been
+achieved using NMR computers.
+
+page No: 21 
+===============
+21
+
+2.8.5
+ 
+Quantum Dots
+
+Quantum computers based on quantum dot technology use simpler architecture and
+less sophisticated experimental, theoretical and mathematical skills as compared to the
+four quantum computer implementations discussed so far. An array of quantum dots, in
+which the dots are connected with their nearest neighbors by the means of gated
+tunneling barriers are used for fabricating quantum gates using split gate technique. This
+scheme has one of the basic advantages: the qubits are controlled electrically. The
+disadvantage of this architecture is that quantum dots can communicate with their nearest
+neighbors only resulting data read out is quite difficult.
+
+2.8.5.1
+ 
+Josephson Junctions
+
+The Josephson junction quantum computer was demonstrated in 1999 by Nakamura
+and the coworkers. In this computer a Cooper pair box, which is a small superconducting
+island electrode is weakly coupled to a bulk superconductor. Weak coupling between the
+superconductors create a Josephson junction between them which behaves as a capacitor.
+If the Cooper box is small as a quantum dot, the charging current breaks into discrete
+transfer of individual Cooper pairs, so that ultimately it is possible to just transfer a single
+Cooper pair across the junction. Like quantum dot, computers in Josephson junction
+computers, qubits are controlled electrically. Josephson junction’s quantum computers
+are one of the promising candidates for future developments.
+
+2.8.5.2
+ 
+The Kane Computer
+
+This computer looks a little like a quantum dot computer but in other ways it is more
+like an NMR computer. It consists of a single magnetically active nucleus of p
+31
+ 
+in a
+crystal of isotropically clean magnetically inactive Si
+28
+. The sample is then placed in a
+very strong magnetic field in order to set the spin of p
+31
+ 
+parallel or antiparallel with the
+direction of the field. The spin of the p
+31
+ 
+nucleus can then be manipulated by applying a
+radio frequency pulse to a control electrode, called A-gate, adjacent to the nucleus.
+Electron mediated interaction between spins could in turn be manipulated by applying
+voltage to electrodes called J-gates, placed between the p
+31
+ 
+nuclei.
+
+2.8.6 Topological Quantum Computer
+
+In this computer qubits are encoded in a system of anyons. “Anyons” are quasi-
+particles in 2-dimensional media obeying parastatistics (neither Fermi Dirac nor Bose
+Einstein). But in a way anyons are still closer to fermions, because a fermion like
+repulsion exists between them. The respective movement of anyons is described by braid
+group. The idea behind the topological quantum computer is to make use of the braid
+group properties that describe the motion of anyons in order to carry out quantum
+computations. It is claimed that such a computer should be invulnerable to quantum
+errors of the topological stability of anyons.
+
+page No: 22 
+===============
+22
+
+2.9 Future Directions of Quantum Computing
+
+The foundation of the subject of quantum computation has become well established,
+but everything else required for its future growth is under exploration. That covers
+quantum algorithms, understanding dynamics and control of decoherence, atomic scale
+technology and worthwhile applications. Reversibility of quantum computation may help
+in solving NP problems, which are easy in one direction but hard in the opposite sense.
+Global minimization problems may benefit from interference (as seen in Fermat’s
+principle
+ 
+in
+ 
+wave
+ 
+mechanics).
+ 
+Simulated
+ 
+annealing
+ 
+methods
+ 
+may improve
+ 
+due
+ 
+to
+quantum tunneling through barriers. Powerful properties of complex numbers(analytic
+functions, conformal mappings) may provide new algorithms.
+Quantum field theory can extend quantum computation to allow for creation and
+destruction of quanta. The natural setting for such operations is in quantum optics. For
+example, the traditional double slit experiment (or beam splitter) can be viewed as the
+copy operation. It is permitted in quantum theory because the intensity of the two copies
+is
+ 
+half
+ 
+the
+ 
+previous
+ 
+value.
+ 
+Theoretical
+ 
+tools
+ 
+for
+ 
+handling
+ 
+many-body
+ 
+quantum
+entanglement are not well developed. Its improved characterization may produce better
+implementation of quantum logic gates and possibilities to correct correlated errors.
+Though decoherence can be described as an effective process, its dynamics is not
+understood. To be able to control decoherence, one should be able to figure out the eigen
+states favored by the environment in a given setup. The dynamics of measurement
+process is not understood either, even after several decades of quantum mechanics.
+Measurement is just described as a non-unitary projection operator in an otherwise
+unitary quantum theory. Ultimately both the system and the observer are made up of
+quantum building blocks, and a unified quantum description of both measurement and
+decoherence must be developed. Apart from theoretical gain, it would help in improving
+the detectors that operate close to the quantum limit of observation. For physicist, it is of
+great interest to study the transition from classical to quantum regime. Enlargement of the
+system from microscopic to mesoscopic levels, and reduction of the environment from
+macroscopic to mesoscopic levels, can take us there. If there is something beyond
+quantum theory lurking there, it would be noticed in the struggle for making quantum
+devices. We may discover new limitations of quantum theory in trying to conquer
+decoherence.
+Theoretical developments alone will be no good without a matching technology.
+Nowadays, the race for miniaturization of electronic circuits is not far away from the
+quantum reality of nature. To devise new types of instruments we must change our view-
+point from scientific to technological-quantum effects are not for only observation, we
+should learn to control them from practical use. The future is not foreseen yet, but it is
+definitely promising.
+
+page No: 23 
+===============
+23
+
+Chapter 3
+A New Outlook to the Principle of Linear Superposition
+
+3.1 Modification of Wave function as a requirement of Quantum Teleportation
+
+Here
+ 
+we
+ 
+introduce
+ 
+a
+ 
+possibility
+ 
+of
+ 
+modification
+ 
+of
+ 
+Expansion
+ 
+Theorem
+ 
+as
+applicable to an EPR situation for correlated terms. In this section we attempt to
+introduce a correlation term in the definition of wave function (
+ψ
+) as given by Linear
+Superposition Principle. A general expression of wave function (
+ψ
+) can be expressed
+in word equation as:
+
+Wave Function (
+ψ
+ψ
+ψ
+ψ
+) = Term of Correlated states (
+δ
+δ
+δ
+δ
+) + Sum of Un-correlated
+terms.
+
+This word equation can be expressed numerically as:
+
+ψ
+ψ
+ψ
+ψ
+ 
+=
+ 
+δ
+δ
+δ
+δ
+ 
++
+ 
+Σ
+Σ
+Σ
+Σ
+ 
+a
+n
+ 
+ψ
+ψ
+ψ
+ψ
+n
+ 
+where n
+ 
+ε
+ 
+allowed un-correlated states &
+ 
+ψ
+(n) are eigen states.
+Hence in general with the introduction for our formalism of wave function, we can
+now divide wave function into 3 categories which are:
+1. Quantum Systems with Corr. = 0
+ 
+
+ 
+ψ
+ 
+=
+ 
+Σ
+ 
+a
+n
+ 
+ψ
+n
+ 
+where n
+ 
+ε
+ 
+(1,2,3,4..) &
+ 
+ψ
+(n) are
+eigen states.
+2. Quantum Systems with 0 < Corr. < 1
+ 
+
+ 
+ψ
+ 
+=
+ 
+δ
+ 
++
+ 
+Σ
+ 
+a
+n
+ 
+ψ
+n
+ 
+where n
+ 
+ε
+ 
+allowed un-
+correlated states &
+ 
+ψ
+(n) are eigen states.
+3.Quantum Systems with Corr. = 1
+ 
+
+ 
+ψ
+ 
+=
+ 
+δ
+ 
+and
+ 
+Σ
+ 
+a
+n
+ 
+ψ
+n
+ 
+= 0
+ 
+ψ
+(n) are eigen states.
+Thus the above treatment of Expansion Theorem in Quantum Systems suggests that
+the definition of wave function should be modified to take into account the representation
+of EPR states and further investigation should be done to determine the value of
+ 
+δ
+ 
+in the
+wave function definition. To further support and validate the above formalism I have
+applied the Schrodinger Wave Eq. both time dependent and time independent to check if
+the form of Expansion Theorem changes or not.
+
+In the standard formulation of Quantum Mechanics we have Schrodinger Wave Eq.
+given by :
+
+∇
+∇
+∇
+∇
+2
+ 
+ψ
+ψ
+ψ
+ψ
++ 2m/h’ (E-V)
+ 
+ψ
+ψ
+ψ
+ψ
+ 
+= 0 -
+-----(1) Schrodinger time independent Eq.
+in this eq.
+ 
+ψ
+ 
+: wave function, m is effective mass of the system, E is total energy, V is
+potential energy of the system and h’ = h
+2
+ 
+/ 4
+π
+2
+ 
+(h: Plank Constant) and Schrodinger Time
+dependent wave eq. is given by:
+
+ih/2
+π
+π
+π
+π
+ 
+(
+∂
+∂
+∂
+∂
+/
+∂
+∂
+∂
+∂
+t)
+ 
+ψ
+ψ
+ψ
+ψ
+ 
+= H
+ 
+ψ
+ψ
+ψ
+ψ
+ 
+---
+------(2)
+where
+ 
+ψ
+ 
+: wave function of the system, H is Hamiltonian of the system.
+
+page No: 24 
+===============
+24
+
+Now, by putting all the three definitions of
+ 
+ψ
+ 
+into these fundamental wave equations of
+Quantum Mechanics that the modified definition of
+ 
+ψ
+ 
+is correct as we get the expected
+results.
+
+3.1.1 Suitability of Quantum Bits for Quantum Computation
+
+Since there are three types of wave function systems as we have discussed in
+previous sections, thus how do they relate to qubits is given in following lines:
+1.
+ 
+For purely unentangled states in a Quantum system i.e. Corr.= 0, in such type of
+systems wave functions is given by Linear Superposition Principle:
+
+ψ
+ 
+=
+ 
+Σ
+ 
+a
+n
+ 
+ψ
+n
+ 
+&
+ 
+Σ
+ 
+|a
+n
+|
+2
+ 
+=1 where n
+ 
+ε
+ 
+(1,2,3,4......) and
+ 
+ψ
+(n) are eigen states.
+In these type of system of qubits quantum algorithms can be made “efficiently” as in
+this case the underlying parallelism of computation and vast storage of information is
+possible according to the conception of Bloch Sphere or otherwise since every state
+
+ψ
+n
+ 
+is independent of each other and hence can be used for computation and storing of
+information.
+2.
+ 
+For mixed entangled states in a Quantum System i.e. 0< Corr. < 1, in such type of
+systems wave function is given by:
+
+ψ
+ 
+=
+ 
+δ
+ 
++
+ 
+Σ
+ 
+a
+n
+ 
+ψ
+n
+ 
+&
+ 
+Σ
+ 
+|a
+n
+|
+2
+ 
+≠
+ 
+1 where n
+ 
+ε
+ 
+allowed un-correlated states &
+ 
+ψ
+(n) are Eigen
+states. In such a case since entangled and unentangled states cannot be separated as that
+would amount to an interaction with the system leading to information loss and wave
+function collapse. Hence such type of a state is not fit for computational purposes as it
+may lead to spurious results.
+3.
+ 
+For purely entangled states in a Quantum system i.e. Corr. = 1, in such type of
+systems wave function is given by:
+
+ψ
+ 
+=
+ 
+δ
+ 
+and
+ 
+Σ
+ 
+a
+n
+ 
+ψ
+n
+ 
+= 0
+ 
+ψ
+(n) are Eigen states.
+These states are suitable for teleportation of information using EPR states and not for
+information storage or computational purposes. Thus case 3 is well suited only for
+information communication keeping the validity of Quantum No Cloning Theorem.
+
+3.2
+ 
+An alternative interpretation of Quantum No Cloning Theorem.
+
+The definition of Quantum No Cloning Theorem states that:
+
+“It is not possible to copy quantum bits of an unknown quantum state.”
+Or “Replication of information of arbitrary qubits is not possible.”
+
+This fundamental limit is brought by Heisenberg’s Uncertainty Principle given by:
+
+∆
+∆
+∆
+∆
+x.
+ 
+∆
+∆
+∆
+∆
+p >= h/2
+π
+π
+π
+π
+
+∆
+x is the uncertainty in the measurement of position.
+
+∆
+p is the uncertainty in the measurement of momentum.
+
+page No: 25 
+===============
+25
+
+Thus Uncertainty Principle brings about the problem of Measurement in Quantum
+Mechanics which says that act of observation leads to wave function collapse and
+information carried by a Quantum System is lost i.e.:
+
+ψ
+ 
+=
+ 
+α
+|0> +
+ 
+β
+|1>
+ 
+observation
+ 
+either |0> or |1>
+Now, another explanation of information loss associated with measurement of a qubit can
+be given by energy exchange leading to irreversibility brought into the system according
+to the 2
+nd
+ 
+Law of Thermodynamics. The very act of measurement or observation has
+brought an element of irreversibility into the system which can also be appreciated by the
+fact that the there is a concept of canonically conjugate variables in Quantum Mechanics.
+That is if we have two observables say A and B in a quantum system which are
+canonically conjugate, they follow the inequality AB
+≠
+ 
+BA and it is represented in
+Quantum Mechanics as commutator brackets [A, B] = h/2
+π
+ 
+
+ 
+AB-BA=h/2
+π
+
+Now the vary fact that
+ 
+AB
+≠
+≠
+≠
+≠
+ 
+BA
+ 
+suggests that there is some irreversibility brought in the
+process of measurement of a quantum system and hence the uncertainty creeps in which
+is given by Heisenberg Uncertainty Principle. This leads to some important questions
+like:
+1.
+ 
+Does the notion of quantum of action h (h, 2h, 3h...) lead to irreversibility in the
+measurement process since ½ h or any fraction value of h cannot take place?
+2.
+ 
+Irreversibility is brought in due to entropy change in the system, since entropy is a
+statistical
+ 
+phenomenon,
+ 
+does
+ 
+this
+ 
+anyway
+ 
+relate
+ 
+to
+ 
+statistical
+ 
+behaviour
+ 
+of
+quantum probabilities?
+3.
+ 
+Is irreversibility in a Quantum measurement more fundamental that uncertainty in
+the measurement process and leads to uncertainty in the system, thus explaining
+the need for Uncertainty Principle?
+Thus in Classical Mechanics entropy (S) of a system is associated with the loss of
+information in the system due to the energy interaction and 2
+nd
+ 
+Law of Thermodynamics.
+But in Quantum Mechanics we have the concept of choice of information due to wave
+function collapse, so we can define a new parameter analogous to entropy in case of
+Quantum systems related to the choice of information. Thus we introduce here a
+possibility of the need of a new parameter for depicting the concept of choice of
+information analogous to entropy. The new parameter can be an area of further research.
+The concept of irreversibility in the system due to measurement process leading to non
+replication of information on a qubit is an alternative explanation of the Quantum No
+Cloning Theorem.
+
+page No: 26 
+===============
+26
+
+Chapter 4
+Experimental Realisation of Quantum Computers
+
+4.1 Materials of Low dimensionality- Quantum Dot as a promising candidate
+
+In 1959 physicist Richard Feynman gave an after-dinner talk exploring the limits of
+miniaturization.
+ 
+The
+ 
+scientist
+ 
+wrote
+ 
+about
+ 
+the
+ 
+potential
+ 
+for
+ 
+nanoscience
+ 
+in
+ 
+an
+influential 1959 talk “There’s Plenty of Room at the Bottom.” thus ushering a new
+era of the field of low dimensional materials. One thing common about all the
+conducting nanomaterials is that, in spite of the contraction in the size of the material,
+the basic characteristics of the material remains the same- the energy levels remain
+the same. This fact remains true as long as the size of the material undergoes
+noticeable change. The number of energy levels increases and they start shifting
+towards ‘blue’ region. By this, it is meant that the wavelength is smaller than green,
+yellow, orange and red. But with the decrease in wavelength, the frequency increases.
+Now we know that the energy level E is given by the equation:
+E = h
+ 
+ν
+ 
+where h: Planck’s constant and
+ 
+ν
+ 
+is frequency.
+As the frequency increases by shifting towards blue, the energy increases. Therefore,
+these
+ 
+materials
+ 
+are
+ 
+capable
+ 
+of
+ 
+storing
+ 
+more
+ 
+energy
+ 
+and
+ 
+are
+ 
+said
+ 
+to
+ 
+exhibit
+nanoproperty. The cause of the above said phenomena is stated below:
+There is a wavelength called Compton Wavelength, which decides at which energy
+levels of the materials change.
+
+λ
+c
+ 
+= h/ (m
+0
+ 
+* c)
+h: Planck’s constant
+m
+0:
+ 
+rest mass
+c: velocity of light.
+If the size of any material is comparable with its Compton’s wavelength, it exhibits
+nanoproperty and the materials are called Nanomaterial. This is found to be the order
+10
+-9
+ 
+m. This is the reason why these materials exhibit nanoproperty. Thus, we come
+to the conclusion that as we move from macro to nano dimensions, we observe the
+following:
+1.
+ 
+There is an additional constraint in the movement of electrons and protons.
+2.
+ 
+There is reduction in the degree of freedom.
+Therefore, these materials are also called as materials of low dimensionality, in which
+the
+ 
+charge
+ 
+density
+ 
+increases
+ 
+by
+ 
+decreasing
+ 
+the
+ 
+degree
+ 
+of
+ 
+freedom.
+ 
+The
+ 
+uses
+ 
+of
+nanomaterials in the manufacturing of computers justify Moore’s Law, which states that:
+
+page No: 27 
+===============
+27
+
+“In every
+ 
+eighteen months, the capacity of processing and carrying information of
+the computers is doubled.”
+
+This is possible by decreasing the number of electrons required to carry one bit of
+information. Most of the nanomaterials are characterised by the decrease of the degrees
+of freedom. Effective reduction of geometry to two or fewer dimensional systems is
+possible by a strong spatial localisation to a plane, line or point( i.e. confinement of an
+electron in at least one direction at the de-Broglie wavelength) occurs only in the case of
+atoms and electrons localised on crystal imperfections( e.g. on impurities).
+Quantum Wells are one of the three basic components of quantum devices, which are
+ultra thin, quasi 3-D planes. A narrow strip sliced from one of the planes is a 1-D
+quantum wire. Dicing up a 1-D wire yields a 0-D quantum dot. Reducing the number of
+dimensions in this manner forces electron to behave in a more atom like manner. All the
+three devices mentioned are the quantum devices i.e. they have nanostructures. Thus, we
+can say that with the evolution of nanotechnology comes the era of Diminishing
+dimensions from 3-dimensions, which was commonly found, to 2-dimensions in the form
+of Quantum Wells. Quantum wells were followed by quantum wires at 1-dimensional
+level. And now the level 0-dimension can be attained by the concept of quantum dots.
+
+Fig 7: Quantum Dots
+
+Quantum Dots are major contenders for being used as a building blocks of future
+Quantum Computers as compared to others like Nuclear Magnetic Resonance technique,
+Trapped Ion technique etc because of the fundamental fact that decoherence of these
+systems is very less hence even if they are prepared to act as quantum bits they
+degenerate very fast and interact with the environment thus loosing their coherence
+behaviour. Quantum Dots being 0-Dimensional entities have practically no degree of
+freedom hence their interaction with the environment is also ideally zero thus they can act
+as qubits to a larger extent. Further analysis and stability criterion are analysed in the
+subsequent sections.
+
+4.2 Need for Modified Coulomb Potential and its Analysis
+
+The highly successful theory of electricity and magnetism amalgamated with the laws
+of classical mechanics, leading to classical electrodynamics is plagued with a serious
+problem right from its inception. The problem lies in the interaction of charge particles
+when the distances tend to zero. The energy of the particle becomes infinite, its field
+momentum becomes infinite and its equation of motion leads to solutions like run-away
+solutions and pre-acceleration phenomenon, which are non-physical. This has been
+termed as “Problem of Divergences” in the classical electrodynamics.
+
+page No: 28 
+===============
+28
+
+It was envisaged that the advent of Quantum Theory would resolve all these difficulties.
+However, this did not prove true. All these problems are still present in the quantum
+version of the theory and appear in an even more complicated manner. In the last ten
+decades, even since Lorentz identified the problem in 1903, a number of attempts have
+been made to circumvent divergence problem of Classical Electrodynamics. Out of all
+the prescriptions, the renormalization technique and Rohrlich procedure of invoking
+boundary
+ 
+conditions
+ 
+have
+ 
+drawn
+ 
+special
+ 
+attention.
+ 
+During
+ 
+the
+ 
+course
+ 
+of
+ 
+present
+investigation, I am bringing to the forefront an attempt which has been made to
+reformulate the theory of electricity and magnetism. In the process, a simple but an
+elegant prescription proposed by Prof. Y M Gupta has been used. For the development of
+proposed formalism a stand has been taken that the problem as enunciated above must be
+solved initially at the classical level and only then the reformulation be carried forward to
+the quantum level. This procedural development automatically ensures the basic stringent
+requirement that the future theory must be a covering theory of the present one: invoking
+Bohr
+ 
+Correspondence
+ 
+Principle-
+ 
+“
+In
+ 
+the
+ 
+limit
+ 
+when
+ 
+the
+ 
+proposed
+ 
+modification
+ 
+is
+withdrawn, the proposed theory reduces to the existing one.”
+
+The proposed formalism is based on the observation that in the realm of known
+formalism
+ 
+of
+ 
+Classical
+ 
+Electrodynamics
+ 
+potential
+ 
+function,
+ 
+field
+ 
+intensity,
+ 
+field
+momentum and interaction force, all, are singular at the origin(R=0) i.e. all these physical
+quantities become infinite in the limit of zero distance. It is this singularity, which is the
+crux of the problem. In the present formalism we choose a potential function such that it
+is suitably and correctly chosen such that it is regular at the origin as well as all other
+space points, we automatically get physical quantities free from singularity. This is a
+logical way to obtain a whole set of dependent quantities which are regular ab initio. But
+at the same time it is also clear that all attempts at changing the basic equations of
+Electrodynamics (Maxwell equations) have proved unsuccessful. As a matter of fact, it is
+required to keep the basic equations of electrodynamics intact and yet look for a suitable
+potential function (solution of basic equations) that provides divergence-free solutions to
+the problems of Classical Electrodynamics (field energy, field intensity, field momentum
+etc.). To achieve this objective, prescriptions proposed by Prof. Y M Gupta have been
+followed. The important features of the prescriptions are-
+1.
+ 
+The basic equations of Electrodynamics (Maxwell equations) remain intact.
+2.
+ 
+The form of potential function, as obtained, is such that it is regular at all
+space points including origin. Notwithstanding this, it also gives rise to field
+intensities, field energies and interaction forces that are regular at all space
+points ab initio.
+3.
+ 
+No free parameter is introduced into the theory- it is basically a parameter free
+theory.
+4.
+ 
+The prescription very gently obeys Bohr Correspondence Principle. In other
+words, in the limit of large distances the proposed potential function reduces
+to usual Coulomb potential function.
+5.
+ 
+The
+ 
+prescription
+ 
+is
+ 
+quite
+ 
+general
+ 
+in
+ 
+nature
+ 
+and
+ 
+not
+ 
+restricted
+ 
+to
+electrodynamics alone. Indeed, it can be applied to any inverse square force
+law. (E.g. Newtonian gravitational force and Yukawa Nuclear force.)
+When the whole problem is analysed very closely, it is observed that the crux of the
+problem in hidden in the fact that in the realm of known formalism of classical
+
+page No: 29 
+===============
+29
+
+electrodynamics potential function, field intensity, field momentum and interaction force
+is infinite at the origin (R=0). It is this singularity in the behaviour of these physical
+quantities that must be removed systematically for the fundamental development of the
+theory of electrodynamics. If the potential function is suitably and correctly selected, we
+shall automatically get physical quantities that are regular at the origin as well as other
+space points. This is a logical way to remove singularities in a systematic way. Once we
+are able to obtain the suitable potential function, we can then attempt to carry forward the
+reformulation to the quantum level. This procedural development will ensure that, the
+basic stringent requirement, that the future theory must be a covering theory of the
+previous one, is automatically fulfilled.
+The present formalism retains the basic laws of electrostatics as given below:
+
+∇
+. E =
+ 
+ρ
+/
+ε
+0
+
+∇
+ 
+x E = 0
+E = -
+∇
+ 
+φ
+
+∇
+2
+ 
+φ
+ 
+= -
+ 
+ρ
+/
+ε
+0
+
+Following Prof. Y M Gupta it is found that the last equation above of the potential
+has the solution:
+
+φ
+ 
+= 1/2
+π
+2
+ 
+ε
+0
+ 
+
+ 
+Si (Y|r-r’|)/ |r-r’|
+ 
+ρ
+(r’) d
+3
+ 
+r’
+Further lim
+|r-r’|->0
+ 
+Si (Y|r-r’|)/ |r-r’| = Y
+And lim
+|r-r’|->0
+ 
+φ
+ 
+= qY/2
+π
+2
+ 
+ε
+0,
+ 
+q =
+ 
+
+ 
+ρ
+(r’) d
+3
+ 
+r’
+This formalism makes the potential function (
+φ
+) regular at the point R=0. For a point
+charge
+ 
+ρ
+(r’) = q
+δ
+ 
+(r’)
+where q is the charge of the particle. The Equations are given as below:
+
+φ
+point
+ 
+= (q/2
+π
+2
+ 
+ε
+0
+) Si(YR)/R
+E
+point
+ 
+= (q/2
+π
+2
+ 
+ε
+0
+)
+ 
+[{Si (YR) –sin (YR)}/R
+2
+ 
+]
+F
+point
+ 
+= (q
+0
+ 
+q/2
+π
+2
+ 
+ε
+0
+) [{Si(YR) – sin(YR)}/R
+2
+ 
+]
+
+4.3
+ 
+Analysis of Quantum Dots using Modified Coulomb Potential.
+
+Quantum Dots is a 0-D system and this system can be analysed as a two body bound
+state problem like a hydrogen atom. As the systems keep on becoming smaller and
+smaller the potential function of the system changes at a particular radius and
+assumes a different form. The length at which the potential function changes form is
+determined
+ 
+by
+ 
+the
+ 
+Compton
+ 
+Wavelength
+ 
+of
+ 
+the
+ 
+system.
+ 
+Thus
+ 
+the
+ 
+Compton
+wavelength plays a major role in determining the modification in potential function.
+The modified Coulomb potential is given by:
+V = ½ k
+h
+ 
+r
+2
+ 
+–V
+0
+ 
+for r < r
+c
+
+= -1/4
+π
+0
+ 
+e
+2
+/r
+ 
+for r> r
+c
+
+Where r
+c
+ 
+determines the size of quantum dot, r
+c
+ 
+is in the range of 10nm to 100nm, this
+has been experimentally determined.
+
+page No: 30 
+===============
+30
+
+The expression of r
+c
+ 
+is given by:
+r
+c
+ 
+= h/m
+eff
+ 
+c
+h: Plancks constant
+m
+eff:
+ 
+Effective mass
+c: Velocity of light
+
+Fig 8: The graphical representation of the Modified Coulomb potential
+
+Due to the reduction of the size at the nano scale the neighbours also try to exert force
+on the particles just like a person is trying to move in a congested street with walls on
+both sides feels the presence of the closeness of the walls. Similarly in the physical
+systems the potential function changes gradually from Coulombian to the one shown
+in above equations i.e.:
+V = ½ k
+h
+ 
+r
+2
+ 
+–V
+0
+ 
+for r < r
+c
+
+= -1/4
+π
+0
+ 
+e
+2
+/r
+ 
+for r> r
+c
+
+Hence in the nanomaterials the effective potential energy is given by the following
+word equation:
+
+Potential energy = potential energy between the constituents + potential energy
+due to boundary.
+
+The above equation can be written as:
+V = ½ k
+h
+ 
+r
+2
+ 
+–V
+0
+
+Hence even experimentally also the form of potential function is found to be
+harmonic in nature for distances less than the Compton wavelength (
+λ
+0
+) of the
+system. The estimation of parameters of the potential energy function can be found
+out in the following way:
+V|
+ 
+r < rc
+ 
+= V|
+ 
+r > rc
+ 
+at r = r
+c
+
+∂
+V/
+∂
+r |
+ 
+r < rc
+ 
+=
+ 
+∂
+V/
+∂
+r |
+ 
+r > rc
+ 
+at r = r
+c
+
+Solving
+ 
+these
+ 
+two
+ 
+sets
+ 
+of
+ 
+equations
+ 
+that
+ 
+is
+ 
+the
+ 
+boundary
+ 
+conditions
+ 
+and
+ 
+the
+differentiability of the potential function leads to finding the solutions to potential
+function. Also k
+h
+ 
+and V
+0
+ 
+can be found out b numerical values. These variables can be
+found out by:
+
+page No: 31 
+===============
+31
+
+R
+ 
+l
+ 
+(r) |
+ 
+r < rc
+ 
+= R
+ 
+l
+ 
+(r) |
+ 
+r > rc
+ 
+at r = r
+c
+
+∂
+R
+ 
+l
+ 
+(r)/
+ 
+∂
+r |
+ 
+r < rc
+ 
+=
+ 
+∂
+R
+ 
+l
+ 
+(r)/
+ 
+∂
+r |
+ 
+r > rc
+ 
+at r = r
+c
+
+Here we can mention that we can also solve the Schrodinger Wave Equation on the
+modified Coulomb Potential for a quantum dot system and get the analytical form of
+the wave function. If the majority of the wave function lies inside the Compton
+wavelength region then it is a very high probability that the quantum dot is stable in
+that region and also gives support to the formulation of potential function. At very
+low distances potential acts as a harmonic potential, this also suggests that at the
+fundamental level Nature may be harmonic and this may in some way lead to the
+origin of Heisenberg Uncertainty Principle due to the fluctuating harmonic nature of
+the potential at quantum levels.
+
+Fig 9: Plot of Wave Function Vs. distance in a Quantum Dot
+
+4.4
+ 
+Study of Quantum Wires using Modified Coulomb Potential
+
+As already discussed above that Quantum Wires are 1-D systems with the degree of
+freedom in 1 dimension only. So as the analysis of 0-D Quantum Dots has been done
+I have also analysed Quantum Wires using the Modified Coulomb Potential by
+applying the Schrodinger time independent wave equation given by
+
+∇
+∇
+∇
+∇
+2
+ 
+ψ
+ψ
+ψ
+ψ
++ 2m/h’ (E-V)
+ 
+ψ
+ψ
+ψ
+ψ
+ 
+= 0
+
+where V = ½ k
+h
+ 
+r
+2
+ 
+–V
+0
+ 
+for r < r
+c
+
+= -1/4
+π
+0
+ 
+e
+2
+/r
+ 
+for r> r
+c
+
+and r
+c
+ 
+(Compton Wavelength) = h/ (m
+0
+ 
+* c)
+Thus solving the Schrodinger Wave Equation for the given potential and the form of
+wave function
+ 
+ψ
+ψ
+ψ
+ψ
+ 
+≡
+≡
+≡
+≡
+ 
+ψ
+ψ
+ψ
+ψ
+(r,
+θ
+θ
+θ
+θ
+, z)
+ 
+and using the variable separable method we could get the
+wave function in ‘z’ direction as a free particle wave function since the equation
+which the Schrodinger Wave Equation reduces to is given by:
+
+∂
+2
+χ
+/
+∂
+z
+2
+ 
++
+ 
+λχ
+(z) =0 which is a famous second order differential equation
+with the solution given by
+
+page No: 32 
+===============
+32
+
+χ
+(z) = A e
++i
+λ
+z
+ 
+which is the wave function of the free particle system. This is also
+logically deducible since Quantum Wire is a 1-D system with complete freedom in 1
+dimension.
+y
+ 
+r
+
+θ
+
+(r,
+ 
+θ
+,z)
+x
+
+Fig 10: Quantum Wire as a 1-D system
+
+The analysis of Quantum Wires is more complicated than Quantum Dots due to the
+increase in the dimension of the system hence a preliminary study is done of this
+system unlike the rigorous study done for Quantum Dots. It is expected from the
+wave function expression of the Quantum Wire in modified Coulomb potential that
+Compton Wavelength (
+λ
+0
+) plays a fundamental role in this system. Thus by the study
+of the two systems we have done using the modified Coulomb Potential we can
+conclude that Compton Wavelength is going to play a major role in Physics may be
+as important as the fundamental constants of Nature.
+
+4.5 Visit to the Nano Technology Lab in Barkatullah University, Bhopal
+
+We had a short three day visit to a state of the art one of its kind Nano Technology
+Lab in Barkatullah University in Bhopal. It was an informative visit in which we saw
+various experiments done with nanomaterials. We also saw different fabrication
+techniques for nanomaterials. We saw and learnt the concept of Atomic Force
+Microscope (AFM), Scanning Tunnelling Microscope (STM), X Ray Diffractometer
+running on the principle of Compton scattering and then using the diffraction pattern
+the inter planar distance between the planes of atoms is calculated. We operated upon
+the Atomic Force Microscope and also got pictures of the surface of nanomaterials.
+We learnt about three kinds of materials based on the degree of freedoms ranging
+from 2-D systems like Quantum Wells to 1-D systems like Quantum Wires to 0-D
+systems like Quantum Dots. How these quantum structures are developed using Wet
+Chemical method which is the most common one and various other methods. Overall
+it was a highly informative visit to the Nanotechnology Lab and we could appreciate
+the practical ways by which work is going on in the field of nanomaterials and
+nanostructures and how this field is going to revolutionise the coming technologies.
+This field experience was worth doing in the summer project. The functioning of
+AFM and the numerical analysis we did in the Lab are reproduced in the coming
+pages and is suggestive of the work we had undertaken.
+
+page No: 33 
+===============
+33
+
+Fig 11: Quantum Dots as seen from an Atomic Force Microscope
+
+Also the basic principle of use of Scanning Probe method is the principle of Quantum
+Tunnelling which leads to induction of potential and hence production of current
+which thus leads to scanning of the surface of the nanomaterial. We had a visit to the
+Nanotechnology Lab and we saw the Scanning Tunnelling Microscope and its
+principle is reproduced below:
+
+Fig 12: The tip of the Scanning Tunnelling Microscope
+
+Fig 13: AFM Plots of Quantum Dots prepared in laboratory
+
+page No: 34 
+===============
+34
+
+Chapter 5
+Future Directions of Research
+
+5.1 Explanation of Measurement Problem by Symmetry breaking process
+
+Symmetry is the most fundamental property of physical systems. It is a very general term
+with regard to physical systems. There are various symmetries in Nature like local space
+time symmetries and global space time symmetries. Global space time symmetries apply
+to all the laws of Physics. Here in this section we will attempt to give a direction on
+which a further thought can be developed for the resolution of the famous Measurement
+Problem in Quantum Mechanics. It is the Measurement Problem which lies at the heart of
+various problems and observation anomalies in Quantum Mechanics. Here I am trying to
+give an explanation of Measurement Problem using Symmetry breaking process. The
+basic equation of Quantum Mechanics i.e. AB
+ 
+≠
+ 
+BA valid for conjugate variables shows
+some kind of irreversibility in the system. Now by the Leibniz’s Principle of Sufficient
+Reason (PSR): If there is no sufficient reason for one thing to happen instead of another,
+the principle says that nothing happens or in a situation with certain symmetry evolves in
+such a way that, in the absence of an asymmetric cause, the initial symmetry is preserved.
+In other words, a breaking of initial symmetry cannot happen without a reason or an
+asymmetry cannot originate spontaneously. Asymmetry is what creates a phenomenon.
+Thus symmetry breaking follows Principle of Causality that is “For every effect there is a
+cause.” By the Measurement process we purposefully throw the Quantum System as a
+“choice of information” by the observer unlike the collapsing of the wave function into
+an uncertain Eigen state. Thus in a Measurement process the system does not lose
+information like classical systems but is thrown in a particular eigen state based on the
+information choice made by the observer. Hence we need to introduce a parameter in
+Quantum Mechanics which takes care of this “choice of information” rather the “loss of
+information” whose parameter is entropy in classical mechanics. Curie’s Principle also is
+an interesting way to represent symmetry requirements in a system. The symmetry
+elements of the causes must be found in their effects, but the converse is not true, that is
+the effects can be more symmetric then their causes. Conditions valid for Curie’s
+Principle are:
+1.
+ 
+The causal connection must be valid.
+2.
+ 
+Cause and Effect and their respective symmetries must be well defined.
+The there must be a sufficient reason for the Measurement Problem to occur and by the
+Leibniz’s Principle of Sufficient Reason (PSR) we can conclude that there must be some
+symmetry breaking phenomenon occurring as a reason for the asymmetry in the system
+and thus leading to Measurement Problem. Thus it is a matter of further research to find
+the precise way how symmetry breaks in the system? What type of symmetry exists? Is it
+a local or a global symmetry which breaks in the Reduction(R) Process of the wave
+function as it is called in the Quantum Mechanics parlance? Thus introducing symmetry
+in the Reduction Process in Quantum Mechanics is a novel idea and can put some more
+light into the reason and the precise process by which wave function collapse occurs.
+Thus this may fundamentally give the reason of Heisenberg Uncertainty Principle. It is
+
+page No: 35 
+===============
+35
+
+yet to be seen that it is the Uncertainty Principle which is more fundamental or the
+symmetry breaking which is occurring in the system.
+
+5.2 EPR Correlation: Interacting Hamiltonian Vs Non Linear Wave function
+
+Basically there are two ways to introduce the effect of correlation in an EPR situation in
+the definition of wave function of the Quantum System those are:
+1.
+ 
+In the form of Schrodinger Time Dependent Wave Eq.
+
+ih/2
+π
+π
+π
+π
+ 
+(
+∂
+∂
+∂
+∂
+/
+∂
+∂
+∂
+∂
+t)
+ 
+ψ
+ψ
+ψ
+ψ
+ 
+= H
+ 
+ψ
+ψ
+ψ
+ψ
+
+We can introduce the correlation effect in the modification of the Hamiltonian (H) of
+the system by introducing a potential term in the expression of H of the system and
+keeping wave function (
+ψ
+) as it is defined by the Expansion Theorem.
+2.
+ 
+In the second case we can keep Hamiltonian (H) as it is and change the definition
+of wave function (
+ψ
+) by introducing a
+ 
+δ
+ 
+term to account for correlation effect of
+EPR states.
+Hence we have attempted the second case in our formalism of accounting for correlation
+in the definition of wave function (
+ψ
+) of the system. Though both the approaches are new
+to the scene and have not been attempted for this type of a situation. Hence the
+application of first case is an area of further research in this formalism.
+Eigen states are essentially entangled or correlated in an EPR situation and since EPR
+implies non-local communication and apparent breakdown of Heisenberg Uncertainty
+Principle hence it may lead to the modification of Linear Superposition Principle’s
+linearity gets violated and different eigen states start interfering with each other and lead
+to the introduction of
+ 
+δ
+ 
+in the definition of wave function (
+ψ
+).
+EPR states
+ 
+modification of Linear Superposition Principle
+ 
+new definition
+of wave function (
+ψ
+) or introduction of a new parameter altogether.
+We find from the above two possible scenarios that EPR correlation can be incorporated
+in
+ 
+the
+ 
+Schrodinger
+ 
+time
+ 
+dependent
+ 
+wave
+ 
+Eq.
+ 
+by
+ 
+modifying
+ 
+the
+ 
+Hamiltonian
+ 
+and
+introducing the
+ 
+δ
+ 
+term due to correlation i e. The word eq. can be written as:
+
+Hamiltonian = Kinetic energy term + Potential energy + energy due to EPR
+correlation
+
+Thus this can be one of the attempted explanations for introducing correlation in the
+scene. In the second case we can put the Hamiltonian as it is without “energy due to EPR
+correlation” term and can rather modify the wave function (
+ψ
+) in a non-linear way by
+introducing the
+ 
+δ
+ 
+term and accounting for EPR correlation as it has already been done in
+previous sections.
+
+5.3 Possibility of third paradigm in Quantum Mechanics
+
+It is a well known fact that though Quantum Mechanics gives correct mathematical
+results of quantum phenomena but the interpretation of Quantum Mechanics is very
+peculiar and is still not complete till date because of paradoxes like Schrodinger Cat
+paradox and Einstein Podolsky Rosen (EPR) Paradox, Wave Function Collapse and
+
+page No: 36 
+===============
+36
+
+Measurement Problem. In this we attempt to give a new direction of thinking for a new
+formulation of the fundamental principle of Uncertainty in Quantum Mechanics since all
+peculiarities of Quantum Mechanics are derived from the Uncertainty Principle. We
+describe the two mechanics we know of and predict the possibility of the third one:
+1.
+ 
+In Classical Mechanics the fundamental concept is the concept of Determinism
+which says that given a state of the system at one point of time the state of the system at
+some later time can be predict with 100% accuracy. This can be reformulated in a
+statement including dynamical variables position (x) and momentum (p) as
+“Both position (x) & momentum (p) can be measured to any desired accuracy.”
+2.
+ 
+In Quantum Mechanics we have the fundamental Uncertainty Principle given by:
+
+∆
+x.
+∆
+p >= h/2
+π
+
+It is interpreted as “ Either position (x) or momentum (p) can be measured with
+desired accuracy but not both at the same time.”
+3.
+ 
+Here we give a new line of thinking to the above formalisms by saying that:
+
+“Neither
+ 
+position
+ 
+(x)
+ 
+nor
+ 
+momentum
+ 
+(p)
+ 
+to
+ 
+any
+ 
+degree
+ 
+of
+ 
+accuracy
+ 
+can
+ 
+be
+measured.”
+
+This is a very interesting statement since in case 1 above we have determinism in the
+definition of the system. In case 2 we have probability but still it is limited probability
+since one of the parameters can still be measured to desired degree of accuracy. But in
+case 3 we have brought in a complete indeterminism in which both the variables are
+completely indeterministic. This formalism requires a new definition of Schrodinger
+Wave Eq., Uncertainty Principle etc. It may be possible that Quantum Mechanics is a
+special case of this third mechanics as we move from complete indeterminism to limited
+indeterminism (Quantum Mechanics) to complete determinism (Classical Mechanics).
+This concept of complete indeterminism may be related in some way to Consciousness of
+the observer which is hot area of research in Quantum Mechanics these days. This last
+proposal
+ 
+was
+ 
+given
+ 
+by
+ 
+Stephen
+ 
+Hawking
+ 
+as
+ 
+a
+ 
+new
+ 
+direction
+ 
+of
+ 
+thinking
+ 
+on
+ 
+the
+modification of Quantum Mechanics right at the fundamental level.
+
+5.4 Conclusion and Future Scope
+
+The foundations of the subject of quantum computation have become well established,
+but everything else required for its future growth is under exploration. That covers
+quantum algorithms, logic gate operations, error correction, understanding dynamics and
+control
+ 
+of
+ 
+decoherence,
+ 
+atomic
+ 
+scale
+ 
+technology
+ 
+and
+ 
+worthwhile
+ 
+applications.
+Reversibility of quantum computation may help in solving NP problems, which are easy
+in one direction but hard in the opposite sense. Global minimization problems may
+benefit from interference effects (as seen in Fermat’s principle in wave mechanics).
+Simulated annealing methods may improve due to quantum tunneling through barriers.
+Powerful properties of complex numbers (analytic functions, conformal mappings) may
+provide
+ 
+new
+ 
+algorithms.
+ 
+Theoretical
+ 
+tools
+ 
+for
+ 
+handling
+ 
+many-body
+ 
+quantum
+entanglement are not well developed. Its improved characterization may produce better
+implementation of quantum logic gates and possibilities to correct correlated errors.
+
+page No: 37 
+===============
+37
+
+Though decoherence can be described as an effective process, its dynamics is not
+understood but an attempt has been made in the present project work in the form of
+Symmetry breaking argument or need for an entropy like parameter or function to
+account for irreversibility in the system. To be able to control decoherence, one should be
+able to figure out the eigenstates favored by the environment in a given setup. The
+dynamics of measurement process in not understood fully, though the attempt is also
+made in this regard in this project. Measurement is just described as a non-unitary
+projection operator in an otherwise unitary quantum theory. Ultimately both the system
+and the observer are made up of quantum building blocks, and a unified quantum
+description of both measurement and decoherence must be developed. Apart from
+theoretical gain, it would help in improving the detectors that operate close to the
+quantum limit of observation. For the physicist, it is of great interest to study the
+transition from classical to quantum regime. Enlargement of the system from microscopic
+to mesoscopic levels, and reduction of the environment from macroscopic to mesoscopic
+levels, can take us there. If there is something beyond quantum theory lurking, there it
+would be noticed in the struggle for making quantum devices. We may discover new
+limitations
+ 
+of
+ 
+quantum
+ 
+theory
+ 
+in
+ 
+trying
+ 
+to
+ 
+conquer
+ 
+decoherence.
+ 
+Theoretical
+developments alone will be no good without a matching technology. Nowadays, the race
+for miniaturization of electronic circuits in not too far away from the quantum reality of
+nature. To devise new types of instruments, we must change our view-points from
+scientific to technological-quantum effects which are not for only observation; we should
+learn how to control them for practical use. The future is not foreseen yet, but it is
+definitely promising.
+
+REFERENCES
+
+1.
+ 
+K.Brading,
+ 
+and
+ 
+E.Castellani
+ 
+(2003),
+ 
+Symmetries
+ 
+in
+ 
+Physics:
+ 
+Philosophical
+Reflections, Cambridge University Press, 2003.
+
+2.
+ 
+Sanjeev Kumar (2002), Reformulation of Classical Electrodynamics, Jiwaji
+University, Gwalior, INDIA.
+
+3.
+ 
+Michael
+ 
+Nielsen,
+ 
+and
+ 
+Isaac
+ 
+Chuang,
+ 
+Quantum
+ 
+Computation,
+ 
+Cambridge
+University Press.
+
+page No: 38 
+===============
+38
+
+Annexure:
+
+Bound state problem under modified Coulomb potential
+
+We are taking an electron hole pair as the system and we perform our calculations on this
+system. From numerical analysis we find the following behavior of modified Coulomb
+potential (attraction).
+V(r) = ½ k
+h
+r
+2
+ 
+– V
+0
+ 
+for r
+ 
+
+ 
+r
+c
+,
+ 
+V
+0
+ 
+is positive
+V(r) = - k
+c
+/r
+ 
+for r
+c
+ 
+
+ 
+r
+ 
+
+ 
+
+ 
+k
+c
+= 1/(4
+ 
+
+ 
+
+0
+ 
+) Z e
+2
+ 
+-----(1)
+Boundary condition
+V(r)
+lhl
+ 
+= V(r)
+rhl
+ 
+and V’(r)
+lhl
+ 
+= V’(r)
+rhl
+ 
+at r = r
+c
+ 
+where r
+c
+ 
+= Compton radius
+Thus we calculate k
+h
+ 
+= 1/(4
+ 
+
+ 
+
+0
+ 
+) e
+2
+/r
+c4
+
+And
+ 
+V
+0
+ 
+= 3/2 * 1/(4
+ 
+
+ 
+
+0
+ 
+) * e
+2
+/r
+c
+
+The radial equation for two body problem is given by
+d
+2
+ 
+R
+l
+(r)/d r
+2
+ 
++ (2/r) d R
+l
+ 
+/d r
+ 
++ { 2
+ 
+
+/
+ 
+
+2
+ 
+(E – V(r)) - l(l+1)/r
+2
+} R
+l
+(r) = 0 (2)
+for bound state E = -B ( B is positive )
+With the help of equation (1), equation (2) becomes
+d
+2
+ 
+R
+l
+(r)/d r
+2
+ 
++ (2/r) d R
+l
+ 
+/d r
+ 
++ { 2
+ 
+
+/
+ 
+
+2
+ 
+(-B – ½ k
+h
+r
+2
+ 
+– V
+0
+) - l(l+1)/r
+2
+} R
+l
+(r) = 0 -----(3)
+and
+d
+2
+ 
+R
+l
+(r)/d r
+2
+ 
++ (2/r) d R
+l
+ 
+/d r
+ 
++ { 2
+ 
+
+/
+ 
+
+2
+ 
+(-B + k
+c
+/r) - l(l+1)/r
+2
+} R
+l
+(r) = 0 ---------(4)
+
+2
+F
+0
+ 
+(a
+c
+,1+a
+c
+–b
+c ,
+1/(2
+
+r).
+ 
+1
+F
+1
+(a
+h
+,b
+h
+,
+ 
+
+r
+2
+) [
+
+r-
+ 
+
+]
+= (a
+h
+/b
+h
+)(2
+
+r)
+ 
+1
+F
+1
+(a
+h
++1,b
+h
++1,
+ 
+
+r
+2
+) .
+ 
+2
+F
+0
+ 
+(a
+c
+,1+a
+c
+–b
+c ,
+1/(2
+
+r) +
+(- a
+c
+/(2
+ 
+
+r
+2
+))
+ 
+2
+F
+0
+ 
+(a
+c
++1,2+a
+c
+–b
+c ,
+1/(2
+
+r)] -----------------------------------(5)
+where a
+h
+ 
+= ½ (l+3/2) –
+ 
+/2 , b
+h
+ 
+= l+3/2
+
+=k
+2
+/(2
+ 
+
+), k
+2
+ 
+= 2
+ 
+
+/
+ 
+
+2
+ 
+(V
+0
+-B) ,
+ 
+
+2
+ 
+= 2
+ 
+
+/
+ 
+
+2
+ 
+* k
+h
+
+We have to find the value of 1/(2
+ 
+
+r) for which LHS is equal to RHS for equation (5).
+By finding this value we can find the energy eigen values B for the particular equation.
+
+This will be the value of the stable energy eigen value for the electron hole pair static
+quantum dot.
+
+page No: 39 
+===============
+39
+
+Val = 1/(2
+ 
+
+r)
+ 
+l(Azimuthal
+Quantum no.
+r
+ 
+(
+ 
+distance
+between
+electron& hole)
+B
+ 
+(Energy
+eigen value)
+V
+0
+ 
+= 3/2 * 1/(4
+
+
+ 
+
+0
+ 
+) * e
+2
+/r
+c
+
+.04119194
+ 
+0
+ 
+10 nm
+ 
+1.8006e-20
+ 
+2.304e-20
+
+.05201122
+ 
+0
+ 
+10 nm
+ 
+1.121197e-20
+ 
+2.304e-20
+
+.08165704
+ 
+0
+ 
+10 nm
+ 
+4.581994e-21
+ 
+2.304e-20
+
+.04566950
+ 
+1
+ 
+10 nm
+ 
+1.464837e-20
+ 
+2.304e-20
+
+.06203910
+ 
+1
+ 
+10 nm
+ 
+7.937994e-21
+ 
+2.304e-20
+
+.15786181
+ 
+1
+ 
+10 nm
+ 
+1.2225992e-21
+ 
+2.304e-20
+
+.20713222
+ 
+0
+ 
+1nm
+ 
+7.121090e-20
+ 
+2.304e-19
+
+Not found
+ 
+1
+ 
+1nm
+
+.11385872
+ 
+0
+ 
+2nm
+ 
+5.891816e-20
+ 
+1.152e-19
+
+.18893625
+ 
+1
+ 
+2nm
+ 
+2.13962e-20
+ 
+1.152e-19
+
+.08575267
+ 
+0
+ 
+3nm
+ 
+4.616405e-20
+ 
+7.679999e-20
+
+.25269888
+ 
+0
+ 
+3nm
+ 
+5.316094e-21
+ 
+7.679999e-20
+
+.11484041
+ 
+1
+ 
+3nm
+ 
+2.574007e-21
+ 
+7.679999e-20
+
+.07116760
+ 
+0
+ 
+4nm
+ 
+3.770137e-20
+ 
+5.76e-20
+
+.13074870
+ 
+0
+ 
+4nm
+ 
+1.116984e-20
+ 
+5.76e-20
+
+.08839940
+ 
+1
+ 
+4nm
+ 
+2.443561e-20
+ 
+5.76e-20
+
+.06195164
+ 
+0
+ 
+5nm
+ 
+3.184169e-20
+ 
+4.608e-20
+
+.09749363
+ 
+0
+ 
+5nm
+ 
+1.285728e-20
+ 
+4.608e-20
+
+.07394641
+ 
+1
+ 
+5nm
+ 
+2.234949e-20
+ 
+4.608e-20
+
+.19056947
+ 
+1
+ 
+5nm
+ 
+3.365077e-21
+ 
+4.608e-20
+
+.05548334
+ 
+0
+ 
+6nm
+ 
+2.756856e-20
+ 
+3.84e-20
+
+.08040687
+ 
+0
+ 
+6nm
+ 
+1.312662e-20
+ 
+3.84e-20
+
+.06458225
+ 
+1
+ 
+6nm
+ 
+2.03475e-20
+ 
+3.84e-20
+
+.11987688
+ 
+1
+ 
+6nm
+ 
+5.905659e-21
+ 
+3.84e-20
+
+.05063503
+ 
+0
+ 
+7nm
+ 
+2.43188e-20
+ 
+3.291428e-20
+
+.06963503
+ 
+0
+ 
+7nm
+ 
+1.285834e-20
+ 
+3.291428e-20
+
+.21120285
+ 
+0
+ 
+7nm
+ 
+1.397803e-21
+ 
+3.291428e-20
+
+.05791610
+ 
+1
+ 
+7nm
+ 
+1.781454e-20
+ 
+3.291428e-20
+
+.09352694
+ 
+1
+ 
+7nm
+ 
+7.128074e-21
+ 
+3.291428e-20
+
+.04683321
+ 
+0
+ 
+8nm
+ 
+2.176476e-20
+ 
+2.88e-20
+
+.06208580
+ 
+0
+ 
+8nm
+ 
+1.238446e-20
+ 
+2.88e-20
+
+.12605788
+ 
+0
+ 
+8nm
+ 
+3.004151e-21
+ 
+2.88e-20
+
+.05287561
+ 
+1
+ 
+8nm
+ 
+1.707462e-21
+ 
+2.88e-20
+
+.07876733
+ 
+1
+ 
+8nm
+ 
+7.694308e-21
+ 
+2.88e-20
+
+.04375221
+ 
+0
+ 
+9nm
+ 
+1.970411e-20
+ 
+2.56e-20
+
+.05643507
+ 
+0
+ 
+9nm
+ 
+1,184291e-20
+ 
+2.56e-20
+
+.09732910
+ 
+0
+ 
+9nm
+ 
+3.981725e-21
+ 
+2.56e-20
+
+.04890059
+ 
+1
+ 
+9nm
+ 
+1.577352e-20
+ 
+2.56e-20
+
+.06904407
+ 
+1
+ 
+9nm
+ 
+7.912323e-21
+ 
+2.56e-20
+
+.03902194
+ 
+0
+ 
+11nm
+ 
+1.658207e-20
+ 
+2.094545e-20
+
+.04843254
+ 
+0
+ 
+11nm
+ 
+1.07642e-20
+ 
+2.094545e-20
+
+.07147330
+ 
+0
+ 
+11nm
+ 
+4.942751e-21
+ 
+2.094545e-20
+
+.04297285
+ 
+1
+ 
+11nm
+ 
+1.36731e-20
+ 
+2.094545e-20
+
+.05669535
+ 
+1
+ 
+11nm
+ 
+7.855277e-21
+ 
+2.094545e-20
+
+.11132382
+ 
+1
+ 
+11nm
+ 
+2.037418e-21
+ 
+2.094545e-20
+
+page No: 40 
+===============
+40
+
+.03715315
+ 
+0
+ 
+12nm
+ 
+1.53705e-20
+ 
+1.92e-20
+
+.04546430
+ 
+0
+ 
+12nm
+ 
+1.026451e-20
+ 
+1.92e-20
+
+.06413234
+ 
+0
+ 
+12nm
+ 
+5.158519e-21
+ 
+1.92e-20
+
+.04068532
+ 
+1
+ 
+12nm
+ 
+1.281754e-20
+ 
+1.92e-20
+
+.05245294
+ 
+1
+ 
+12nm
+ 
+7.711512e-21
+ 
+1.92e-20
+
+.09023859
+ 
+1
+ 
+12nm
+ 
+2.605521e-21
+ 
+1.92e-20
+
+.03871289
+ 
+0
+ 
+13nm
+ 
+1.432684e-20
+ 
+1.772308e-20
+
+.04898401
+ 
+0
+ 
+13nm
+ 
+9.798517e-21
+ 
+1.772308e-20
+
+.07754975
+ 
+0
+ 
+13nm
+ 
+5.270199e-21
+ 
+1.772308e-20
+
+.03552240
+ 
+1
+ 
+13nm
+ 
+1.206268e-20
+ 
+1.772308e-20
+
+.04295338
+ 
+1
+ 
+13nm
+ 
+7.534360e-21
+ 
+1.772308e-20
+
+.05856849
+ 
+1
+ 
+13nm
+ 
+3.006036e-21
+ 
+1.772308e-20
+
+.034083607
+ 
+0
+ 
+14nm
+ 
+1.341821e-20
+ 
+1.645714e-20
+
+.04079518
+ 
+0
+ 
+14nm
+ 
+9.366297e-21
+ 
+1.645714e-20
+
+.05415846
+ 
+0
+ 
+14nm
+ 
+5.314385e-21
+ 
+1.645714e-20
+
+.11111741
+ 
+0
+ 
+14nm
+ 
+1.262471e-21
+ 
+1.645714e-20
+
+.03699031
+ 
+1
+ 
+14nm
+ 
+1.139225e-20
+ 
+1.645714e-20
+
+.04608237
+ 
+1
+ 
+14nm
+ 
+7.340338e-21
+ 
+1.645714e-20
+
+.06884917
+ 
+1
+ 
+14nm
+ 
+3.288427e-21
+ 
+1.645714e-20
+
+.03280219
+ 
+0
+ 
+15nm
+ 
+1.264983e-20
+ 
+1.536e-20
+
+.03891556
+ 
+0
+ 
+15nm
+ 
+8.966288e-21
+ 
+1.536e-20
+
+.05055576
+ 
+0
+ 
+15nm
+ 
+5.312733e-21
+ 
+1.536e-20
+
+.09046542
+ 
+0
+ 
+15nm
+ 
+1.659182e-21
+ 
+1.536e-20
+
+.03546969
+ 
+1
+ 
+15nm
+ 
+1.079306e-20
+ 
+1.536e-20
+
+.04361094
+ 
+1
+ 
+15nm
+ 
+7.139509e-21
+ 
+1.536e-20
+
+.06241206
+ 
+1
+ 
+15nm
+ 
+3.485958e-21
+ 
+1.536e-20
+
+-2.00E+36
+-1.00E+36
+0.00E+00
+1.00E+36
+2.00E+36
+3.00E+36
+4.00E+36
+5.00E+36
+1
+ 
+3
+ 
+5
+ 
+7
+ 
+9
+ 
+11
+ 
+13 15 17
+
+Series1
+
+Series2
+
+Series3
+
+page No: 41 
+===============
+41
+
+-1.40E+42
+-1.20E+42
+-1.00E+42
+-8.00E+41
+-6.00E+41
+-4.00E+41
+-2.00E+41
+0.00E+00
+2.00E+41
+1
+ 
+3
+ 
+5
+ 
+7
+ 
+9
+ 
+11
+ 
+13 15 17
+
+Series1
+
+Series2
+
+Series3
+
+So we observe that there are three points of intersection. So there exist three values
+of Val where a solution exists which indirectly means that there are three possible
+values of B (stable energy Eigen values for the quantum dot).
+
+Thus we can effectively conclude that
+
+1.
+ 
+Qdots have highly stable energy eigen states below the Compton Wavelength
+hence perturbations are almost negligible.
+2.
+ 
+Decoherence time (time to decohere) of Quantum Dots is much more than other
+techniques due to their 0-dimensional nature.
+3.
+ 
+Qubits, Teleportation, storage of information, processing of information can be
+done efficiently on Quantum Dots.
+4.
+ 
+A large ensemble of Quantum Dots can be used for making Quantum Computers
+because of their property of almost negligible decoherence amongst themselves
+and from the environment.
+
+Acknowledgements
+
+First of all let me take this opportunity to thank God for with out Him nothing can happen
+in this mortal world.
+I also pay my gratitude to
+ 
+Professor Y M Gupta
+ 
+who is a person from whom I learned
+so much on so many aspects of life. His self-less preaching influenced almost every
+aspect of my thought. On the research front, almost all of my works originated from his
+insightful notes. He always supported and motivated me to do hard work during my B.
+Tech and especially for this dissertation by guiding me through the right path.
 
