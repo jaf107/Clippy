@@ -260,9 +260,12 @@ exports.uploadPaperById = async (req, res) => {
             console.log("here in db");
             if (req.userId) {
               console.log("updating history");
-              updateHistory(req.userId, req.body.paper_id, ppr.title);
-            }
-            res.status(200).send(ppr);
+              updateHistory(req.userId, req.body.paper_id, ppr.title).then(
+                (r) => {
+                  res.status(200).send(ppr);
+                }
+              );
+            } else res.status(200).send(ppr);
           } else {
             if (!paper_data.data.isOpenAccess || !paper_data.data.openAccessPdf)
               res.status(404).send("Paper Not Accessible");
@@ -653,10 +656,11 @@ async function updateHistory(userId, paper_id, title) {
   // Find the document that matches the paper_id in the history array
   User.findOne({ _id: userId, "history.paper_id": paper_id })
     .then((r) => {
-      if (doc) {
+      if (r) {
         User.updateOne(
           { _id: userId, "history.paper_id": paper_id },
-          { $set: { "history.$.openedAt": Date.now() } }
+          { $set: { "history.$.openedAt": Date.now() } },
+          { upsert: true }
         ).then((r) => console.log("Updated time for paper_id", paper_id));
       } else {
         // If the document doesn't exist, push a new document to the history array with the paper_id and newTime
