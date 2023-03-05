@@ -50,7 +50,6 @@ export class PdfShareService {
   }
 
   getFile(): any {
-    console.log(this.file);
     return this.file;
   }
 
@@ -82,9 +81,7 @@ export class PdfShareService {
   }
 
   getHistory(): Observable<any> {
-    console.log(this.tokenStorage.getToken());
     let _id = this.tokenStorage.getUser().id;
-    console.log(_id);
     return this.http.get(API_USER_URL + _id, { headers: this.headers });
   }
 

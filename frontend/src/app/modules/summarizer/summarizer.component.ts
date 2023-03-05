@@ -51,7 +51,6 @@ export class SummarizerComponent implements OnInit {
       'Click any of the title to view its content summary';
     this.currentChunkTitle = 'Select a Title';
     if (this.exSummarizerOn) {
-      console.log('Summarizer On ');
       this.spinner.show();
       this.featureService
         .getExtractiveSummary(this.pdfShareService.getPaperId())
@@ -85,7 +84,6 @@ export class SummarizerComponent implements OnInit {
     this.currentChunkTitle = 'Select a Title';
 
     if (this.absSummarizerOn) {
-      console.log('Summarizer On ');
       this.spinner.show();
       this.featureService
         .getAbstractiveSummary(this.pdfShareService.getPaperId())
@@ -94,7 +92,6 @@ export class SummarizerComponent implements OnInit {
             //console.log(JSON.parse(data));
             // data = JSON.parse(data);
             this.rawSummary = data;
-            console.log(this.rawSummary);
 
             if ((this.summary.length = 0)) {
               this.currentChunkSummary = 'No summary available for this pdf';
@@ -122,6 +119,5 @@ export class SummarizerComponent implements OnInit {
 
   onClipboardCopy(successful: boolean) {
     this.toastr.show('Text copied to Clipboard');
-    console.log(successful);
   }
 }

@@ -56,12 +56,10 @@ export class FeaturesService {
   }
 
   getAbsSummarizerStatus(): Observable<boolean> {
-    console.log('abs ' + this.abstractiveSummarizerOnCheck.value);
     return this.abstractiveSummarizerOnCheck.asObservable();
   }
 
   getExSummarizerStatus(): Observable<boolean> {
-    console.log('ex ' + this.extractiveSummarizerOnCheck.value);
     return this.extractiveSummarizerOnCheck.asObservable();
   }
 
@@ -77,7 +75,6 @@ export class FeaturesService {
   }
 
   getHighlightedText() {
-    console.log('inside highlighted');
     return this.highlighted;
   }
   setHighlightedText(highlighed: any) {

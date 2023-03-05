@@ -35,7 +35,6 @@ export class UserService {
   }
 
   getUsername(): string {
-    console.log(this.username);
     return this.username;
   }
 }

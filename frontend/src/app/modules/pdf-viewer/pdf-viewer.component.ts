@@ -56,11 +56,17 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   ngOnInit() {
     this.pdfPath = this.pdfShareService.getFile();
 
-    if (this.pdfPath == null) {
-      if (this.tokenStorage.getPaper() == null) {
+    if (!this.pdfPath) {
+      if (this.tokenStorage.getPaper() == undefined) {
         this.pdfPath = './assets/SCORE_intro.pdf';
       } else {
         this.pdfPath = JSON.parse(this.tokenStorage.getPaper());
+        if(this.pdfPath ===  undefined){
+          this.pdfPath = this.tokenStorage.getPaper();
+          if(this.pdfPath === undefined){
+            this.pdfPath = './assets/SCORE_intro.pdf';
+          }
+        }
       }
     }
 
@@ -78,7 +84,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     });
 
     this.featureService.getExSummarizerStatus().subscribe((value) => {
-      console.log('extractive status changed');
       this.exSummary = value;
       if (this.exSummary) {
         this.summarizerOn = false;
@@ -118,7 +123,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
 
   loaded() {
-    console.log('Loaded ' + this.pdfPath);
+    // console.log('Loaded ' + this.pdfPath);
   }
   starts() {
     // console.log('Started ' + this.pdfPath);
@@ -130,7 +135,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
    * @param e custom event
    */
   pageRendered(e: any) {
-    console.log('page rendered:', e);
     this.pageRenderedEvents.push(e);
 
     let pageNum = e.pageNumber;
@@ -230,7 +234,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
   loadComplete(pdfData: any) {
     this.totalPages = pdfData.numPages;
-    console.log(pdfData);
   }
 
   openFileDialog() {
@@ -250,7 +253,6 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   uploadPdf(e) {
     this.file = e.target.files[0];
     this.visitedFiles.push({ name: this.file.name, lastVisited: new Date() });
-    console.log(this.visitedFiles);
 
     if (this.file.type != 'application/pdf') {
       console.log('Not supported file type!');
@@ -270,15 +272,13 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       const formData: FormData = new FormData();
       formData.append('paper', this.pdfShareService.getRawFile());
       formData.append('title', this.pdfShareService.getTitle());
-      console.log('formdata: ', formData.get('title'), formData.get('paper'));
       this.pdfShareService.sendFiletoServer(formData).subscribe(
         (data) => {
-          console.log(data);
           this.tokenStorage.savePaperData(data);
           this.pdfShareService.setPaperId(data.paper_id);
         },
         (err) => {
-          this.toastr.error('File sending failed!');
+          // this.toastr.error('File sending failed!');
           console.log('File sending failed');
         }
       );
