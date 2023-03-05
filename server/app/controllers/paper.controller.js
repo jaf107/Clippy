@@ -97,13 +97,11 @@ exports.uploadPaper = async (req, res) => {
         if (paper_data.data.data.length > 0) {
           const data = paper_data.data.data[0];
           if (data.title !== req.body.title) {
+            console.log("match koreni");
             Paper.findOne({ title: req.body.title })
               .then((ppr) => {
                 if (ppr) {
-                  fs.unlinkSync(req.file.path, (err) => {
-                    if (err) throw err;
-                    console.log("successfully deleted");
-                  });
+                  fs.unlinkSync(req.file.path);
                   if (req.userId) {
                     updateHistory(req.userId, ppr.paper_id, ppr.title);
                   }
@@ -165,10 +163,6 @@ exports.uploadPaper = async (req, res) => {
                   };
                   Paper.create(paper)
                     .then((r) => {
-                      fs.unlinkSync(req.file.path);
-                      console.log(
-                        "successfully deleted - paper found in scholar"
-                      );
                       if (req.userId) {
                         updateHistory(req.userId, paper.paper_id, paper.title);
                       }
