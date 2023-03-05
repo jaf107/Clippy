@@ -1,6 +1,3 @@
-/**
- * Created by vadimdez on 21/06/16.
- */
 import {
   Component,
   Input,
@@ -682,7 +679,7 @@ export class PdfViewerComponent
 
     fromEvent(this.eventBus, 'pagechanging')
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ pageNumber }) => {
+      .subscribe(({ pageNumber: any }) => {
         if (this.pageScrollTimeout) {
           clearTimeout(this.pageScrollTimeout);
         }
