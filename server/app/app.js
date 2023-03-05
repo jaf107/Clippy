@@ -39,7 +39,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 //app.use(fileUpload());
-app.use(cors({ credentials: true, origin: "http://localhost:4200" }));
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://clippyicsescore2023.s3-website-us-east-1.amazonaws.com",
+  })
+);
 
 // response headers setup; CORS
 app.use(globalResponseHeaders);
