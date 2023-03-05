@@ -187,7 +187,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     let startingIndex = spanStr.indexOf(segStr);
     let wrappedText = ``;
     for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
-    wrappedText += `<a class="highlighed-text ${selectionClass}">`;
+    wrappedText += `<a class="highlighed-text ${selectionClass}" style="background-color: transparent !important; color: transparent !important;">`;
     for (let i = startingIndex; i < startingIndex + segStr.length; i++)
       wrappedText += spanStr[i];
     wrappedText += `</a>`;
