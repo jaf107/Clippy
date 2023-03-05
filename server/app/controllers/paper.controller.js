@@ -651,7 +651,7 @@ async function createChunkForHighlighting(src, paragraph) {
 
 async function updateHistory(userId, paper_id, title) {
   // Find the document that matches the paper_id in the history array
-  let doc = await User.findOne({ _id: userId, "history.paper_id": paper_id })
+  User.findOne({ _id: userId, "history.paper_id": paper_id })
     .then((r) => {
       if (doc) {
         User.updateOne(
