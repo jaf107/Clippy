@@ -2,9 +2,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TokenStorageService } from 'src/app/token-storage.service';
+import { environment } from 'src/environment/environment';
 import { PdfShareService } from './pdf-share.service';
 
-const API_URL = 'http://bs23.ddnsfree.com/api/paper/';
+// const API_URL = 'http://bs23.ddnsfree.com/api/paper/';
+const API_URL = environment.url + 'paper/';
 
 @Injectable({
   providedIn: 'root',
@@ -54,12 +56,12 @@ export class FeaturesService {
   }
 
   getAbsSummarizerStatus(): Observable<boolean> {
-    console.log("abs " + this.abstractiveSummarizerOnCheck.value);
+    console.log('abs ' + this.abstractiveSummarizerOnCheck.value);
     return this.abstractiveSummarizerOnCheck.asObservable();
   }
 
   getExSummarizerStatus(): Observable<boolean> {
-    console.log("ex " + this.extractiveSummarizerOnCheck.value);
+    console.log('ex ' + this.extractiveSummarizerOnCheck.value);
     return this.extractiveSummarizerOnCheck.asObservable();
   }
 

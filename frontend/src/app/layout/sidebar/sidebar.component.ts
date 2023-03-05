@@ -18,6 +18,8 @@ interface chunk {
 export class SidebarComponent {
   public isActive: boolean = true;
   public optionsActive: boolean = false;
+  public enableHighlightOption: boolean = false;
+  public highlightOn: boolean = false;
 
   constructor(
     public featureService: FeaturesService,
@@ -35,11 +37,19 @@ export class SidebarComponent {
   public pdfData: any;
 
   ngOnInit(): void {
-
     this.pdfData = JSON.parse(this.tokenStorage.getPaperData());
-    console.log(this.pdfData);
+    //   console.log(this.pdfData);
+    {
+      {
+        console.log('pdfData:', this.pdfData);
+      }
+    }
+    {
+      {
+        console.log('citationCount:', this.pdfData?.citationCount);
+      }
+    }
 
-    
     this.featureService.getAbsSummarizerStatus().subscribe((value) => {
       if (value == false) {
         this.abstractiveOn = false;
@@ -65,6 +75,29 @@ export class SidebarComponent {
     this.optionsActive = !this.optionsActive;
   }
 
+  showHighlighter() {
+    this.enableHighlightOption = !this.enableHighlightOption;
+  }
+
+  toggleHighlighter() {
+    this.highlightOn = !this.highlightOn;
+
+    let highlightedSpans = document.querySelectorAll('.highlighed-text');
+    highlightedSpans.forEach((span: HTMLElement) => {
+      if (this.highlightOn) {
+        span.setAttribute(
+          'style',
+          'background-color: yellow !important; color: yellow !important;'
+        );
+      } else {
+        span.setAttribute(
+          'style',
+          'background-color: transparent !important; color: transparent !important;'
+        );
+      }
+    });
+  }
+
   toggleSummarizer(type: string) {
     if (type == 'Extractive') {
       if (this.extractiveOn == false) {
@@ -76,6 +109,7 @@ export class SidebarComponent {
       } else {
         this.extractiveOn = false;
         this.abstractiveOn = false;
+        this.highlightOn = false;
         this.featureService.setExSummarizerOn(this.extractiveOn);
         this.featureService.setAbsSummarizerOn(this.abstractiveOn);
       }

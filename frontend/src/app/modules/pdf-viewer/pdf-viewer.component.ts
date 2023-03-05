@@ -94,6 +94,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
 
     this.featureService.getHighlightedText().subscribe((value) => {
       this.highlightedText = value;
+      // console.log(this.pageRenderedEvents);
       // this.getTextSpans();
       this.pageRenderedEvents.forEach((e) => {
         let pageNum = e.pageNumber;
@@ -140,7 +141,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
   }
 
   highlightSummary(pageNo, spans, AllSegments) {
-    console.log('inside highlighted', pageNo, spans);
+    // console.log('inside highlighted', pageNo, spans);
     let higlightedSegments = this.filterDataSegmentsForAPage(
       AllSegments,
       pageNo
@@ -182,7 +183,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
     let startingIndex = spanStr.indexOf(segStr);
     let wrappedText = ``;
     for (let i = 0; i < startingIndex; i++) wrappedText += spanStr[i];
-    wrappedText += `<a class="highlighed-text ${selectionClass}" style="background-color: ${highlightColor} !important; color: ${highlightColor} !important;">`;
+    wrappedText += `<a class="highlighed-text ${selectionClass}" style="background-color: transparent !important; color: transparent !important;">`;
     for (let i = startingIndex; i < startingIndex + segStr.length; i++)
       wrappedText += spanStr[i];
     wrappedText += `</a>`;
@@ -277,6 +278,7 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
           this.pdfShareService.setPaperId(data.paper_id);
         },
         (err) => {
+          this.toastr.error('File sending failed!');
           console.log('File sending failed');
         }
       );

@@ -1,17 +1,17 @@
-.left{
-    /* width: 96%; */
-    width: 96%;
-    display: inline-block;
-    margin: 0 auto;
+.left {
+  /* width: 96%; */
+  width: 96%;
+  display: inline-block;
+  margin: 0 auto;
 }
 
-.leftGraph{
-    /* width: 96%; */
-    position: absolute;
-    left: 1rem;
-    bottom: 0.5rem;
-    width: 96%;
-    margin: 0 auto;
+.leftGraph {
+  /* width: 96%; */
+  position: absolute;
+  left: 1rem;
+  bottom: 0.5rem;
+  width: 96%;
+  margin: 0 auto;
 }
 
 .right {
@@ -21,7 +21,7 @@
 
 .middle {
   display: inline-block;
-  width: 27%;
+  width: 20%;
   vertical-align: top;
 }
 
@@ -29,37 +29,46 @@
   background-color: yellow;
 }
 
-.graphCanvas{
-    width: 96%;
-    height: 90%;
-    margin-top: 1rem;
-    border: 1px solid white;
-    border-radius: 10px;
+.graphCanvas {
+  width: 96%;
+  height: 90%;
+  margin-top: 1rem;
+  border: 1px solid white;
+  border-radius: 10px;
 }
 
-.toolbar{
-    padding-top: 0.5rem;
-    color: #777777;
-    background-color: #404040;
-    box-shadow: 0 4px 2px -2px #333333;
+.toolbar {
+  padding-top: 0.5rem;
+  color: #777777;
+  background-color: #404040;
+  box-shadow: 0 4px 2px -2px #333333;
 }
 
-button{
-    margin-right: 0.5rem;
-    background-color: transparent;
-    border: none;
+button {
+  margin-right: 0.5rem;
+  background-color: transparent;
+  border: none;
 }
 
-button:hover{
-    background-color: #333333;
+button:hover {
+  background-color: #333333;
 }
 
-.page{
-    text-align: center;
-    color: white;
-    margin-right: 0.5rem;
-    width: 3rem;
-    background-color: transparent;
-    border: 1px solid #777777;
-    border-radius: 2px;
+.page {
+  text-align: center;
+  color: white;
+  margin-right: 0.5rem;
+  width: 3rem;
+  background-color: transparent;
+  border: 1px solid #777777;
+  border-radius: 2px;
+}
+
+.uploadDownload {
+  float: right;
+}
+
+.highlight-yellow {
+  color: yellow;
+  background-color: yellow;
 }
