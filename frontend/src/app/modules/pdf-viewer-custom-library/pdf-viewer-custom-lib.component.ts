@@ -679,7 +679,7 @@ export class PdfViewerComponent
 
     fromEvent(this.eventBus, 'pagechanging')
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ pageNumber: any }) => {
+      .subscribe(({ pageNumber }) => {
         if (this.pageScrollTimeout) {
           clearTimeout(this.pageScrollTimeout);
         }
