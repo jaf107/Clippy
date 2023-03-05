@@ -403,6 +403,7 @@ async function AbstractSummary(filepath) {
       let element = paragraphs[i];
       let contextString = element.text;
       let retryCount = 0;
+      let noOfSentenceInSummary;
 
       if (element.noOfSentences > 50) {
         noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
@@ -441,6 +442,7 @@ async function ExtractSummary(src) {
 
   for (let i = 0; i < paragraphs.length; i++) {
     let element = paragraphs[i];
+    let noOfSentenceInSummary;
 
     if (element.noOfSentences > 50) {
       noOfSentenceInSummary = parseInt(element.noOfSentences / 10);
@@ -875,15 +877,6 @@ function getTextChunkObject(content) {
   return retItems;
 }
 
-function noOfSentences(context) {
-  let noOfSentence = 0;
-  for (var i = 0; i < context.length; i++) {
-    if (context[i] == "." || context[i] == "?" || context[i] == "!")
-      noOfSentence++;
-  }
-  // console.log(noOfSentence);
-  return noOfSentence;
-}
 function breakTextChunkIntoSentence(textChunk) {
   let sentences = textChunk.split(/[.?!]/g);
   return sentences;
