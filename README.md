@@ -47,8 +47,10 @@ Note that pdf.js is a prerequisite for this project.
   		<pre><code>cd frontend</code>
 <code>npm install --save</code></pre>
 		<li>Start the application:</li>
-		<pre>If angular cli is installed globally: <code>ng serve</code></pre>
-		<pre>If not then: <code>npm start</code></pre>		
+		<li>If angular cli is installed globally: </li>
+		<pre><code>ng serve</code></pre>
+		<li>If not then: </li>
+		<pre><code>npm start</code></pre>		
 		<li>Open a web browser and go to <a href="http://localhost:4200">http://localhost:4200</a></li>
 		<li>Install the dependencies:</li>
 	<pre><code>npm install</code></pre>
