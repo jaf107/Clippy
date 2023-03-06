@@ -10,9 +10,9 @@ export class AppComponent implements OnInit {
   title = 'frontend';
   ngOnInit() {
     if (isDevMode()) {
-      console.log('Development!');
+      // console.log('Development!');
     } else {
-      console.log('Production!');
+      // console.log('Production!');
     }
   }
 }
