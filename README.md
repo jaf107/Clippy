@@ -45,8 +45,7 @@ Note that pdf.js is a prerequisite for this project.
 		<li>Install the dependencies:</li>
   		<pre><code>cd frontend</code>
 <code>npm install --save</code></pre>
-		<li>Start the application:</li>
-		<li>
+		<li>Start the application:
 			<ul>
 				<li>If angular cli is installed globally: </li>
 				<pre><code>ng serve</code></pre>
