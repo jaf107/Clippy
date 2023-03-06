@@ -37,7 +37,6 @@ Note that pdf.js is a prerequisite for this project.
 		</li>
 <li>Citation graph will not be shown if the software can not find the paper in semantic scholar.
 		</li>	
-
   	</ol>
 	
 <h1 align="center">Installation</h1>
