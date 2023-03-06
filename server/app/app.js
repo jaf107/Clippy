@@ -43,6 +43,7 @@ app.use(
   cors({
     credentials: true,
     origin: "http://clippyicsescore2023.s3-website-us-east-1.amazonaws.com",
+    // origin: "http://localhost:4200",
   })
 );
 
