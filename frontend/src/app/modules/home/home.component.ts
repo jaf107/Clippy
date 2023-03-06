@@ -53,7 +53,6 @@ export class HomeComponent implements OnInit {
     } else {
       this.pdfShareService.getHistory().subscribe((data) => {
         this.historyList = data.history;
-        console.log(data.history);
         this.historyList.reverse();
         this.historyList = this.historyList.slice(0, 2);
       });
@@ -109,7 +108,6 @@ export class HomeComponent implements OnInit {
         this.pdfShareService
           .searchPaperbyId(data.data[0].paperId)
           .subscribe((data) => {
-            console.log(data);
             this.tokenStorage.savePaperData(data);
             this.pdfShareService.setPaperId(data.paper_id);
             this.pdfShareService.getPaperFromSearch(data.url).subscribe(
@@ -138,7 +136,6 @@ export class HomeComponent implements OnInit {
     this.spinner.show();
     this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
       (data) => {
-        console.log(data);
         this.tokenStorage.savePaperData(data);
         this.pdfShareService.setPaperId(data.paper_id);
         this.pdfShareService.getPaperFromSearch(data.url).subscribe(
@@ -167,7 +164,6 @@ export class HomeComponent implements OnInit {
   }
 
   viewHistoryPaper(historyFile: history) {
-    console.log(historyFile.paper_id);
     this.searchedTerm = historyFile.paper_id;
     this.searchById();
   }

@@ -56,7 +56,6 @@ export class KnowledgeGraphComponent implements OnInit {
       // this.spinner.show();
       this.graphOn = value;
       if(this.graphOn){
-        console.log("Hello from knowledge graph component");
         this.featureService.getCitationGraph(this.pdfShareService.getPaperId()).subscribe(
           (data) =>{
             this.graphData = JSON.parse(data);
@@ -210,8 +209,6 @@ export class KnowledgeGraphComponent implements OnInit {
       }
     });
 
-    console.log(this.graphNodes);
-    console.log(this.graphEdges);
   }
 
 }
