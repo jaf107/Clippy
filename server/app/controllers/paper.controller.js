@@ -99,83 +99,83 @@ exports.uploadPaper = async (req, res) => {
       .then((paper_data) => {
         if (paper_data.data.data.length > 0) {
           const data = paper_data.data.data[0];
-          if (data.title !== req.body.title) {
-            console.log("match koreni");
-            Paper.findOne({ title: req.body.title })
-              .then((ppr) => {
-                if (ppr) {
+          // if (data.title !== req.body.title) {
+          //   console.log("match koreni");
+          //   Paper.findOne({ title: req.body.title })
+          //     .then((ppr) => {
+          //       if (ppr) {
+          //         fs.unlinkSync(req.file.path);
+          //         if (req.userId) {
+          //           updateHistory(req.userId, ppr.paper_id, ppr.title);
+          //         }
+          //         res.status(200).send(ppr);
+          //       } else {
+          //         var uuid = Math.random().toString(36).substr(2, 9);
+          //         fs.renameSync(req.file.path, "./uploads/" + uuid + ".pdf");
+          //         console.log("File renamed successfully");
+          //         const paper = {
+          //           paper_id: uuid,
+          //           title: req.body.title,
+          //           knowledge_graph: "",
+          //           url: "./uploads/" + uuid + ".pdf",
+          //           abstract: "",
+          //           abstractive_summary: "",
+          //           extractive_summary: "",
+          //           citationCount: 0,
+          //           referenceCount: 0,
+          //           authors: [],
+          //         };
+          //         Paper.create(paper)
+          //           .then((r) => {
+          //             if (req.userId) {
+          //               updateHistory(req.userId, paper.paper_id, paper.title);
+          //             }
+          //             res.status(200).send(paper);
+          //           })
+          //           .catch((err) => res.status(404).send(err.message));
+          //       }
+          //     })
+          //     .catch((err) => res.status(404).send(err.message));
+          // } else {
+          Paper.findOne({ paper_id: data.paperId })
+            .then((ppr) => {
+              if (ppr) {
+                fs.unlinkSync(req.file.path);
+                console.log("successfully deleted - paper found in db");
+                res.status(200).send(ppr);
+              } else {
+                if (fs.existsSync("./uploads/" + data.paperId + ".pdf")) {
+                  console.log("exists");
                   fs.unlinkSync(req.file.path);
-                  if (req.userId) {
-                    updateHistory(req.userId, ppr.paper_id, ppr.title);
-                  }
-                  res.status(200).send(ppr);
-                } else {
-                  var uuid = Math.random().toString(36).substr(2, 9);
-                  fs.renameSync(req.file.path, "./uploads/" + uuid + ".pdf");
-                  console.log("File renamed successfully");
-                  const paper = {
-                    paper_id: uuid,
-                    title: req.body.title,
-                    knowledge_graph: "",
-                    url: "./uploads/" + uuid + ".pdf",
-                    abstract: "",
-                    abstractive_summary: "",
-                    extractive_summary: "",
-                    citationCount: 0,
-                    referenceCount: 0,
-                    authors: [],
-                  };
-                  Paper.create(paper)
-                    .then((r) => {
-                      if (req.userId) {
-                        updateHistory(req.userId, paper.paper_id, paper.title);
-                      }
-                      res.status(200).send(paper);
-                    })
-                    .catch((err) => res.status(404).send(err.message));
-                }
-              })
-              .catch((err) => res.status(404).send(err.message));
-          } else {
-            Paper.findOne({ paper_id: data.paperId })
-              .then((ppr) => {
-                if (ppr) {
-                  fs.unlinkSync(req.file.path);
-                  console.log("successfully deleted - paper found in db");
-                  res.status(200).send(ppr);
-                } else {
-                  if (fs.existsSync("./uploads/" + data.paperId + ".pdf")) {
-                    console.log("exists");
-                    fs.unlinkSync(req.file.path);
-                  } else
-                    fs.renameSync(
-                      req.file.path,
-                      "./uploads/" + data.paperId + ".pdf"
-                    );
-                  const paper = {
-                    paper_id: data.paperId,
-                    title: data.title,
-                    knowledge_graph: "",
-                    url: "./uploads/" + data.paperId + ".pdf",
-                    abstract: data.abstract,
-                    abstractive_summary: "",
-                    extractive_summary: "",
-                    citationCount: data.citationCount,
-                    referenceCount: data.referenceCount,
-                    authors: data.authors,
-                  };
-                  Paper.create(paper)
-                    .then((r) => {
-                      if (req.userId) {
-                        updateHistory(req.userId, paper.paper_id, paper.title);
-                      }
-                      res.status(200).send(paper);
-                    })
-                    .catch((err) => res.status(404).send(err.message));
-                }
-              })
-              .catch((err) => res.status(404).send(err.message));
-          }
+                } else
+                  fs.renameSync(
+                    req.file.path,
+                    "./uploads/" + data.paperId + ".pdf"
+                  );
+                const paper = {
+                  paper_id: data.paperId,
+                  title: data.title,
+                  knowledge_graph: "",
+                  url: "./uploads/" + data.paperId + ".pdf",
+                  abstract: data.abstract,
+                  abstractive_summary: "",
+                  extractive_summary: "",
+                  citationCount: data.citationCount,
+                  referenceCount: data.referenceCount,
+                  authors: data.authors,
+                };
+                Paper.create(paper)
+                  .then((r) => {
+                    if (req.userId) {
+                      updateHistory(req.userId, paper.paper_id, paper.title);
+                    }
+                    res.status(200).send(paper);
+                  })
+                  .catch((err) => res.status(404).send(err.message));
+              }
+            })
+            .catch((err) => res.status(404).send(err.message));
+          //         }
         } else {
           var uuid = Math.random().toString(36).substr(2, 9);
           fs.renameSync(req.file.path, "./uploads/" + uuid + ".pdf");
