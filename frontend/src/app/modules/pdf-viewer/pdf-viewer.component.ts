@@ -61,9 +61,9 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
         this.pdfPath = './assets/SCORE_intro.pdf';
       } else {
         this.pdfPath = JSON.parse(this.tokenStorage.getPaper());
-        if(this.pdfPath ===  undefined){
+        if (this.pdfPath === undefined) {
           this.pdfPath = this.tokenStorage.getPaper();
-          if(this.pdfPath === undefined){
+          if (this.pdfPath === undefined) {
             this.pdfPath = './assets/SCORE_intro.pdf';
           }
         }
@@ -320,9 +320,17 @@ export class PdfViewerComponent implements AfterViewInit, OnInit {
       let entireScreenWidth = this.convertREMToPx(50);
       this.topCSS = -1 * (entireScreenHeight - e.clienY) - 100;
 
+      console.log({
+        y1: e.clienY,
+        top: this.topCSS,
+        entireScreenHeight,
+        height: e.height,
+      });
+
       if (this.topCSS + e.height > 0) {
-        this.topCSS -= e.height;
+        this.topCSS -= e.height * 1.1;
       }
+
       this.leftCSS = e.clientX;
       if (this.leftCSS + e.width > entireScreenWidth) {
         this.leftCSS -= e.width / 2;

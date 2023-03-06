@@ -589,11 +589,12 @@ export class PdfViewerComponent
             }
           }
 
-          span.innerHTML = this.placeWrappingTagForRefrence(
-            span.innerHTML,
-            startingIndex,
-            finalIndex
-          );
+          if (span.children.length === 0)
+            span.innerHTML = this.placeWrappingTagForRefrence(
+              span.innerHTML,
+              startingIndex,
+              finalIndex
+            );
         }
       }
 
@@ -617,11 +618,12 @@ export class PdfViewerComponent
             }
           }
 
-          span.innerHTML = this.placeWrappingTagForRefrence(
-            span.innerHTML,
-            startingIndex,
-            finalIndex
-          );
+          if (span.children.length === 0)
+            span.innerHTML = this.placeWrappingTagForRefrence(
+              span.innerHTML,
+              startingIndex,
+              finalIndex
+            );
         }
       }
     });
