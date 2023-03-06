@@ -1,4 +1,5 @@
-#! /bin/bash 
+#! /bin/bash
+
 sudo docker image rm clippy
 sudo docker system prune -y
 sudo docker build -t clippy .
