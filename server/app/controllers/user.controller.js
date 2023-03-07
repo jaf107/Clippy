@@ -10,14 +10,20 @@ exports.userBoard = (req, res) => {
 };
 
 exports.userById = async (req, res) => {
-  var user = await User.findById(req.params.id).populate("roles", "-__v");
-  console.log(req.params.id);
-  res.status(200).send({
-    username: user.username,
-    email: user.email,
-    roles: user.roles,
-    history: user.history,
-  });
+  User.findById(req.params.id)
+    .populate("roles", "-__v")
+    .then((user) => {
+      console.log(req.params.id);
+      res.status(200).send({
+        username: user.username,
+        email: user.email,
+        roles: user.roles,
+        history: user.history,
+      });
+    })
+    .catch((err) => {
+      res.status(404).send(err);
+    });
 };
 
 exports.adminBoard = (req, res) => {
