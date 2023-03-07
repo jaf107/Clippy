@@ -239,7 +239,6 @@ export class PdfViewerComponent
   }
 
   async handlePopOver(event: any) {
-    console.log('called');
     if (event.type != 'mouseover') {
       return;
     }
