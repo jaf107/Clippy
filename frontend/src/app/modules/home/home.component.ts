@@ -133,7 +133,7 @@ export class HomeComponent implements OnInit {
   }
 
   searchById() {
-    this.spinner.show();
+    // this.spinner.show();
     this.pdfShareService.searchPaperbyId(this.searchedTerm).subscribe(
       (data) => {
         this.tokenStorage.savePaperData(data);
@@ -157,6 +157,7 @@ export class HomeComponent implements OnInit {
         this.toastr.error(err.error);
       }
     );
+    this.spinner.show();
   }
 
   searchPaperToggle(searchType: string) {

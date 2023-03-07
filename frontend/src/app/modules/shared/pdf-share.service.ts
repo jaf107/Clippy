@@ -30,7 +30,7 @@ export class PdfShareService {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, Content-Type, x-access-token',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
-    'x-access-token': this.tokenStorage.getToken(),
+    'x-access-token': this.tokenStorage.getToken() || '',
   });
 
   setSearched(setSearched: boolean) {

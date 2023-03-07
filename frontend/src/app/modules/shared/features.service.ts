@@ -30,7 +30,7 @@ export class FeaturesService {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, Content-Type, x-access-token',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
-    'x-access-token': JSON.stringify(this.tokenStorage.getToken()),
+    'x-access-token': this.tokenStorage.getToken() || '',
   });
 
   knowledgeGraphOnCheck: Subject<boolean> = new Subject<boolean>();
