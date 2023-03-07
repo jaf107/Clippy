@@ -70,8 +70,12 @@ Note that pdf.js is a prerequisite for this project.
 		<pre><li>Tasmia Zerin			bsse1128@iit.du.ac.bd		University of Dhaka</li></pre>
 	</ul>
 	<ul>
-		<h1 align="center">You tube link of this project</h1>
+		<h1 align="center">You Tube Link of this Project</h1>
 		<li>https://youtu.be/gEyYHD3tCuk</li>
+	</ul>
+	<ul>
+		<h1 align="center">Live Demo</h1>
+		<li>http://clippyicsescore2023.s3-website-us-east-1.amazonaws.com/</li>
 	</ul>
 	
 	
