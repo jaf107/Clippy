@@ -579,10 +579,17 @@ export class PdfViewerComponent
           !remainingWords[0].toLocaleLowerCase().localeCompare('fig') ||
           !remainingWords[0].toLocaleLowerCase().localeCompare('figure')
         ) {
+          let foundNumber = false;
           for (let i = startingIndex; i < spanText.length; i++) {
             if (
               spanText.charCodeAt(i) >= '0'.charCodeAt(0) &&
               spanText.charCodeAt(i) <= '9'.charCodeAt(0)
+            ) {
+              foundNumber = true;
+            } else if (
+              foundNumber &&
+              spanText.charCodeAt(i) < '0'.charCodeAt(0) &&
+              spanText.charCodeAt(i) > '9'.charCodeAt(0)
             ) {
               finalIndex = i;
               break;
