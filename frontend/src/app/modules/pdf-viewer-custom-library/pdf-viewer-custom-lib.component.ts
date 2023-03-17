@@ -591,7 +591,7 @@ export class PdfViewerComponent
               spanText.charCodeAt(i) < '0'.charCodeAt(0) &&
               spanText.charCodeAt(i) > '9'.charCodeAt(0)
             ) {
-              finalIndex = i;
+              finalIndex = i - 1;
               break;
             }
           }
