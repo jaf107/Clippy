@@ -48,7 +48,10 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.userName = this.tokenStorage.getUser().username;
+    // console.log(this.userName);
+    // console.log(this.tokenStorage.getUser());
     if (this.userName == null) {
+      console.log('guest');
       this.isGuest = true;
     } else {
       this.pdfShareService.getHistory().subscribe((data) => {
@@ -64,6 +67,7 @@ export class HomeComponent implements OnInit {
   }
 
   handle(e) {
+    console.log('in handel');
     this.pdfShareService.setSearched(false);
     this.file = e.target.files[0];
     if (this.file.type != 'application/pdf') {
@@ -102,12 +106,14 @@ export class HomeComponent implements OnInit {
   }
 
   searchByTitle() {
+    console.log('in search by title');
     this.spinner.show();
     this.pdfShareService.searchPaperByTitle(this.searchedTerm).subscribe(
       (data) => {
         this.pdfShareService
           .searchPaperbyId(data.data[0].paperId)
           .subscribe((data) => {
+            console.log('in subscribe title');
             this.tokenStorage.savePaperData(data);
             this.pdfShareService.setPaperId(data.paper_id);
             this.pdfShareService.getPaperFromSearch(data.url).subscribe(
@@ -147,7 +153,10 @@ export class HomeComponent implements OnInit {
           },
           (err) => {
             console.log(err);
-            this.toastr.error('Not found', 'Paper not found in Semantic Scholar');
+            this.toastr.error(
+              'Not found',
+              'Paper not found in Semantic Scholar'
+            );
             this.spinner.hide();
           }
         );

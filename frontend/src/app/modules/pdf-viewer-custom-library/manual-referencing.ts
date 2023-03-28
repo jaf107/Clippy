@@ -79,6 +79,7 @@ export async function getManualReferences(src: any) {
         isAlphanumeric(item.str)
     );
 
+    let captionType;
     regularText.map((item, index, array) => {
       // Table
       if (item.str.toLowerCase().includes('table')) {
@@ -86,6 +87,7 @@ export async function getManualReferences(src: any) {
           index + 1 < array.length &&
           Math.abs(item.transform[5] - array[index + 1].transform[5]) >= 25
         ) {
+          captionType = 'table';
           let xPos = item.transform[4];
           if (xPos - 300 > 15 || xPos - 50 > 15) {
             let tempX = -1;
@@ -94,7 +96,7 @@ export async function getManualReferences(src: any) {
             } else tempX = 280;
 
             finalOut.push({
-              str: extractKeywordFromStr(item.str, 'table'),
+              str: extractKeywordFromStr(item.str, captionType),
               page: pageIndex + 1,
               height: 250,
               width: 580,
@@ -106,15 +108,24 @@ export async function getManualReferences(src: any) {
       }
 
       // For figure
-      else if (index == 0 && item.str.toLowerCase().includes('figure')) {
+      else if (
+        index == 0 &&
+        (item.str.toLowerCase().includes('fig') ||
+          item.str.toLowerCase().includes('figure'))
+      ) {
         if (710 - item.transform[5] >= 50) {
           let tempX = -1;
+
+          if (item.str.toLowerCase().includes('fig')) captionType = 'fig';
+          else if (item.str.toLowerCase().includes('figure'))
+            captionType = 'figure';
+
           if (item.transform[4] < 280) {
             tempX = 25;
           } else tempX = 280;
 
           finalOut.push({
-            str: extractKeywordFromStr(item.str, 'figure'),
+            str: extractKeywordFromStr(item.str, captionType),
             page: pageIndex + 1,
             height: 750 - item.transform[5],
             width: 580,
@@ -124,11 +135,18 @@ export async function getManualReferences(src: any) {
         }
       } else if (
         index + 1 < array.length &&
-        array[index + 1].str.toLowerCase().includes('figure') &&
+        (array[index + 1].str.toLowerCase().includes('fig') ||
+          array[index + 1].str.toLowerCase().includes('figure')) &&
         index != 0
       ) {
         if (Math.abs(array[index + 1].transform[5] - item.transform[5]) >= 70) {
           let tempHeight, tempY, tempX;
+
+          if (array[index + 1].str.toLowerCase().includes('fig'))
+            captionType = 'fig';
+          else if (array[index + 1].str.toLowerCase().includes('figure'))
+            captionType = 'figure';
+
           if (item.transform[5] - array[index + 1].transform[5] > 0) {
             tempHeight = item.transform[5] - array[index + 1].transform[5];
             tempY = item.transform[5];
@@ -142,7 +160,7 @@ export async function getManualReferences(src: any) {
           } else tempX = 280;
 
           finalOut.push({
-            str: extractKeywordFromStr(array[index + 1].str, 'figure'),
+            str: extractKeywordFromStr(array[index + 1].str, captionType),
             page: pageIndex + 1,
             height: tempHeight,
             width: 580,
@@ -155,5 +173,3 @@ export async function getManualReferences(src: any) {
   }
   return finalOut;
 }
-
-/// vai re vai
