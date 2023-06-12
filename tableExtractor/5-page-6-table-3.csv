@@ -1,0 +1,90 @@
+"","",""
+"","",""
+"HRFuser [4]
+SegFormer [80]","RGB
+HRFormer-T
+RGB
+MiT-B2","53.20
+47.95
+67.04
+57.20"
+"HRFuser [4]
+TokenFusion [72]
+CMX [49]
+CMNeXt","RGB-Depth
+HRFormer-T
+RGB-Depth
+MiT-B2
+RGB-Depth
+MiT-B2
+RGB-Depth
+MiT-B2","49.32
+51.88
+57.44
+60.25
+64.43
+62.67
+65.09
+63.58"
+"HRFuser [4]
+TokenFusion [72]
+CMX [49]
+CMNeXt","RGB-Event
+HRFormer-T
+RGB-Event
+MiT-B2
+RGB-Event
+MiT-B2
+RGB-Event
+MiT-B2","44.85
+42.22
+55.97
+45.63
+64.03
+56.52
+66.13
+57.48"
+"HRFuser [4]
+TokenFusion [72]
+CMX [49]
+CMNeXt","RGB-LiDAR
+HRFormer-T
+RGB-LiDAR
+MiT-B2
+RGB-LiDAR
+MiT-B2
+RGB-LiDAR
+MiT-B2","48.74
+43.13
+54.55
+53.01
+64.31
+56.37
+65.26
+58.04"
+"HRFuser [4]
+CMNeXt","RGB-D-Event HRFormer-T
+RGB-D-Event
+MiT-B2","50.21
+51.83
+67.73
+64.44"
+"HRFuser [4]
+CMNeXt","RGB-D-LiDAR HRFormer-T
+RGB-D-LiDAR
+MiT-B2","52.61
+52.72
+66.55
+65.50"
+"HRFuser [4]
+CMNeXt","RGB-D-E-Li
+HRFormer-T
+RGB-D-E-Li
+MiT-B2","Method
+Modal
+Backbone
+KITTI-360 DeLiVER
+52.76
+52.97
+67.84
+66.30"

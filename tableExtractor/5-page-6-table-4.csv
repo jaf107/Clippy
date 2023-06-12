@@ -1,0 +1,32 @@
+"","",""
+"DRConv [6]
+DDF [102]
+TransFuser [55]
+MMTM [38]
+FuseNet [31]","","RGB-A-D-N 34.63
+RGB-A-D-N 36.16
+RGB-A-D-N 37.66
+RGB-A-D-N 39.71
+RGB-A-D-N 40.58"
+"MCubeSNet [45]
+CMNeXt (MiT-B2)
+MCubeSNet [45]
+CMNeXt (MiT-B2)
+MCubeSNet [45]
+CMNeXt (MiT-B2)
+MCubeSNet [45]
+CMNeXt (MiT-B2) RGB-A-D-N 51.54","RGB
+RGB
+RGB-A
+RGB-A
+RGB-A-D
+RGB-A-D","Method
+Modal
+mIoU
+33.70
+48.16
+39.10
+48.42
+42.00
+49.48
+RGB-A-D-N 42.86"

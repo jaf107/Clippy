@@ -1,0 +1,46 @@
+"","",""
+"","",""
+"PSPNet [97]
+OCR [87]
+SegFormer [80] (B4)","RGB
+RGB
+RGB","76.34
+75.78
+78.60
+79.36
+82.20
+78.53"
+"DAVSS [106]
+TMANet [70]","Video
+Video","75.91
+74.27
+77.14
+76.41"
+"ESANet [58]
+SA-Gate [11]","RGB-D
+RGB-D","n.a.
+79.43
+n.a.
+79.53"
+"PSPNet-LF [60]
+OCR-LF [60]
+CMNeXt (MiT-B4)
+CMNeXt (MiT-B4)
+CMNeXt (MiT-B4)","RGB-LF33
+RGB-LF33
+RGB-LF8
+RGB-LF33
+RGB-LF80","Method
+Modal
+Real
+Syn
+78.10
+77.88
+79.32
+80.43
+83.22
+80.74
+82.62
+80.98
+81.02
+83.11"

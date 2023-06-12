@@ -1,0 +1,37 @@
+"","",""
+"","",""
+"SwinT [50]
+SegFormer [80]","RGB
+RGB","49.0
+52.0"
+"ACNet [35]
+FuseSeg [66]
+ABMDRNet [96]
+LASNet [41]
+FEANet [15]
+MFTNet [101]
+GMNet [103]
+DooDLeNet [20]
+CMX (MiT-B2) [49] RGB-T
+CMX (MiT-B4) [49] RGB-T
+CMNeXt (MiT-B4)","RGB-T
+RGB-T
+RGB-T
+RGB-T
+RGB-T
+RGB-T
+RGB-T
+RGB-T
+RGB-T","Method
+Modal mIoU
+46.3
+54.5
+54.8
+54.9
+55.3
+57.3
+57.3
+57.3
+58.2
+59.7
+59.9"
