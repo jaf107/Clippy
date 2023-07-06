@@ -1,32 +1,32 @@
 import camelot
-import PyPDF2
+# import PyPDF2
 
-# Function to extract tables from a PDF
-def extract_tables_from_pdf(file_path):
-    # Open the PDF file
-    with open(file_path, 'rb') as file:
-        # Create a PDF reader object
-        pdf_reader = PyPDF2.PdfReader(file)
-        num_pages = len(pdf_reader.pages)
-        print('numL: ',num_pages)
-        tables = []
-        num = 0
-        # Iterate over each page in the PDF
-        for page_number in range(num_pages):
-            # Extract text from the page
-            page_text = pdf_reader.pages[page_number].extract_text()
+# # Function to extract tables from a PDF
+# def extract_tables_from_pdf(file_path):
+#     # Open the PDF file
+#     with open(file_path, 'rb') as file:
+#         # Create a PDF reader object
+#         pdf_reader = PyPDF2.PdfReader(file)
+#         num_pages = len(pdf_reader.pages)
+#         print('numL: ',num_pages)
+#         tables = []
+#         num = 0
+#         # Iterate over each page in the PDF
+#         for page_number in range(num_pages):
+#             # Extract text from the page
+#             page_text = pdf_reader.pages[page_number].extract_text()
 
-            # Use Camelot to detect and extract tables from the page
-            table = camelot.read_pdf(file_path, pages=str(page_number+1))
-            filename = str(num) + '.csv'
-            num+=1
-            table.export(filename,f='csv', compress=False)
-            tables.extend(table)
+#             # Use Camelot to detect and extract tables from the page
+#             table = camelot.read_pdf(file_path, pages=str(page_number+1))
+#             filename = str(num) + '.csv'
+#             num+=1
+#             table.export(filename,f='csv', compress=False)
+#             tables.extend(table)
 
-        return tables
+#         return tables
 
-# Provide the path to your PDF file
-pdf_file_path = '/home/mdsiam/Desktop/2303.01480v1.pdf'
+# # Provide the path to your PDF file
+# pdf_file_path = '/home/mdsiam/Desktop/2303.01480v1.pdf'
 
 # Extract tables from the PDF
 # tables = extract_tables_from_pdf(pdf_file_path)

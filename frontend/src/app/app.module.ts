@@ -22,6 +22,8 @@ import { SummarizerComponent } from './modules/summarizer/summarizer.component';
 import { PdfViewerModule } from './modules/pdf-viewer-custom-library/pdf-viewer.module';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { PdfPreviewComponent } from './modules/pdf-viewer/pdf-preview/pdf-preview.component';
+import { ExamplePdfViewerComponent } from './example-pdf-viewer/example-pdf-viewer.component';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,8 @@ import { PdfPreviewComponent } from './modules/pdf-viewer/pdf-preview/pdf-previe
     PdfViewerComponent,
     SidebarComponent,
     SummarizerComponent,
-    PdfPreviewComponent
+    PdfPreviewComponent,
+    ExamplePdfViewerComponent
   ],
   imports: [
     BrowserModule,
@@ -47,7 +50,8 @@ import { PdfPreviewComponent } from './modules/pdf-viewer/pdf-preview/pdf-previe
     PdfViewerModule,
     ClipboardModule,
     FontAwesomeModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    NgxExtendedPdfViewerModule
   ],
   providers: [],
   bootstrap: [AppComponent],
